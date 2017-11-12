@@ -9,6 +9,7 @@ pkg = env.AskapPackage("cpdataservices")
 
 pkg.AddSubPackage("skymodelclient")
 pkg.AddSubPackage("calibrationclient")
+pkg.AddSubPackage("calibrationaccessor")
 
 env.AppendUnique(CCFLAGS=['-DASKAP_DEBUG'])
 
