@@ -53,9 +53,10 @@ using namespace casa;
 // variables functions used by the linmos accumulator class
 
 // See loadParset for these options.
-enum weight_types {FROM_WEIGHT_IMAGES=0, FROM_BP_MODEL};
+enum weight_types {FROM_WEIGHT_IMAGES=0, FROM_BP_MODEL, COMBINED};
 // FROM_WEIGHT_IMAGES   Obtain pixel weights from weight images (parset "weights" entries)
 // FROM_BP_MODEL        Generate pixel weights using a Gaussian primary-beam model
+// COMBINED             The combined case - where we use both the weight image and the PB model
 enum weight_states {CORRECTED=0, INHERENT, WEIGHTED};
 // CORRECTED            Direction-dependent beams/weights have been divided out of input images
 // INHERENT             Input images retain the natural primary-beam weighting of the visibilities
@@ -118,6 +119,9 @@ namespace askap {
             } else if (boost::iequals(weightTypeName, "FromPrimaryBeamModel")) {
                 itsWeightType = FROM_BP_MODEL;
                 ASKAPLOG_INFO_STR(linmoslogger, "Weights to be set using a Gaussian primary-beam models");
+            } else if (boost::iequals(weightTypeName, "Combined")) {
+                  itsWeightType = COMBINED;
+                  ASKAPLOG_INFO_STR(linmoslogger, "Weights to be set using a combination of weight images and Gaussian primary-beam models");
             } else {
                 ASKAPLOG_ERROR_STR(linmoslogger, "Unknown weighttype " << weightTypeName);
                 return false;
@@ -145,7 +149,7 @@ namespace askap {
                 string outWgtName = parset.getString("outweight");
 
                 // If reading weights from images, check the input for those
-                if (itsWeightType == FROM_WEIGHT_IMAGES) {
+                if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED) {
                     ASKAPCHECK(inImgNames.size()==inWgtNames.size(), "# weight images should equal # images");
                 }
 
@@ -164,7 +168,7 @@ namespace askap {
 
             }
 
-            if (itsWeightType == FROM_WEIGHT_IMAGES) {
+            if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED) {
 
                 // if reading weights from images, check for inputs associated with other kinds of weighting
                 if (parset.isDefined("feeds.centre") ||
@@ -273,7 +277,7 @@ namespace askap {
             // set a single key for the various file-name maps
             itsOutWgtNames[outImgName] = outWgtName;
             itsInImgNameVecs[outImgName] = inImgNames;
-            if (itsWeightType == FROM_WEIGHT_IMAGES) {
+            if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED) {
                 itsInWgtNameVecs[outImgName] = inWgtNames;
             }
             if (itsDoSensitivity) {
@@ -346,7 +350,7 @@ namespace askap {
                     ASKAPCHECK(inImgName!=outImgName,
                         "Output image, "<<outImgName<<", is present among the inputs");
 
-                    if (itsWeightType == FROM_WEIGHT_IMAGES) {
+                    if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED) {
                         // do some tests
                         string inWgtName = inWgtNames[img]; // short cut
                         pos0 = inWgtName.find(itsTaylorTag);
@@ -628,7 +632,7 @@ namespace askap {
 
                             // look for weights image if required (weights are
                             // not needed when combining sensitivity images)
-                            if (itsWeightType == FROM_WEIGHT_IMAGES) {
+                            if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED) {
                                 // replace the prefix with "weights"
                                 nextName.replace(0, (*pre).length(), "weights");
                                 // remove any ".restored" sub-string from the weights file name
@@ -686,12 +690,12 @@ namespace askap {
                     continue;
                 }
 
-                if ((full_set == -1) || ((itsWeightType == FROM_WEIGHT_IMAGES) && (full_wgt_set == -1))) {
+                if ((full_set == -1) || ((itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED) && (full_wgt_set == -1))) {
                     // this file did have a relevant prefix, but failed
                     if (full_set == -1) {
                         ASKAPLOG_INFO_STR(linmoslogger, mosaicName << " does not have a full set of input files. Ignoring.");
                     }
-                    if ((itsWeightType == FROM_WEIGHT_IMAGES) && (full_wgt_set == -1)) {
+                    if ((itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED ) && (full_wgt_set == -1)) {
                         ASKAPLOG_INFO_STR(linmoslogger, mosaicName << " does not have a full set of weights files. Ignoring.");
                     }
 
@@ -718,7 +722,7 @@ namespace askap {
                 // double check the size of the various maps and vectors. These should have been caught already
                 ASKAPCHECK(itsInImgNameVecs.size()==itsOutWgtNames.size(),
                     mosaicName << ": inconsistent name maps.");
-                if (itsWeightType == FROM_WEIGHT_IMAGES) {
+                if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED ) {
                     ASKAPCHECK(itsInImgNameVecs.size()==itsInWgtNameVecs.size(),
                         mosaicName << ": mosaic search error. Inconsistent name maps.");
                     ASKAPCHECK(itsInImgNameVecs[mosaicName].size()==itsInWgtNameVecs[mosaicName].size(),
@@ -778,7 +782,7 @@ namespace askap {
             itsInShape = inShape;
             itsInCoordSys = inCoordSys;
 
-            if (itsWeightType == FROM_BP_MODEL) {
+            if (itsWeightType == FROM_BP_MODEL || itsWeightType == COMBINED) {
                 // set the centre of the beam
                 if ( itsCentres.size() > n ) {
                     itsInCentre = itsCentres[n];
@@ -893,7 +897,7 @@ namespace askap {
             double maxMemoryInMB = double(shape.product()*sizeof(T))/1024./1024.+100;
             itsOutBuffer = TempImage<T>(shape, cSysTmp, maxMemoryInMB);
             ASKAPCHECK(itsOutBuffer.shape().nelements()>0, "Output buffer does not appear to be set");
-            if (itsWeightType == FROM_WEIGHT_IMAGES) {
+            if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED ) {
                 itsOutWgtBuffer = TempImage<T>(shape, cSysTmp, maxMemoryInMB);
                 ASKAPCHECK(itsOutWgtBuffer.shape().nelements()>0,
                     "Output weights buffer does not appear to be set");
@@ -926,7 +930,7 @@ namespace askap {
             double maxMemoryInMB = double(shape.product()*sizeof(T))/1024./1024.+100;
             itsInBuffer = TempImage<T>(shape,cSys,maxMemoryInMB);
             ASKAPCHECK(itsInBuffer.shape().nelements()>0, "Input buffer does not appear to be set");
-            if (itsWeightType == FROM_WEIGHT_IMAGES) {
+            if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED) {
                 itsInWgtBuffer = TempImage<T>(shape,cSys,maxMemoryInMB);
                 ASKAPCHECK(itsInWgtBuffer.shape().nelements()>0,
                     "Input weights buffer does not appear to be set");
@@ -953,7 +957,7 @@ namespace askap {
                                                     Array<T>& inWgtPix,
                                                     Array<T>& inSenPix) {
             itsInBuffer.put(planeIter.getPlane(inPix));
-            if (itsWeightType == FROM_WEIGHT_IMAGES) {
+            if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED ) {
                 itsInWgtBuffer.put(planeIter.getPlane(inWgtPix));
             }
             if (itsDoSensitivity) {
@@ -986,7 +990,7 @@ namespace askap {
                 "Output buffer does not appear to be set");
             itsRegridder.regrid(itsOutBuffer, itsEmethod, itsAxes, itsInBuffer,
                                 itsReplicate, itsDecimate, false, itsForce);
-            if (itsWeightType == FROM_WEIGHT_IMAGES) {
+            if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED ) {
                 itsRegridder.regrid(itsOutWgtBuffer, itsEmethod, itsAxes,
                     itsInWgtBuffer, itsReplicate, itsDecimate, false, itsForce);
             }
@@ -1010,9 +1014,23 @@ namespace askap {
 
             // set the weights, either to those read in or using the primary-beam model
             TempImage<T> wgtBuffer;
-            if (itsWeightType == FROM_WEIGHT_IMAGES) {
+
+
+            if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED) {
                 wgtBuffer = itsOutWgtBuffer;
-            } else {
+            }
+            else {
+              // apparently the +100 forces it to use the memory
+              double maxMemoryInMB = double(itsOutBuffer.shape().product()*sizeof(T))/1024./1024.+100;
+              wgtBuffer = TempImage<T>(itsOutBuffer.shape(), itsOutBuffer.coordinates(), maxMemoryInMB);
+              // set the weights to unity to allow multiplication by PB for combined weight case
+              wgtBuffer.set(1.0);
+
+
+            }
+
+            if (itsWeightType == FROM_BP_MODEL || itsWeightType == COMBINED) {
+
 
                 Vector<double> pixel(2,0.);
                 MVDirection world0, world1;
@@ -1038,9 +1056,7 @@ namespace askap {
                 // set the centre of the input beam (needs to be more flexible -- and correct...)
                 inDC.toWorld(world0,inDC.referencePixel());
 
-                // apparently the +100 forces it to use the memory
-                double maxMemoryInMB = double(itsOutBuffer.shape().product()*sizeof(T))/1024./1024.+100;
-                wgtBuffer = TempImage<T>(itsOutBuffer.shape(), itsOutBuffer.coordinates(), maxMemoryInMB);
+
 
                 // step through the pixels, setting the weights (power primary beam squared)
                 for (int x=0; x<outPix.shape()[0];++x) {
@@ -1057,7 +1073,9 @@ namespace askap {
                         // set the weight
                         //pb = exp(-offsetBeam*offsetBeam*4.*log(2.)/fwhm/fwhm);
                         pb = itsPB->evaluateAtOffset(offsetBeam,freq);
-                        wgtBuffer.putAt(pb * pb, pos);
+                        // this catches the COMBINED
+                        T scale = wgtBuffer(pos) * wgtBuffer(pos);
+                        wgtBuffer.putAt(pb * pb * scale, pos);
 
                     }
                 }
@@ -1150,10 +1168,14 @@ namespace askap {
 
             Array<T> wgtPix;
 
+
+
             // set the weights, either to those read in or using the primary-beam model
             if (itsWeightType == FROM_WEIGHT_IMAGES) {
                 wgtPix.reference(inWgtPix);
-            } else {
+            }
+
+            if ( itsWeightType == FROM_BP_MODEL || itsWeightType == COMBINED ) {
 
                 Vector<double> pixel(2,0.);
                 MVDirection world;
@@ -1180,7 +1202,13 @@ namespace askap {
                     wgtpos[dim] = 0;
                 }
                 // set the array
-                wgtPix = Array<T>(itsInShape);
+                if ( itsWeightType == FROM_BP_MODEL ) {
+                  wgtPix = Array<T>(itsInShape);
+
+                }
+                else {
+                  wgtPix.reference(inWgtPix);
+                }
 
                 for (int x=0; x<outPix.shape()[0];++x) {
                     for (int y=0; y<outPix.shape()[1];++y) {
@@ -1196,7 +1224,14 @@ namespace askap {
                         // set the weight
                         //pb = exp(-offsetBeam*offsetBeam*4.*log(2.)/fwhm/fwhm);
                         pb = itsPB->evaluateAtOffset(offsetBeam,freq);
-                        wgtPix(wgtpos) = pb * pb;
+                        if (itsWeightType == COMBINED) {
+                          T scale = wgtPix(wgtpos) * wgtPix(wgtpos);
+
+                          wgtPix(wgtpos) = scale * pb * pb;
+                        }
+                        else {
+                          wgtPix(wgtpos) = pb * pb;
+                        }
 
                     }
                 }
