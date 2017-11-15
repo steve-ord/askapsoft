@@ -58,7 +58,7 @@ public:
   /// @param[in] parset parset file name
   /// @param[in] readonly if true, additional checks are done that file exists
 
-  explicit ServiceCalSolutionAccessor(const std::string &parset, bool readonly = false);
+  explicit ServiceCalSolutionAccessor(const std::string &parset, casa::Long iD = 0, bool readonly = false);
 
   /// @brief destructor
   /// @details Not yet sure what functionality that needs to be here

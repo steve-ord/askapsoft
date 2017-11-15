@@ -44,8 +44,9 @@ namespace   caldataservice {
 /// @brief constructor
 /// @details It reads the given parset file, configures the service client
 /// @param[in] parset parset file name
+/// @param[in] the iD of the solution to get - or to make
 /// @param[in] readonly if true, additional checks are done that file exists
-ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const std::string &parset, bool readonly) : itsParsetFileName(parset)
+ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const std::string &parset, casa::Long iD, bool readonly) : itsParsetFileName(parset)
 
 {
 ;

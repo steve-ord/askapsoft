@@ -96,6 +96,9 @@ LUSTRE_STRIPE_SIZE=1048576
 # Storage manager bucket size - I/O quantum for MS writing
 BUCKET_SIZE=1048576
 
+# If true, copy with distributed copy tool dcp. Else use cp
+USE_DCP_TO_COPY_MS=true
+
 ####################
 # Locations of the executables.
 # If you have a local version of the ASKAPsoft codebase, and have
@@ -558,7 +561,7 @@ SELFCAL_SELAVY_NSUBY=3
 # detected.
 SELFCAL_SELAVY_WEIGHTSCUT=0.95
 # Type of fitting to apply within Selavy for the self-calibration.
-SELFCAL_SELAVY_FIT_TYPE="full"
+SELFCAL_SELAVY_FIT_TYPE="psf"
 # Value for the calibrate.scalenoise parameter for applying the
 # self-cal solution
 SELFCAL_SCALENOISE=false
@@ -904,11 +907,11 @@ SELAVY_SPEC_GROWTH_CUT=3
 # Growth flux threshold - leave blank if using SNR
 SELAVY_SPEC_GROWTH_THRESHOLD=""
 # Cutoff in the weights for source-detection
-SELAVY_WEIGHTS_CUTOFF=0.15
+SELAVY_SPEC_WEIGHTS_CUTOFF=0.15
 #
 # Preprocessing
 # Smoothing:
-SELAVY_SPEC_FLAG_SMOOTH=false
+SELAVY_SPEC_FLAG_SMOOTH=true
 # Type of smoothing - 'spectral' or 'spatial'
 SELAVY_SPEC_SMOOTH_TYPE=spectral
 # Spectral smoothing hanning width (channels)
@@ -926,22 +929,25 @@ SELAVY_SPEC_RECON_SNR=4
 SELAVY_SPEC_RECON_SCALE_MIN=1
 # Maximum scale for inclusion in reconstruction (0 means all scales)
 SELAVY_SPEC_RECON_SCALE_MAX=0
-
+#
 # Type of searching to be done - 'spectral' or 'spatial'
-SELAVY_SPEC_SEARCH_TYPE=spectral
+SELAVY_SPEC_SEARCH_TYPE=spatial
 # Whether to use a variable threshold
-SELAVY_SPEC_VARIABLE_THRESHOLD=false
+SELAVY_SPEC_VARIABLE_THRESHOLD=true
 # Half-size of the box used to calculate the local threshold
-SELAVY_SPEC_BOX_SIZE=50
+SELAVY_SPEC_BOX_SIZE=35
 # How the processors subdivide the image
 SELAVY_SPEC_NSUBX=6
 SELAVY_SPEC_NSUBY=3
-SELAVY_SPEC_NSUBZ=1
+SELAVY_SPEC_NSUBZ=11
 #
 # Limits on sizes of reported sources
 SELAVY_SPEC_MIN_PIX=5
 SELAVY_SPEC_MIN_CHAN=5
 SELAVY_SPEC_MAX_CHAN=2592
+#
+# Whether to use the optimiseMask option
+SELAVY_SPEC_OPTIMISE_MASK=true
 #
 # Base names for various extracted data products
 SELAVY_SPEC_BASE_SPECTRUM=spectrum

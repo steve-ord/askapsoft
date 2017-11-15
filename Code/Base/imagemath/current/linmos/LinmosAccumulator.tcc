@@ -1007,6 +1007,10 @@ namespace askap {
                                                    Array<T>& outSenPix,
                                                    const IPosition& curpos) {
 
+
+            // I really worry about the replication here - there must be away
+            // to avoid this.
+
             // copy the pixel iterator containing all dimensions
             IPosition fullpos(curpos);
             // set a pixel iterator that does not have the higher dimensions
@@ -1014,17 +1018,20 @@ namespace askap {
 
             // set the weights, either to those read in or using the primary-beam model
             TempImage<T> wgtBuffer;
-
+            TempImage<T> wgtBeamBuffer;// typically for the weight beam
+              // apparently the +100 forces it to use the memory
+            double maxMemoryInMB = double(itsOutBuffer.shape().product()*sizeof(T))/1024./1024.+100;
+            wgtBeamBuffer = TempImage<T>(itsOutBuffer.shape(), itsOutBuffer.coordinates(), maxMemoryInMB);
+            wgtBeamBuffer.set(1.0); // set to one to make the weighting logic simpler
 
             if (itsWeightType == FROM_WEIGHT_IMAGES || itsWeightType == COMBINED) {
+
                 wgtBuffer = itsOutWgtBuffer;
+
             }
             else {
-              // apparently the +100 forces it to use the memory
-              double maxMemoryInMB = double(itsOutBuffer.shape().product()*sizeof(T))/1024./1024.+100;
+
               wgtBuffer = TempImage<T>(itsOutBuffer.shape(), itsOutBuffer.coordinates(), maxMemoryInMB);
-              // set the weights to unity to allow multiplication by PB for combined weight case
-              wgtBuffer.set(1.0);
 
 
             }
@@ -1073,9 +1080,18 @@ namespace askap {
                         // set the weight
                         //pb = exp(-offsetBeam*offsetBeam*4.*log(2.)/fwhm/fwhm);
                         pb = itsPB->evaluateAtOffset(offsetBeam,freq);
-                        // this catches the COMBINED
-                        T scale = wgtBuffer(pos) * wgtBuffer(pos);
-                        wgtBuffer.putAt(pb * pb * scale, pos);
+
+                        if (itsWeightType == FROM_BP_MODEL) {
+                          // this replicates the case where we just use the PB model
+                          wgtBuffer.putAt(pb * pb, pos); // this is an image
+                        }
+                        else { // COMBINED
+                          // this replicates the case where we use the model and the inv. variance
+                          // so we need somewhere to put the beam as the wgtBuffer contains the inv. variance
+                          wgtBeamBuffer.putAt(pb,pos);
+                        }
+
+
 
                     }
                 }
@@ -1096,9 +1112,12 @@ namespace askap {
                         fullpos[1] = y;
                         pos[0] = x;
                         pos[1] = y;
-                        if (wgtBuffer.getAt(pos)>=wgtCutoff) {
-                            outPix(fullpos) = outPix(fullpos) + itsOutBuffer.getAt(pos) * wgtBuffer.getAt(pos);
-                            outWgtPix(fullpos) = outWgtPix(fullpos) + wgtBuffer.getAt(pos);
+                        // we need a beamsquared x inv. variance weight in the image
+                        // this should cover all cases
+                        T theWeight = wgtBuffer.getAt(pos) * wgtBeamBuffer.getAt(pos) * wgtBeamBuffer.getAt(pos);
+                        if (theWeight >= wgtCutoff) {
+                            outPix(fullpos) = outPix(fullpos) + itsOutBuffer.getAt(pos) * theWeight;
+                            outWgtPix(fullpos) = outWgtPix(fullpos) + theWeight;
                         }
                     }
                 }
@@ -1109,9 +1128,30 @@ namespace askap {
                         fullpos[1] = y;
                         pos[0] = x;
                         pos[1] = y;
-                        if (wgtBuffer.getAt(pos)>=wgtCutoff) {
-                            outPix(fullpos) = outPix(fullpos) + itsOutBuffer.getAt(pos) * sqrt(wgtBuffer.getAt(pos));
-                            outWgtPix(fullpos) = outWgtPix(fullpos) + wgtBuffer.getAt(pos);
+                        // we need a beamsquared x inv. variance weight in the image
+                        // it already has a beam weight so the weight is a function of user choices
+
+                        T theWeight = 0.0;
+                        T theDeWeight = 0.0;
+
+                        if (itsWeightType == COMBINED) {
+                          theWeight = wgtBuffer.getAt(pos) * wgtBeamBuffer.getAt(pos); // beam squared . inv variance
+                          theDeWeight = wgtBeamBuffer.getAt(pos) * wgtBeamBuffer.getAt(pos) * wgtBuffer.getAt(pos); // as above
+                        }
+                        else if (itsWeightType == FROM_BP_MODEL) {
+                          theWeight = sqrt(wgtBuffer.getAt(pos));
+                          theDeWeight = wgtBuffer.getAt(pos);
+                        }
+                        else if (itsWeightType == FROM_WEIGHT_IMAGES ) {
+                           ASKAPLOG_WARN_STR(linmoslogger,"Weighting INHERENT images with weight images alone - NO primary beam correction will be done. Use Combined");
+                           theWeight = wgtBuffer.getAt(pos);
+                           theDeWeight = wgtBuffer.getAt(pos);
+
+                        }
+
+                        if (theWeight >=wgtCutoff) {
+                            outPix(fullpos) = outPix(fullpos) + itsOutBuffer.getAt(pos) * theWeight;
+                            outWgtPix(fullpos) = outWgtPix(fullpos) + theDeWeight;
                         }
                     }
                 }
@@ -1122,9 +1162,29 @@ namespace askap {
                         fullpos[1] = y;
                         pos[0] = x;
                         pos[1] = y;
-                        if (wgtBuffer.getAt(pos)>=wgtCutoff) {
+
+                        /// the beam squared weight is already in the image_pos
+                        /// we need multiple cases here
+                        T theWeight = 0.0;
+                        T theDeWeight = 0.0;
+                        if (itsWeightType == COMBINED) {
+
+                          ASKAPTHROW(AskapError,"A projection weighting by weight image strangely not supported in this release");
+
+                        }
+                        else if (itsWeightType == FROM_BP_MODEL) {
+                          theWeight = 1.0; /// beam already here
+                          theDeWeight = wgtBuffer.getAt(pos);
+                        }
+                        else if (itsWeightType == FROM_WEIGHT_IMAGES ) {
+                          /// in this case I assume the beam^2 is already in the weight image
+                          /// as well as in the beam^2 in the image so ...
+                          ASKAPTHROW(AskapError,"A projection weighting by weight image strangely not supported in this release");
+                        }
+                        // using the deweight here as the weight is already in the imaage
+                        if (theDeWeight >= wgtCutoff) {
                             outPix(fullpos) = outPix(fullpos) + itsOutBuffer.getAt(pos);
-                            outWgtPix(fullpos) = outWgtPix(fullpos) + wgtBuffer.getAt(pos);
+                            outWgtPix(fullpos) = outWgtPix(fullpos) + theDeWeight;
                         }
                     }
                 }
@@ -1166,8 +1226,8 @@ namespace askap {
             // set up an indexing vector for the weights. If weight images are used, these are as in the image.
             IPosition wgtpos(curpos);
 
-            Array<T> wgtPix;
-
+            Array<T> wgtPix; // typically for the weight image
+            Array<T> wgtPixBeam;// typically for the weight beam
 
 
             // set the weights, either to those read in or using the primary-beam model
@@ -1202,45 +1262,49 @@ namespace askap {
                     wgtpos[dim] = 0;
                 }
                 // set the array
-                if ( itsWeightType == FROM_BP_MODEL ) {
-                  wgtPix = Array<T>(itsInShape);
+                if ( itsWeightType == FROM_BP_MODEL  || itsWeightType == COMBINED) {
+                  wgtPixBeam = Array<T>(itsInShape);
+                  for (int x=0; x<outPix.shape()[0];++x) {
+                      for (int y=0; y<outPix.shape()[1];++y) {
+                          wgtpos[0] = x;
+                          wgtpos[1] = y;
+
+                          // get the current pixel location and distance from beam centre
+                          pixel[0] = double(x);
+                          pixel[1] = double(y);
+                          outDC.toWorld(world,pixel);
+                          offsetBeam = itsInCentre.separation(world);
+
+                          // set the weight
+                          //pb = exp(-offsetBeam*offsetBeam*4.*log(2.)/fwhm/fwhm);
+                          pb = itsPB->evaluateAtOffset(offsetBeam,freq);
+                          if (itsWeightType == FROM_BP_MODEL) {
+                            wgtPix(wgtpos) = pb * pb;
+                            wgtPixBeam(wgtpos) = 1.0;
+                          }
+                          else {
+                            wgtPixBeam(wgtpos) = pb;
+                          }
+
+
+                      }
+                  }
 
                 }
                 else {
                   wgtPix.reference(inWgtPix);
                 }
 
-                for (int x=0; x<outPix.shape()[0];++x) {
-                    for (int y=0; y<outPix.shape()[1];++y) {
-                        wgtpos[0] = x;
-                        wgtpos[1] = y;
 
-                        // get the current pixel location and distance from beam centre
-                        pixel[0] = double(x);
-                        pixel[1] = double(y);
-                        outDC.toWorld(world,pixel);
-                        offsetBeam = itsInCentre.separation(world);
-
-                        // set the weight
-                        //pb = exp(-offsetBeam*offsetBeam*4.*log(2.)/fwhm/fwhm);
-                        pb = itsPB->evaluateAtOffset(offsetBeam,freq);
-                        if (itsWeightType == COMBINED) {
-                          T scale = wgtPix(wgtpos) * wgtPix(wgtpos);
-
-                          wgtPix(wgtpos) = scale * pb * pb;
-                        }
-                        else {
-                          wgtPix(wgtpos) = pb * pb;
-                        }
-
-                    }
-                }
             }
 
             T minVal, maxVal;
             IPosition minPos, maxPos;
             minMax(minVal,maxVal,minPos,maxPos,wgtPix);
             T wgtCutoff = itsCutoff * itsCutoff * maxVal; // wgtPix is prop. to image (gain/sigma)^2
+
+///
+///
 
             if (itsWeightState == CORRECTED) {
                 for (int x=0; x<outPix.shape()[0];++x) {
@@ -1249,9 +1313,13 @@ namespace askap {
                         fullpos[1] = y;
                         wgtpos[0] = x;
                         wgtpos[1] = y;
-                        if (wgtPix(wgtpos)>=wgtCutoff) {
-                            outPix(fullpos)    = outPix(fullpos)    + inPix(fullpos) * wgtPix(wgtpos);
-                            outWgtPix(fullpos) = outWgtPix(fullpos) + wgtPix(wgtpos);
+                        /// make beamsquared weight times inverse variance
+                        /// this should cover all cases
+                        T theWeight = wgtPix(wgtpos) * wgtPixBeam(wgtpos) * wgtPixBeam(wgtpos);
+
+                        if (theWeight >=wgtCutoff) {
+                            outPix(fullpos)    = outPix(fullpos)    + inPix(fullpos) * theWeight;
+                            outWgtPix(fullpos) = outWgtPix(fullpos) + theWeight ;
                         }
                     }
                 }
@@ -1262,7 +1330,24 @@ namespace askap {
                         fullpos[1] = y;
                         wgtpos[0] = x;
                         wgtpos[1] = y;
-                        if (wgtPix(wgtpos)>=wgtCutoff) {
+                        /// make a beam squared weight times inverse variance
+                        /// we need multiple cases here
+                        T theWeight = 0.0;
+                        T theDeWeight = 0.0;
+                        if (itsWeightType == COMBINED) {
+                          theWeight = wgtPixBeam(wgtpos) * wgtPix(wgtpos);
+                          theDeWeight = wgtPixBeam(wgtpos) * wgtPixBeam(wgtpos) * wgtPix(wgtpos);
+                        }
+                        else if (itsWeightType == FROM_BP_MODEL) {
+                          theWeight = sqrt(wgtPix(wgtpos));
+                          theDeWeight = wgtPix(wgtpos);
+                        }
+                        else if (itsWeightType == FROM_WEIGHT_IMAGES ) {
+                          ASKAPLOG_WARN_STR(linmoslogger,"Weighting INHERENT images with weight images alone - NO primary beam correction will be done. Use Combined");
+                          theWeight = wgtPix(wgtpos);
+                          theDeWeight = wgtPix(wgtpos);
+                        }
+                        if (theWeight>=wgtCutoff) {
                             outPix(fullpos)    = outPix(fullpos)    + inPix(fullpos) * sqrt(wgtPix(wgtpos));
                             outWgtPix(fullpos) = outWgtPix(fullpos) + wgtPix(wgtpos);
                         }
@@ -1275,9 +1360,28 @@ namespace askap {
                         fullpos[1] = y;
                         wgtpos[0] = x;
                         wgtpos[1] = y;
-                        if (wgtPix(wgtpos)>=wgtCutoff) {
-                            outPix(fullpos)    = outPix(fullpos)    + inPix(fullpos);
-                            outWgtPix(fullpos) = outWgtPix(fullpos) + wgtPix(wgtpos);
+                        /// the beam squared weight is already in the image_pos
+                        /// we need multiple cases here
+                        T theWeight = 0.0;
+                        T theDeWeight = 0.0;
+                        if (itsWeightType == COMBINED) {
+
+                          ASKAPTHROW(AskapError,"A projection weighting by weight image strangely not supported in this release");
+
+                        }
+                        else if (itsWeightType == FROM_BP_MODEL) {
+                          theWeight = 1.0; /// beam already here
+                          theDeWeight = wgtPix(wgtpos);
+                        }
+                        else if (itsWeightType == FROM_WEIGHT_IMAGES ) {
+                          /// in this case I assume the beam^2 is already in the weight image
+                          /// as well as in the beam^2 in the image so ...
+                          ASKAPTHROW(AskapError,"A projection weighting by weight image strangely not supported in this release");
+                        }
+                        // using the deweight here as the weight is already in the imaage
+                        if (theDeWeight >= wgtCutoff) {
+                            outPix(fullpos)    = outPix(fullpos)    + inPix(fullpos) * theWeight;
+                            outWgtPix(fullpos) = outWgtPix(fullpos) + theDeWeight;
                         }
                     }
                 }
