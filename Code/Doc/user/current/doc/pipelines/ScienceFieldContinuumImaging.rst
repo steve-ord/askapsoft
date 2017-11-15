@@ -125,7 +125,7 @@ the ``DO_CONVERT_TO_FITS`` flag, which makes use of the
 +--------------------------------------------+---------------------------------+--------------------------------------------------------+---------------------------------------------------------------+
 | ``IMAGETYPE_CONTCUBE``                     | casa                            | imagetype (:doc:`../calim/imager`)                     | Image format to use - can be either 'casa' or 'fits',         |
 |                                            |                                 |                                                        | although 'fits' can only be given in conjunction with         |
-|                                            |                                 |                                                        | ``DO_ALT_IMAGER_SPECTRAL=true``.                              |
+|                                            |                                 |                                                        | ``DO_ALT_IMAGER_CONTCUBE=true``.                              |
 +--------------------------------------------+---------------------------------+--------------------------------------------------------+---------------------------------------------------------------+
 | **Basic variables**                        |                                 |                                                        |                                                               |
 +--------------------------------------------+---------------------------------+--------------------------------------------------------+---------------------------------------------------------------+
@@ -292,7 +292,8 @@ the ``DO_CONVERT_TO_FITS`` flag, which makes use of the
 |                                            |                                 |                                                        | (:doc:`../calim/imager`). If false, it is done by cimager     |
 |                                            |                                 |                                                        | (:doc:`../calim/cimager`). When true, the following           |
 |                                            |                                 |                                                        | parameters are used. If left blank (the default), the value   |
-|                                            |                                 |                                                        | is given by the overall parameter ``DO_ALT_IMAGER``.          |
+|                                            |                                 |                                                        | is given by the overall parameter ``DO_ALT_IMAGER`` (see      |
+|                                            |                                 |                                                        | :doc:`ControlParameters`).                                    |
 +--------------------------------------------+---------------------------------+--------------------------------------------------------+---------------------------------------------------------------+
 | ``DO_ALT_IMAGER_CONTCUBE``                 | ""                              | none                                                   | If true, the continuum cube imaging is done by imager         |
 |                                            |                                 |                                                        | (:doc:`../calim/imager`). If false, it is done by cimager     |
@@ -369,6 +370,12 @@ the ``DO_CONVERT_TO_FITS`` flag, which makes use of the
 |                                            |                                 | (:doc:`../analysis/thresholds`)                        | weight will not be considered by the source-finding. If       |
 |                                            |                                 |                                                        | the value is negative, or more than one, no consideration     |
 |                                            |                                 |                                                        | of the weight is made.                                        |
++--------------------------------------------+---------------------------------+--------------------------------------------------------+---------------------------------------------------------------+
+| ``SELFCAL_COMPONENT_SNR_LIMIT``            | 10                              | Used to create Cmodel.flux_limit                       | The signal-to-noise level used to set the flux limit for      |
+|                                            |                                 | (:doc:`../calim/cmodel`)                               | components that are used by Cmodel. The image noise values    |
+|                                            |                                 |                                                        | reported for all components are averaged, then multiplied by  |
+|                                            |                                 |                                                        | this value to form the Cmodel flux limit. If left blank (""), |
+|                                            |                                 |                                                        | the flux limit is determined by ``SELFCAL_MODEL_FLUX_LIMIT``. |
 +--------------------------------------------+---------------------------------+--------------------------------------------------------+---------------------------------------------------------------+
 | ``SELFCAL_MODEL_FLUX_LIMIT``               | 10uJy                           | Cmodel.flux_limit (:doc:`../calim/cmodel`)             | The minimum integrated flux for components to be included in  |
 |                                            |                                 |                                                        | the model used for self-calibration.                          |

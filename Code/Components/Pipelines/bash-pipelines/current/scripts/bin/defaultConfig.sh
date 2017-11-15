@@ -188,7 +188,7 @@ DO_MOSAIC_FIELDS=true
 DO_SOURCE_FINDING_CONT=""
 DO_SOURCE_FINDING_SPEC=""
 DO_SOURCE_FINDING_BEAMWISE=false
-DO_ALT_IMAGER=false
+DO_ALT_IMAGER=true
 DO_ALT_IMAGER_CONT=""
 DO_ALT_IMAGER_CONTCUBE=""
 DO_ALT_IMAGER_SPECTRAL=""
@@ -565,7 +565,9 @@ SELFCAL_SELAVY_FIT_TYPE="psf"
 # Value for the calibrate.scalenoise parameter for applying the
 # self-cal solution
 SELFCAL_SCALENOISE=false
-# Flux limit for cmodel
+# SNR limit for components to go into self-cal model image
+SELFCAL_COMPONENT_SNR_LIMIT=10
+# Flux limit for cmodel - fall back value if SELFCAL_COMPONENT_SNR_LIMIT not given
 SELFCAL_MODEL_FLUX_LIMIT=10uJy
 # Whether to use the number of Gaussians taken from initial estimate
 SELFCAL_SELAVY_GAUSSIANS_FROM_GUESS=true
