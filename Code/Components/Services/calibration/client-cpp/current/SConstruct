@@ -5,10 +5,9 @@
 from askapenv import env
 
 # create build object with library name
-pkg = env.AskapPackage("cpdataservices")
+pkg = env.AskapPackage("caldataaccessor")
 
-pkg.AddSubPackage("skymodelclient")
-pkg.AddSubPackage("calibrationclient")
+pkg.AddSubPackage("calibrationaccessor")
 
 env.AppendUnique(CCFLAGS=['-DASKAP_DEBUG'])
 
