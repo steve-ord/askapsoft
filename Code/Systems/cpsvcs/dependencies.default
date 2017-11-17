@@ -1,6 +1,9 @@
-manager=Code/Components/Services/manager/current
-cpdataservices=Code/Components/Services/cpdataservices/server/current
+#This is the deprecated Java manager
+#manager=Code/Components/Services/manager/current
+# cpdataservices is also deprecated, although some code still has references.
+cpdataservices=Code/Components/Services/archive/cpdataservices/server/current
 ingest=Code/Components/Services/ingest/current
 vispublisher=Code/Components/Services/vispublisher/current
 correlatorsim=Code/Components/Services/correlatorsim/current
-
+# TODO: is this required here?
+skymodelservice=Code/Components/Services/skymodel/service
