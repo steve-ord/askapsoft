@@ -3,7 +3,7 @@
 ## Important: Runtime errors when executing tests on Pawsey Systems
 Issues with the interaction of rbuild, Python virtual environments, and the
 module system cause the functional and unit tests to fail on Galaxy and related
-systems. This occurs when incorrect shared libraries are loaded. 
+systems. This occurs when incorrect shared libraries are loaded.
 The solution is to force the loading of the correct libraries via the
 `LD_PRELOAD` environment variable.
 
@@ -18,8 +18,11 @@ required:
 
 The database schema is defined by the ODB-annotated classes in the `schema`
 directory. Note that the files in this directory are not used directly by the
-other code. A custom build step copies the files to the datamodel directory, and
+other code. A custom build step copies the files to the `datamodel` directory, and
 then the odb compiler generates the database schema and persistence classes.
+
+The ODB compiler does not support building the files in-place in the schema
+directory.
 
 ## Compiling the database schema
 
@@ -30,7 +33,7 @@ done through the Makefile rather than rbuild, since it does not need to be
 performed during every build and because compiling the odb compiler is
 problematic on Pawsey systems.
 
-First, build the odb compiler in `$ASKAP_ROOT/3rdParty/odb/odb-2.4.0/odb` with 
+First, build the odb compiler in `$ASKAP_ROOT/3rdParty/odb/odb-2.4.0/odb` with
 `rbuild -naf` to force the build despite the NO_BUILD file.
 
 Then make the `generate` target with `make generate`. If you have changed the

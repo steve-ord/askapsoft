@@ -75,6 +75,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
         CPPUNIT_TEST(testRectSearch_freq_range);
         CPPUNIT_TEST(testLargeAreaSearch);
         CPPUNIT_TEST(testPixelsPerDatabaseSearchIsMultipleOfPixelsInSearch);
+        CPPUNIT_TEST(test_bug_2771);
         CPPUNIT_TEST_SUITE_END();
 
     public:
@@ -97,11 +98,6 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
 
         void tearDown() {
             parset.clear();
-        }
-
-        void initEmptyDatabase() {
-            gsm = GlobalSkyModel::create(parset);
-            gsm->createSchema();
         }
 
         void testGsmStatsEmpty() {
@@ -371,7 +367,34 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             CPPUNIT_ASSERT_NO_THROW(gsm->coneSearch(Coordinate(70.2, -61.8), 0.21));
         }
 
+        void test_bug_2771() {
+            // Test attempting to reproduce the intermittent test failures.
+            // See https://jira.csiro.au/browse/ASKAPSDP-2771
+            parset.replace("sqlite.name", "./tests/service/null_constraint_bug.db");
+            for (int i = 0; i < 500; i++) {
+                initEmptyDatabase();
+                gsm->ingestVOTable(
+                    simple_cone_search,
+                    small_polarisation,
+                    42,
+                    second_clock::universal_time());
+
+                GlobalSkyModel::ComponentQuery query(
+                    GlobalSkyModel::ComponentQuery::flux_int >= 80.0);
+                Coordinate centre(76.0, -71.0);
+                double radius = 1.5;
+                GlobalSkyModel::ComponentListPtr results = gsm->coneSearch(centre, radius, query);
+                CPPUNIT_ASSERT_EQUAL(size_t(3), results->size());
+            }
+        }
+
+
     private:
+        void initEmptyDatabase() {
+            gsm = GlobalSkyModel::create(parset);
+            gsm->createSchema();
+        }
+
         GlobalSkyModel::IdListPtr initSearch() {
             // Generate the database file for use in functional tests
             //parset.replace("sqlite.name", "./tests/service/small_spatial_search.db");

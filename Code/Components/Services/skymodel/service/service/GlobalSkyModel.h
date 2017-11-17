@@ -189,14 +189,32 @@ class GlobalSkyModel :
         /// Private. Use the factory method to create.
         /// @param database The odb::database instance.
         /// @param maxPixelsPerQuery The maximum number of healpix pixels per database query
+        /// @param maxTransactionRetries The maximum number of failed transaction retries
         GlobalSkyModel(
             boost::shared_ptr<odb::database> database,
-            size_t maxPixelsPerQuery);
+            size_t maxPixelsPerQuery,
+            unsigned int maxTransactionRetries=1);
 
         /// @brief SQLite-specific schema creation method
         ///
         /// @param dropTables Should existing tables be dropped or not.
         void createSchemaSqlite(bool dropTables=true);
+
+        /// @brief Ingests a VO table of Continuum Components into the GSM with
+        ///        transaction retries on failure
+        /// @param componentsCatalog The VO table file name for the continuum components.
+        /// @param polarisationCatalog The VO table file name for the polarisation data.
+        /// @param dataSource Pointer to the DataSource structure
+        /// @param sb_id The scheduling block ID to store with the ingested table.
+        /// @param obs_date The observation date in UTC.
+        /// @throw AskapError Thrown if there are errors.
+        /// @return Vector of new object IDs.
+        IdListPtr ingestVOTableWithRetry(
+            const std::string& componentsCatalog,
+            const std::string& polarisationCatalog,
+            boost::shared_ptr<datamodel::DataSource> dataSource,
+            boost::int64_t sb_id,
+            boost::posix_time::ptime obs_date=boost::date_time::not_a_date_time);
 
         /// @brief Ingests a VO table of Continuum Components into the GSM.
         /// @param componentsCatalog The VO table file name for the continuum components.
@@ -231,6 +249,9 @@ class GlobalSkyModel :
 
         /// @brief The max number of HEALPix pixels per database query
         size_t itsMaxPixelsPerQuery;
+
+        /// @brief Max number of transaction retries for failed transactions
+        const unsigned int itsTransactionRetries;
 };
 
 }

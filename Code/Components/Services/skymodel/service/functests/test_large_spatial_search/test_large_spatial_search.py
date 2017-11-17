@@ -29,6 +29,9 @@ from askap.interfaces.skymodelservice import (
 )
 
 
+# Currently skipping the large spatial query tests. The test database is
+# too large to add to SVN, and I haven't written a script to generate a deterministic
+# large database yet.
 @skip
 class Test(CPFuncTestBase):
     def __init__(self):

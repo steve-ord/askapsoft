@@ -57,6 +57,13 @@
 
 ASKAP_LOGGER(logger, ".GlobalSkyModel");
 
+//#define DC_DBG
+#ifdef DC_DBG
+    #define COUT std::cout
+#else
+    #define COUT if(false) std::cout
+#endif
+
 using namespace odb;
 using namespace std;
 using namespace boost;
@@ -82,6 +89,17 @@ boost::shared_ptr<GlobalSkyModel> GlobalSkyModel::create(const LOFAR::ParameterS
         maxPixelsPerQuery = MAX_MAX_PIXELS_PER_QUERY;
 
     ASKAPLOG_INFO_STR(logger, "Using " << maxPixelsPerQuery << " pixels per database query");
+    
+    // Get the max number of transaction retries, clamped to the max value
+    // Probably need a clamp<T> utility function ...
+    const int MAX_MAX_RETRIES = 20;
+    const int DEFAULT_RETRIES = 5;
+    int maxTransactionRetries = parset.getInt("database.max_transaction_retries", DEFAULT_RETRIES);
+    if (maxTransactionRetries > MAX_MAX_RETRIES)
+        maxTransactionRetries = MAX_MAX_RETRIES;
+    if (maxTransactionRetries < 0)
+        maxTransactionRetries = 0;
+    ASKAPLOG_INFO_STR(logger, "Using a max of " << maxTransactionRetries << " transaction retries");
 
     if (dbType.compare("sqlite") == 0) {
         // get parameters
@@ -98,7 +116,7 @@ boost::shared_ptr<GlobalSkyModel> GlobalSkyModel::create(const LOFAR::ParameterS
         ASKAPCHECK(pDb.get(), "GlobalSkyModel creation failed");
 
         // create the implementation
-        pImpl.reset(new GlobalSkyModel(pDb, maxPixelsPerQuery));
+        pImpl.reset(new GlobalSkyModel(pDb, maxPixelsPerQuery, maxTransactionRetries));
     }
     else if (dbType.compare("mysql") == 0) {
         ASKAPLOG_INFO_STR(logger, "connecting to msql");
@@ -127,7 +145,7 @@ boost::shared_ptr<GlobalSkyModel> GlobalSkyModel::create(const LOFAR::ParameterS
 
         // create the implementation
         ASKAPLOG_DEBUG_STR(logger, "creating GlobalSkyModel");
-        pImpl.reset(new GlobalSkyModel(pDb, maxPixelsPerQuery));
+        pImpl.reset(new GlobalSkyModel(pDb, maxPixelsPerQuery, maxTransactionRetries));
     }
     /* PostgreSQL support is being removed in order to simplify build
      * dependencies. MySQL has been chosen as the production backend, while unit
@@ -159,7 +177,7 @@ boost::shared_ptr<GlobalSkyModel> GlobalSkyModel::create(const LOFAR::ParameterS
 
         // create the implementation
         ASKAPLOG_DEBUG_STR(logger, "creating GlobalSkyModel");
-        pImpl.reset(new GlobalSkyModel(pDb, maxPixelsPerQuery));
+        pImpl.reset(new GlobalSkyModel(pDb, maxPixelsPerQuery, maxtransactionretries));
     }
     */
     else {
@@ -172,11 +190,13 @@ boost::shared_ptr<GlobalSkyModel> GlobalSkyModel::create(const LOFAR::ParameterS
 
 GlobalSkyModel::GlobalSkyModel(
     boost::shared_ptr<odb::database> database,
-    size_t maxPixelsPerQuery)
+    size_t maxPixelsPerQuery,
+    unsigned int maxTransactionRetries)
     :
     itsDb(database),
     itsHealPix(getHealpixOrder()),
-    itsMaxPixelsPerQuery(maxPixelsPerQuery)
+    itsMaxPixelsPerQuery(maxPixelsPerQuery),
+    itsTransactionRetries(maxTransactionRetries)
 {
 }
 
@@ -235,7 +255,7 @@ GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTable(
     int64_t sb_id,
     posix_time::ptime obs_date)
 {
-    return ingestVOTable(
+    return ingestVOTableWithRetry(
             componentsCatalog,
             polarisationCatalog,
             boost::shared_ptr<datamodel::DataSource>(),
@@ -249,12 +269,42 @@ GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTable(
     boost::shared_ptr<datamodel::DataSource> dataSource)
 {
     ASKAPASSERT(dataSource.get());
-    return ingestVOTable(
+    return ingestVOTableWithRetry(
             componentsCatalog,
             polarisationCatalog,
             dataSource,
             NO_SB_ID,
             date_time::not_a_date_time);
+}
+
+GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTableWithRetry(
+    const std::string& componentsCatalog,
+    const std::string& polarisationCatalog,
+    boost::shared_ptr<datamodel::DataSource> dataSource,
+    int64_t sb_id,
+    posix_time::ptime obs_date)
+{
+    GlobalSkyModel::IdListPtr p;
+    for (unsigned int n = 0; n < itsTransactionRetries + 1; n++) {
+        try {
+            p = ingestVOTable(
+                    componentsCatalog,
+                    polarisationCatalog,
+                    dataSource,
+                    sb_id,
+                    obs_date);
+            break;
+        } catch (...) {
+            if (n < itsTransactionRetries) {
+                ASKAPLOG_INFO_STR(logger, "Catalog ingest transaction failed. Retry " << n);
+                continue;
+            }
+
+            throw;
+        }
+    }
+
+    return p;
 }
 
 GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTable(
@@ -289,21 +339,30 @@ GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTable(
         // bulk persist is only supported for SQLServer and Oracle.
         // So we have to fall back to a manual loop persisting one component at
         // a time...
+        int i = 0;
         for (VOTableData::ComponentList::iterator it = components.begin();
              it != components.end();
-             it++) {
+             it++, i++) {
+            COUT << endl << "i" << i;
             it->sb_id = sb_id;
             it->observation_date = obs_date;
             it->data_source = dataSource;
 
             // If this component has polarisation data, then persist it
-            if (it->polarisation.get())
+            if (it->polarisation.get()) {
+                COUT << " pp";
                 itsDb->persist(it->polarisation);
+                COUT << "+";
+            }
 
+            COUT << "p";
             results->push_back(itsDb->persist(*it));
+            COUT << "+";
         }
 
+        COUT << "c";
         t.commit();
+        COUT << "+" << endl;
         ASKAPLOG_DEBUG_STR(logger, "transaction committed. Ingested " << results->size() << " components");
     }
 
@@ -379,7 +438,7 @@ GlobalSkyModel::ComponentListPtr GlobalSkyModel::queryComponentsByPixel(
         for (long i = 0; i < requiredIterations; i++) {
             size_t size = i == chunks.quot ? chunks.rem : getMaxPixelsPerQuery();
             cumulative += size;
-            //cout << "i: " << i << " size: " << size << " cumulative: " << cumulative << endl;
+            //COUT << "i: " << i << " size: " << size << " cumulative: " << cumulative << endl;
             Result r = itsDb->query<ContinuumComponent>(
                     ComponentQuery::healpix_index.in_range(it, it + size)
                     && query);
