@@ -87,18 +87,13 @@ class SkyModelServiceClient :
                 const casa::Quantity& fluxLimit);
 
     private:
+        ComponentListPtr transformData(const askap::interfaces::skymodelservice::ComponentSeq& ice_resultset) const;
 
         // Ice Communicator
         Ice::CommunicatorPtr itsComm;
 
         // Proxy object for remote service
         askap::interfaces::skymodelservice::ISkyModelServicePrx itsService;
-
-        // No support for assignment
-        SkyModelServiceClient& operator=(const SkyModelServiceClient& rhs);
-
-        // No support for copy constructor
-        SkyModelServiceClient(const SkyModelServiceClient& src);
 };
 
 };

@@ -101,8 +101,13 @@ SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::coneSearch(
             searchRadius.getValue("deg"),
             criteria);
 
+    return transformData(ice_resultset);
+}
+
+SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::transformData(
+    const askap::interfaces::skymodelservice::ComponentSeq& ice_resultset) const
+{
     // Temporary code: return an empty result set
-    ComponentListPtr results(new ComponentList());
-    // TODO: marshal the ICE results into the Component class
+    ComponentListPtr results;
     return results;
 }
