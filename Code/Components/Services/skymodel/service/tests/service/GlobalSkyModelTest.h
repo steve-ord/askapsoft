@@ -370,7 +370,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
         void test_bug_2771() {
             // Test attempting to reproduce the intermittent test failures.
             // See https://jira.csiro.au/browse/ASKAPSDP-2771
-            parset.replace("sqlite.name", "./tests/service/null_constraint_bug.db");
+            //parset.replace("sqlite.name", "./tests/service/null_constraint_bug.db");
             for (int i = 0; i < 500; i++) {
                 initEmptyDatabase();
                 gsm->ingestVOTable(
