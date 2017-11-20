@@ -31,8 +31,8 @@
 /// @author Stephen Ord <Stephen.Ord@csiro.au>
 
 
-#ifndef ASKAP_CP_CALDATASERVICE_SOLUTION_SOURCE_H
-#define ASKAP_CP_CALDATASERVICE_SOLUTION_SOURCE_H
+#ifndef ASKAP_ACCESSORS_SERVICE_SOLUTION_SOURCE_H
+#define ASKAP_ACCESSORS_SERVICE_SOLUTION_SOURCE_H
 
 #include <calibaccess/ICalSolutionSource.h>
 #include <calibaccess/ServiceCalSolutionAccessorStub.h>

@@ -29,8 +29,8 @@
 /// @author Stephen Ord <Stephen.Ord@csiro.au>
 
 
-#ifndef ASKAP_ACCESSORS_SOLUTION_ACCESSORSTUB_H
-#define ASKAP_ACCESSORS_SOLUTION_ACCESSORSTUB_H
+#ifndef ASKAP_ACCESSORS_SERVICE_SOLUTION_ACCESSOR_STUB_H
+#define ASKAP_ACCESSORS_SERVICE_SOLUTION_ACCESSOR_STUB_H
 // third party
 #include <Common/ParameterSet.h>
 
