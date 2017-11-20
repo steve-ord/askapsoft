@@ -34,6 +34,7 @@
 namespace askap {
 namespace cp {
 namespace sms {
+namespace client {
 
 /// Component identifier typedef
 typedef casa::Long ComponentId;
@@ -107,6 +108,7 @@ class Component {
         casa::Double itsSpectralCurvature;
 };
 
+};
 };
 };
 };

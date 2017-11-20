@@ -39,6 +39,7 @@
 namespace askap {
 namespace cp {
 namespace sms {
+namespace client {
 
 class ComponentTest : public CppUnit::TestFixture {
         CPPUNIT_TEST_SUITE(ComponentTest);
@@ -105,6 +106,7 @@ class ComponentTest : public CppUnit::TestFixture {
         casa::Double itsSpectralCurvature;
 };
 
-}   // End namespace skymodelservice
-}   // End namespace cp
-}   // End namespace askap
+}
+}
+}
+}

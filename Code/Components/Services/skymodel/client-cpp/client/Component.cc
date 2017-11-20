@@ -35,7 +35,7 @@
 #include "casacore/casa/Quanta/Quantum.h"
 
 // Using
-using namespace askap::cp::sms;
+using namespace askap::cp::sms::client;
 
 Component::Component(const ComponentId id,
         const casa::Quantity& rightAscension,

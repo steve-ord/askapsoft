@@ -47,12 +47,13 @@
 // Using
 using namespace std;
 using namespace askap;
-using namespace askap::cp::sms;
+using namespace askap::cp::sms::client;
 using namespace askap::interfaces::skymodelservice;
 
-SkyModelServiceClient::SkyModelServiceClient(const std::string& locatorHost,
-                            const std::string& locatorPort,
-                            const std::string& serviceName)
+SkyModelServiceClient::SkyModelServiceClient(
+    const std::string& locatorHost,
+    const std::string& locatorPort,
+    const std::string& serviceName)
 {
     askap::cp::icewrapper::CommunicatorConfig config(locatorHost, locatorPort);
     config.setProperty("Ice.MessageSizeMax", "131072");
@@ -73,9 +74,11 @@ SkyModelServiceClient::~SkyModelServiceClient()
 {
 }
 
-vector<Component> SkyModelServiceClient::coneSearch(const casa::Quantity& ra,
-        const casa::Quantity& dec, const casa::Quantity& searchRadius,
-        const casa::Quantity& fluxLimit)
+SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::coneSearch(
+    const casa::Quantity& ra,
+    const casa::Quantity& dec,
+    const casa::Quantity& searchRadius,
+    const casa::Quantity& fluxLimit)
 {
     ASKAPCHECK(ra.isConform("deg"), "ra must conform to degrees");
     ASKAPCHECK(dec.isConform("deg"), "dec must conform to degrees");
@@ -99,5 +102,7 @@ vector<Component> SkyModelServiceClient::coneSearch(const casa::Quantity& ra,
             criteria);
 
     // Temporary code: return an empty result set
-    return vector<Component>();
+    ComponentListPtr results(new ComponentList());
+    // TODO: marshal the ICE results into the Component class
+    return results;
 }

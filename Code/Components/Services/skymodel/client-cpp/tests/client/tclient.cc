@@ -33,7 +33,7 @@
 int main(int argc, char *argv[])
 {
     askapdev::testutils::AskapTestRunner runner(argv[0]);
-    runner.addTest(askap::cp::sms::ComponentTest::suite());
+    runner.addTest(askap::cp::sms::client::ComponentTest::suite());
     bool wasSucessful = runner.run();
 
     return wasSucessful ? 0 : 1;

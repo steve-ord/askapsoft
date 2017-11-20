@@ -32,9 +32,11 @@
 #include <vector>
 
 // ASKAPsoft includes
+#include <boost/noncopyable.hpp>
+#include "boost/shared_ptr.hpp"
+#include "casacore/casa/Quanta/Quantum.h"
 #include "Ice/Ice.h"
 #include "SkyModelService.h" // Ice generated interface
-#include "casacore/casa/Quanta/Quantum.h"
 
 // Local package includes
 #include "client/Component.h"
@@ -42,58 +44,64 @@
 namespace askap {
 namespace cp {
 namespace sms {
+namespace client {
 
-    class SkyModelServiceClient {
+class SkyModelServiceClient :
+    private boost::noncopyable {
+    public:
+        typedef std::vector<askap::cp::sms::client::Component> ComponentList;
+        typedef boost::shared_ptr<ComponentList> ComponentListPtr;
 
-        public:
-            /// Constructor
-            /// The three parameters passed allow an instance of the sky model
-            /// service to be located in an ICE registry.
-            ///
-            /// @param[in] locatorHost  host of the ICE locator service.
-            /// @param[in] locatorPort  port of the ICE locator service.
-            /// @param[in] serviceName  identity of the calibration data service
-            ///                         in the ICE registry.
-            SkyModelServiceClient(const std::string& locatorHost,
-                    const std::string& locatorPort,
-                    const std::string& serviceName = "SkyModelService");
+        /// Constructor
+        /// The three parameters passed allow an instance of the sky model
+        /// service to be located in an ICE registry.
+        ///
+        /// @param[in] locatorHost  host of the ICE locator service.
+        /// @param[in] locatorPort  port of the ICE locator service.
+        /// @param[in] serviceName  identity of the calibration data service
+        ///                         in the ICE registry.
+        SkyModelServiceClient(
+                const std::string& locatorHost,
+                const std::string& locatorPort,
+                const std::string& serviceName = "SkyModelService");
 
-            /// Destructor.
-            ~SkyModelServiceClient();
+        /// Destructor.
+        ~SkyModelServiceClient();
 
-            /// Cone search.
-            ///
-            /// @param ra   the right ascension of the centre of the
-            ///             search area (Unit conformance: decimal degrees).
-            /// @param dec  the declination of the centre of the search
-            ///              area (Unit conformance: decimal degrees).
-            /// @param searchRadius the search radius (Unit conformance:
-            ///                      decimal degrees).
-            /// @param fluxLimit    low limit on flux on sources returned all
-            ///                     returned sources shall have flux >= fluxLimit
-            ///                     (Unit conformance: Jy).
-            /// @throw  AskapError  in the case one ore more of the Quantities does not
-            ///                     conform to the appropriate unit.
-            std::vector<Component> coneSearch(const casa::Quantity& ra,
-                    const casa::Quantity& dec,
-                    const casa::Quantity& searchRadius,
-                    const casa::Quantity& fluxLimit);
+        /// Cone search.
+        ///
+        /// @param ra   the right ascension of the centre of the
+        ///             search area (Unit conformance: decimal degrees).
+        /// @param dec  the declination of the centre of the search
+        ///              area (Unit conformance: decimal degrees).
+        /// @param searchRadius the search radius (Unit conformance:
+        ///                      decimal degrees).
+        /// @param fluxLimit    low limit on flux on sources returned all
+        ///                     returned sources shall have flux >= fluxLimit
+        ///                     (Unit conformance: Jy).
+        /// @throw  AskapError  in the case one ore more of the Quantities does not
+        ///                     conform to the appropriate unit.
+        ComponentListPtr coneSearch(const casa::Quantity& ra,
+                const casa::Quantity& dec,
+                const casa::Quantity& searchRadius,
+                const casa::Quantity& fluxLimit);
 
-        private:
+    private:
 
-            // Ice Communicator
-            Ice::CommunicatorPtr itsComm;
+        // Ice Communicator
+        Ice::CommunicatorPtr itsComm;
 
-            // Proxy object for remote service
-            askap::interfaces::skymodelservice::ISkyModelServicePrx itsService;
+        // Proxy object for remote service
+        askap::interfaces::skymodelservice::ISkyModelServicePrx itsService;
 
-            // No support for assignment
-            SkyModelServiceClient& operator=(const SkyModelServiceClient& rhs);
+        // No support for assignment
+        SkyModelServiceClient& operator=(const SkyModelServiceClient& rhs);
 
-            // No support for copy constructor
-            SkyModelServiceClient(const SkyModelServiceClient& src);
-    };
+        // No support for copy constructor
+        SkyModelServiceClient(const SkyModelServiceClient& src);
+};
 
+};
 };
 };
 };
