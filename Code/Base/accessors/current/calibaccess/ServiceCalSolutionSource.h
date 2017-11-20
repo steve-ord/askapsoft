@@ -35,14 +35,12 @@
 #define ASKAP_CP_CALDATASERVICE_SOLUTION_SOURCE_H
 
 #include <calibaccess/ICalSolutionSource.h>
-#include <calibrationaccessor/ServiceCalSolutionAccessor.h>
+#include <calibaccess/ServiceCalSolutionAccessorStub.h>
 #include <calibaccess/CalSolutionSourceStub.h>
 
 namespace askap {
 
-namespace cp {
-
-namespace caldataservice {
+namespace accessors {
 
 /// @brief Service based implementation of the calibration solution source
 /// @details This implementation is to be used with the Calibration Data Service, one of
@@ -52,18 +50,18 @@ namespace caldataservice {
 /// @ingroup calibaccess
 struct ServiceCalSolutionSource : public accessors::CalSolutionSourceStub {
   /// @brief constructor
-  /// @details Creates solution source object for a given parset file
+  /// @details Creates solution source object for a given parset
   /// (whether it is for writing or reading depends on the actual methods
   /// used).
   /// @param[in] parset parset file name
-  explicit ServiceCalSolutionSource(const std::string &parset);
+  explicit ServiceCalSolutionSource(const LOFAR::ParameterSet &parset);
 
   /// @brief shared pointer definition
   typedef boost::shared_ptr<ServiceCalSolutionSource> ShPtr;
 
 };
 
-} // namespace caldataservice
+
 
 } // namespace accessors
 

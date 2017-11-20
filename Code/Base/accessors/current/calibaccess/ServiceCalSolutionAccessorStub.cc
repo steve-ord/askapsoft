@@ -28,25 +28,23 @@
 /// @author Max Voronkov <Maxim.Voronkov@csiro.au>
 /// @author Stephen Ord <Stephen.Ord@csiro.au>
 
+#include <Common/ParameterSet.h>
 
-#include <calibrationaccessor/ServiceCalSolutionAccessor.h>
+#include <calibaccess/ServiceCalSolutionAccessorStub.h>
 #include <askap/AskapError.h>
 
-using namespace askap::accessors;
+
 
 namespace askap {
 
-namespace cp {
-
-namespace   caldataservice {
-
+namespace accessors {
 
 /// @brief constructor
-/// @details It reads the given parset file, configures the service client
-/// @param[in] parset parset file name
+/// @details It reads the given parset, configures the service client
+/// @param[in] parset
 /// @param[in] the iD of the solution to get - or to make
 /// @param[in] readonly if true, additional checks are done that file exists
-ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const std::string &parset, casa::Long iD, bool readonly) : itsParsetFileName(parset)
+ServiceCalSolutionAccessorStub::ServiceCalSolutionAccessorStub(const LOFAR::ParameterSet &parset, casa::Long iD, bool readonly)
 
 {
 ;
@@ -59,7 +57,7 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const std::string &parset
 /// returned.
 /// @param[in] index ant/beam index
 /// @return JonesJTerm object with gains and validity flags
-accessors::JonesJTerm ServiceCalSolutionAccessor::gain(const accessors::JonesIndex &index) const
+accessors::JonesJTerm ServiceCalSolutionAccessorStub::gain(const accessors::JonesIndex &index) const
 {
 
 }
@@ -72,7 +70,7 @@ accessors::JonesJTerm ServiceCalSolutionAccessor::gain(const accessors::JonesInd
 /// zero leakages are returned with invalid flags set.
 /// @param[in] index ant/beam index
 /// @return JonesDTerm object with leakages and validity flags
-accessors::JonesDTerm ServiceCalSolutionAccessor::leakage(const accessors::JonesIndex &index) const
+accessors::JonesDTerm ServiceCalSolutionAccessorStub::leakage(const accessors::JonesIndex &index) const
 {
 
 }
@@ -90,7 +88,7 @@ accessors::JonesDTerm ServiceCalSolutionAccessor::leakage(const accessors::Jones
 /// @param[in] index ant/beam index
 /// @param[in] chan spectral channel of interest
 /// @return JonesJTerm object with gains and validity flags
-accessors::JonesJTerm ServiceCalSolutionAccessor::bandpass(const accessors::JonesIndex &index, const casa::uInt chan) const
+accessors::JonesJTerm ServiceCalSolutionAccessorStub::bandpass(const accessors::JonesIndex &index, const casa::uInt chan) const
 {
 
 }
@@ -100,7 +98,7 @@ accessors::JonesJTerm ServiceCalSolutionAccessor::bandpass(const accessors::Jone
 /// polarisations (corresponding to XX and YY)
 /// @param[in] index ant/beam index
 /// @param[in] gains JonesJTerm object with gains and validity flags
-void ServiceCalSolutionAccessor::setGain(const accessors::JonesIndex &index, const accessors::JonesJTerm &gains)
+void ServiceCalSolutionAccessorStub::setGain(const accessors::JonesIndex &index, const accessors::JonesJTerm &gains)
 {
 
 }
@@ -110,7 +108,7 @@ void ServiceCalSolutionAccessor::setGain(const accessors::JonesIndex &index, con
 /// (corresponding to XY and YX)
 /// @param[in] index ant/beam index
 /// @param[in] leakages JonesDTerm object with leakages and validity flags
-void ServiceCalSolutionAccessor::setLeakage(const accessors::JonesIndex &index, const accessors::JonesDTerm &leakages)
+void ServiceCalSolutionAccessorStub::setLeakage(const accessors::JonesIndex &index, const accessors::JonesDTerm &leakages)
 {
 
 }
@@ -124,20 +122,20 @@ void ServiceCalSolutionAccessor::setLeakage(const accessors::JonesIndex &index, 
 /// @note We may add later variants of this method assuming that the bandpass is
 /// approximated somehow, e.g. by a polynomial. For simplicity, for now we deal with
 /// gains set explicitly for each channel.
-void ServiceCalSolutionAccessor::setBandpass(const accessors::JonesIndex &index, const accessors::JonesJTerm &bp, const casa::uInt chan)
+void ServiceCalSolutionAccessorStub::setBandpass(const accessors::JonesIndex &index, const accessors::JonesJTerm &bp, const casa::uInt chan)
 {
 
 }
 
 /// @brief destructor
 /// @details We need it to call syncCache at the end
-ServiceCalSolutionAccessor::~ServiceCalSolutionAccessor()
+ServiceCalSolutionAccessorStub::~ServiceCalSolutionAccessorStub()
 {
 
 }
 
-} // namespace caldataservice
+} // namespace accessors
 
-} // namespace cp
+
 
 } // namespace askap

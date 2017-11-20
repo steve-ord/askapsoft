@@ -29,8 +29,11 @@
 /// @author Stephen Ord <Stephen.Ord@csiro.au>
 
 
-#ifndef ASKAP_CP_CALDATASERVICE_SOLUTION_ACCESSOR_H
-#define ASKAP_CP_CALDATASERVICE_SOLUTION_ACCESSOR_H
+#ifndef ASKAP_ACCESSORS_SOLUTION_ACCESSORSTUB_H
+#define ASKAP_ACCESSORS_SOLUTION_ACCESSORSTUB_H
+// third party
+#include <Common/ParameterSet.h>
+
 
 // own includes
 #include <calibaccess/ICalSolutionAccessor.h>
@@ -40,16 +43,14 @@
 
 namespace askap {
 
-namespace cp {
-
-namespace caldataservice {
+namespace accessors {
 
 /// @brief Service based implementation of the calibration solution accessor
 /// @details This implementation is to be used with the Calibration Data Service
 /// it implements both a source and sink depending upon the context.
 
 /// @ingroup calibaccess
-class ServiceCalSolutionAccessor : virtual public accessors::ICalSolutionAccessor
+class ServiceCalSolutionAccessorStub : virtual public accessors::ICalSolutionAccessor
 
   {
 public:
@@ -58,12 +59,12 @@ public:
   /// @param[in] parset parset file name
   /// @param[in] readonly if true, additional checks are done that file exists
 
-  explicit ServiceCalSolutionAccessor(const std::string &parset, casa::Long iD = 0, bool readonly = false);
+  explicit ServiceCalSolutionAccessorStub(const LOFAR::ParameterSet &parset, casa::Long iD = 0, bool readonly = false);
 
   /// @brief destructor
   /// @details Not yet sure what functionality that needs to be here
 
-  virtual ~ServiceCalSolutionAccessor();
+  virtual ~ServiceCalSolutionAccessorStub();
 
   // override write methods to handle service access
 
@@ -127,7 +128,7 @@ public:
   virtual void setBandpass(const accessors::JonesIndex &index, const accessors::JonesJTerm &bp, const casa::uInt chan);
 
   /// @brief shared pointer definition
-  typedef boost::shared_ptr<ServiceCalSolutionAccessor> ShPtr;
+  typedef boost::shared_ptr<ServiceCalSolutionAccessorStub> ShPtr;
 
 
 protected:
@@ -135,12 +136,10 @@ protected:
 
 
 private:
-  /// @brief parset file name for reading or writing
-  std::string itsParsetFileName;
+
 
 
 };
-} // namespace caldataservice
 
 } // namespace accessors
 

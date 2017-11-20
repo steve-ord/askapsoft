@@ -30,8 +30,8 @@
 /// @author Stephen Ord <Stephen.Ord@csiro.au>
 
 
-#include <calibrationaccessor/ServiceCalSolutionSource.h>
-#include <calibrationaccessor/ServiceCalSolutionAccessor.h>
+#include <calibaccess/ServiceCalSolutionSource.h>
+#include <calibaccess/ServiceCalSolutionAccessorStub.h>
 
 // logging stuff
 #include <askap_accessors.h>
@@ -40,20 +40,16 @@ ASKAP_LOGGER(logger, ".calibaccess");
 
 namespace askap {
 
-namespace cp {
-
-namespace caldataservice {
-
+namespace accessors {
 
 /// @brief constructor
 /// @details Creates solution source object for a given parset file
 /// (whether it is for writing or reading depends on the actual methods
 /// used).
 /// @param[in] parset parset file name
-ServiceCalSolutionSource::ServiceCalSolutionSource(const std::string &parset) :
-   accessors::CalSolutionSourceStub(boost::shared_ptr<ServiceCalSolutionAccessor>(new ServiceCalSolutionAccessor(parset))) {}
+ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &parset) :
+   accessors::CalSolutionSourceStub(boost::shared_ptr<ServiceCalSolutionAccessorStub>(new ServiceCalSolutionAccessorStub(parset))) {}
 
-} // caldataservice
 
 } // accessors
 
