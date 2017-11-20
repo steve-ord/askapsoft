@@ -64,14 +64,6 @@ namespace ice_interfaces = askap::interfaces::skymodelservice;
 ice_interfaces::ComponentSeq marshallComponentsToDTO(
     boost::shared_ptr< std::vector<datamodel::ContinuumComponent> > components)
 {
-    // This might be nice if I can define a conversion operator from
-    // datamodel::ContinuumComponent to ice_interfaces::ContinuumComponent
-    // But unfortunately, both source and destination classes are produced by
-    // the corresponding systems (Ice slice compiler, ODB class generation),
-    // so I have no easy way to define the conversion. Doing it manually isn't
-    // too bad though due to the code generation.
-    //return ice_interfaces::ComponentSeq(components->begin(), components->end());
-
     // preallocate space for more efficient allocation
     ice_interfaces::ComponentSeq dst(components->size());
 
@@ -98,19 +90,7 @@ ice_interfaces::ComponentSeq marshallComponentsToDTO(
         if (it->polarisation.get()) {
             const datamodel::Polarisation* src_pol = it->polarisation.get();
 
-            // I need to profile how the performance of stack instance followed
-            // by assignment to the vector compares to the resize and assign
-            // members in place. On the surface, it is comparing a default ctor, field assignment, and copy ctor
-            // to default ctor and field assignment. I hope to avoid the additional
-            // copy when pushing the stack instance into the vectory.
-            // Of course, the compiler could be doing all sorts of optimisations, so
-            // sticking to the clearer code is probably best.
             ice_interfaces::ContinuumComponentPolarisation dst_pol;
-
-            // Or:
-            //dst[i].polarisation.resize(1);
-            // And then:
-            //dst[i].polarisation[0].polPeakFit = src_pol->pol_peak_fit;
 
             dst_pol.lambdaRefSq = src_pol->lambda_ref_sq;
             dst_pol.polPeakFit = src_pol->pol_peak_fit;
@@ -121,8 +101,6 @@ ice_interfaces::ComponentSeq marshallComponentsToDTO(
             dst_pol.fdPeakFit = src_pol->fd_peak_fit;
             dst_pol.fdPeakFitErr = src_pol->fd_peak_fit_err;
 
-            // Assign our stack variable to the vector. Hopefully the additional
-            // copy constructor gets optimised away.
             dst[i].polarisation.push_back(dst_pol);
         } // end of polarisation branch
     } // end of component loop
