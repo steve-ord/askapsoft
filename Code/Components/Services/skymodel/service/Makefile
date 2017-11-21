@@ -4,7 +4,7 @@ RBUILD_FLAGS=-na
 #RBUILD_FLAGS+= -v
 
 # C++11 support
-RBUILD_FLAGS+=-p "cpp11=1" -p "squash=1"
+#RBUILD_FLAGS+=-p "cpp11=1" -p "squash=1"
 
 .PHONY: install
 install:
