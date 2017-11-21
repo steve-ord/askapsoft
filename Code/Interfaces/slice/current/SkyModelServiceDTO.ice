@@ -131,6 +131,18 @@ module skymodelservice
         /// UCD: stat.error;phot.flux.density;em.radio;stat.fit
         float fluxIntErr;
 
+        /// @brief FWHM major axis before deconvolution (arcsec)
+        /// UCD: phys.angSize.smajAxis;em.radio;stat.fit
+        float majAxis;
+
+        /// @brief FWHM minor axis before deconvolution (arcsec)
+        /// UCD: phys.angSize.sminAxis;em.radio;stat.fit
+        float minAxis;
+
+        /// @brief Position angle before deconvolution (deg)
+        /// UCD: phys.angSize;pos.posAng;em.radio;stat.fit
+        float posAng;
+
         /// @brief Spectral index (First Taylor term)
         /// UCD: spect.index;em.radio
         float spectralIndex;

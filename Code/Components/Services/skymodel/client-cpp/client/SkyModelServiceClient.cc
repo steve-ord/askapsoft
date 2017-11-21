@@ -1,6 +1,6 @@
 /// @file SkyModelServiceClient.cc
 ///
-/// @copyright (c) 2011 CSIRO
+/// @copyright (c) 2017 CSIRO
 /// Australia Telescope National Facility (ATNF)
 /// Commonwealth Scientific and Industrial Research Organisation (CSIRO)
 /// PO Box 76, Epping NSW 1710, Australia
@@ -22,7 +22,7 @@
 /// along with this program; if not, write to the Free Software
 /// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 ///
-/// @author Ben Humphreys <ben.humphreys@csiro.au>
+/// @author Daniel Collins <daniel.collins@csiro.au>
 
 // Include own header file first
 #include "SkyModelServiceClient.h"
@@ -39,7 +39,6 @@
 #include "Ice/Ice.h"
 #include "iceutils/CommunicatorConfig.h"
 #include "iceutils/CommunicatorFactory.h"
-#include "SkyModelService.h" // Ice generated interface
 #include "casacore/casa/Quanta/Quantum.h"
 
 // Local package includes
@@ -49,6 +48,9 @@ using namespace std;
 using namespace askap;
 using namespace askap::cp::sms::client;
 using namespace askap::interfaces::skymodelservice;
+
+// Alias for the Ice type namespace
+namespace ice_interfaces = askap::interfaces::skymodelservice;
 
 SkyModelServiceClient::SkyModelServiceClient(
     const std::string& locatorHost,
@@ -63,7 +65,7 @@ SkyModelServiceClient::SkyModelServiceClient(
     ASKAPDEBUGASSERT(itsComm);
 
     Ice::ObjectPrx base = itsComm->stringToProxy(serviceName);
-    itsService = askap::interfaces::skymodelservice::ISkyModelServicePrx::checkedCast(base);
+    itsService = ice_interfaces::ISkyModelServicePrx::checkedCast(base);
 
     if (!itsService) {
         ASKAPTHROW(AskapError, "SkyModelService proxy is invalid");
@@ -95,7 +97,7 @@ SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::coneSearch(
     SearchCriteria criteria;
     criteria.maxFluxInt = fluxLimit.getValue("mJy");
 
-    askap::interfaces::skymodelservice::ComponentSeq ice_resultset =
+    ice_interfaces::ComponentSeq ice_resultset =
         itsService->coneSearch(
             centre,
             searchRadius.getValue("deg"),
@@ -105,9 +107,11 @@ SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::coneSearch(
 }
 
 SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::transformData(
-    const askap::interfaces::skymodelservice::ComponentSeq& ice_resultset) const
+    const ice_interfaces::ComponentSeq& ice_resultset) const
 {
-    // Temporary code: return an empty result set
     ComponentListPtr results;
+    // for each component
+    //   transform
+    //   add to results
     return results;
 }

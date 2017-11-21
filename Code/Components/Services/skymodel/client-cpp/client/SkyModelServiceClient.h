@@ -1,6 +1,6 @@
 /// @file SkyModelServiceClient.h
 ///
-/// @copyright (c) 2011 CSIRO
+/// @copyright (c) 2017 CSIRO
 /// Australia Telescope National Facility (ATNF)
 /// Commonwealth Scientific and Industrial Research Organisation (CSIRO)
 /// PO Box 76, Epping NSW 1710, Australia
@@ -22,7 +22,7 @@
 /// along with this program; if not, write to the Free Software
 /// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 ///
-/// @author Ben Humphreys <ben.humphreys@csiro.au>
+/// @author Daniel Collins <daniel.collins@csiro.au>
 
 #ifndef ASKAP_CP_SMS_SKYMODELSERVICECLIENT_H
 #define ASKAP_CP_SMS_SKYMODELSERVICECLIENT_H
@@ -36,7 +36,10 @@
 #include "boost/shared_ptr.hpp"
 #include "casacore/casa/Quanta/Quantum.h"
 #include "Ice/Ice.h"
-#include "SkyModelService.h" // Ice generated interface
+
+// Ice interfaces
+#include <SkyModelService.h>
+#include <SkyModelServiceDTO.h>
 
 // Local package includes
 #include "client/Component.h"
@@ -46,9 +49,13 @@ namespace cp {
 namespace sms {
 namespace client {
 
+
 class SkyModelServiceClient :
     private boost::noncopyable {
+
     public:
+        friend class SkyModelServiceClientTest;
+
         typedef std::vector<askap::cp::sms::client::Component> ComponentList;
         typedef boost::shared_ptr<ComponentList> ComponentListPtr;
 
@@ -87,6 +94,14 @@ class SkyModelServiceClient :
                 const casa::Quantity& fluxLimit);
 
     private:
+        /// Default ctor used only for unit tests. 
+        /// Do not call any search methods after using this constructor.
+        SkyModelServiceClient() {}
+
+        /// Transforms a sequence of ICE ContinuumComponent objects into
+        /// a sequence of askap::cp::sms::client::Component objects.
+        /// 
+        /// @param ice_resultset    The ICE Component sequence.
         ComponentListPtr transformData(const askap::interfaces::skymodelservice::ComponentSeq& ice_resultset) const;
 
         // Ice Communicator
