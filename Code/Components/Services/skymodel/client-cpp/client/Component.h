@@ -36,23 +36,16 @@ namespace cp {
 namespace sms {
 namespace client {
 
-/// Component identifier typedef
-typedef casa::Long ComponentId;
-
 class Component {
 
     public:
 
         /// Constructor
         ///
-        /// @param[in] id   can be ignored for creation of new components. This
-        ///                 is used internally to the package.
-        ///   
         /// @throw  AskapError  in the case one ore more of the Quantities does
         /// not conform to the appropriate unit. See the accessor methods for
         /// the specification of units for each attribute.
-        Component(const ComponentId id,
-                  const casa::Quantity& rightAscension,
+        Component(const casa::Quantity& rightAscension,
                   const casa::Quantity& declination,
                   const casa::Quantity& positionAngle,
                   const casa::Quantity& majorAxis,
@@ -60,9 +53,6 @@ class Component {
                   const casa::Quantity& i1400,
                   const casa::Double& spectralIndex,
                   const casa::Double& spectralCurvature);
-
-        /// Unique component index number
-        ComponentId id() const;
 
         /// Right ascension in the J2000 coordinate system
         /// Base units: degrees
@@ -97,7 +87,6 @@ class Component {
         casa::Double spectralCurvature() const;
 
     private:
-        ComponentId itsId;
         casa::Quantity itsRightAscension;
         casa::Quantity itsDeclination;
         casa::Quantity itsPositionAngle;

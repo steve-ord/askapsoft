@@ -109,9 +109,30 @@ SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::coneSearch(
 SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::transformData(
     const ice_interfaces::ComponentSeq& ice_resultset) const
 {
-    ComponentListPtr results;
-    // for each component
-    //   transform
-    //   add to results
+    ComponentListPtr results(new ComponentList());
+
+    for (ice_interfaces::ComponentSeq::const_iterator it = ice_resultset.begin();
+         it != ice_resultset.end();
+         it++) {
+
+        results->push_back(Component(
+            //rightAscension
+            casa::Quantity(it->ra, "deg"),
+            //declination
+            casa::Quantity(it->dec, "deg"),
+            //positionAngle
+            casa::Quantity(it->posAng, "deg"),
+            //majorAxis
+            casa::Quantity(it->majAxis, "arcsec"),
+            //minorAxis
+            casa::Quantity(it->minAxis, "arcsec"),
+            //i1400
+            casa::Quantity(it->fluxInt, "mJy"),
+            //spectralIndex
+            it->spectralIndex,
+            //spectralCurvature
+            it->spectralCurvature));
+    }
+
     return results;
 }

@@ -37,7 +37,7 @@
 // Using
 using namespace askap::cp::sms::client;
 
-Component::Component(const ComponentId id,
+Component::Component(
         const casa::Quantity& rightAscension,
         const casa::Quantity& declination,
         const casa::Quantity& positionAngle,
@@ -46,7 +46,7 @@ Component::Component(const ComponentId id,
         const casa::Quantity& i1400,
         const casa::Double& spectralIndex,
         const casa::Double& spectralCurvature)
-    : itsId(id),
+    :
     itsRightAscension(rightAscension),
     itsDeclination(declination),
     itsPositionAngle(positionAngle),
@@ -62,11 +62,6 @@ Component::Component(const ComponentId id,
     ASKAPCHECK(itsMajorAxis.isConform("arcsec"), "major axis must conform to degrees");
     ASKAPCHECK(itsMinorAxis.isConform("arcsec"), "minor axis must conform to degrees");
     ASKAPCHECK(itsI1400.isConform("Jy"), "i1400 must conform to Jy");
-}
-
-ComponentId Component::id() const
-{
-    return itsId;
 }
 
 casa::Quantity Component::rightAscension() const

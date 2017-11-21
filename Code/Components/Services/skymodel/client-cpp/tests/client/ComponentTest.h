@@ -66,22 +66,22 @@ class ComponentTest : public CppUnit::TestFixture {
             // Test with various non-conformant units
             casa::Quantity conformJy(0.1, "Jy");
             casa::Quantity conformDeg(187.5, "deg");
-            CPPUNIT_ASSERT_THROW(Component(-1, conformJy, itsDec, itsPositionAngle,
+            CPPUNIT_ASSERT_THROW(Component(conformJy, itsDec, itsPositionAngle,
                     itsMajorAxis, itsMinorAxis, itsI1400, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
-            CPPUNIT_ASSERT_THROW(Component(-1, itsRA, conformJy, itsPositionAngle,
+            CPPUNIT_ASSERT_THROW(Component(itsRA, conformJy, itsPositionAngle,
                     itsMajorAxis, itsMinorAxis, itsI1400, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
-            CPPUNIT_ASSERT_THROW(Component(-1, itsRA, itsDec, conformJy,
+            CPPUNIT_ASSERT_THROW(Component(itsRA, itsDec, conformJy,
                     itsMajorAxis, itsMinorAxis, itsI1400, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
-            CPPUNIT_ASSERT_THROW(Component(-1, itsRA, itsDec, itsPositionAngle,
+            CPPUNIT_ASSERT_THROW(Component(itsRA, itsDec, itsPositionAngle,
                     conformJy, itsMinorAxis, itsI1400, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
-            CPPUNIT_ASSERT_THROW(Component(-1, itsRA, itsDec, itsPositionAngle,
+            CPPUNIT_ASSERT_THROW(Component(itsRA, itsDec, itsPositionAngle,
                     itsMajorAxis, conformJy, itsI1400, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
-            CPPUNIT_ASSERT_THROW(Component(-1, itsRA, itsDec, itsPositionAngle,
+            CPPUNIT_ASSERT_THROW(Component(itsRA, itsDec, itsPositionAngle,
                     itsMajorAxis, itsMinorAxis, conformDeg, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
         }
 
         void testGetters() {
-            Component c(-1, itsRA, itsDec, itsPositionAngle,
+            Component c(itsRA, itsDec, itsPositionAngle,
                     itsMajorAxis, itsMinorAxis, itsI1400, itsSpectralIndex, itsSpectralCurvature);
 
             const double dblEpsilon = std::numeric_limits<double>::epsilon();
