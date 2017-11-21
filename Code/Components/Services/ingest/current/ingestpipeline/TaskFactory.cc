@@ -60,6 +60,7 @@
 #include "ingestpipeline/phasetracktask/FringeRotationTask.h"
 #include "ingestpipeline/beamscattertask/BeamScatterTask.h"
 #include "ingestpipeline/bufferedtask/BufferedTask.h"
+#include "ingestpipeline/shadowflagtask/ShadowFlagTask.h"
 #include "configuration/Configuration.h" // Includes all configuration attributes too
 
 ASKAP_LOGGER(logger, ".TaskFactory");
@@ -122,6 +123,9 @@ ITask::ShPtr TaskFactory::createTask(const TaskDesc& taskDescription)
             break;
         case TaskDesc::BufferedTask:
             task.reset(new BufferedTask(params, itsConfig));
+            break;
+        case TaskDesc::ShadowFlagTask:
+            task.reset(new ShadowFlagTask(params, itsConfig));
             break;
         default:
             ASKAPTHROW(AskapError, "Unknown task type specified");
