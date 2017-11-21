@@ -60,6 +60,7 @@ class SkyModelServiceClientTest : public CppUnit::TestFixture {
     CPPUNIT_TEST(testTransformDataResult);
     CPPUNIT_TEST(testTransformDataResultSize);
     CPPUNIT_TEST(testUnits);
+    CPPUNIT_TEST(testValues);
     CPPUNIT_TEST_SUITE_END();
 
     public:
@@ -111,10 +112,50 @@ class SkyModelServiceClientTest : public CppUnit::TestFixture {
                 it++) {
                 CPPUNIT_ASSERT(it->rightAscension().isConform("deg"));
                 CPPUNIT_ASSERT(it->declination().isConform("deg"));
-                CPPUNIT_ASSERT(it->positionAngle().isConform("deg"));
+                CPPUNIT_ASSERT(it->positionAngle().isConform("rad"));
                 CPPUNIT_ASSERT(it->majorAxis().isConform("arcsec"));
                 CPPUNIT_ASSERT(it->minorAxis().isConform("arcsec"));
                 CPPUNIT_ASSERT(it->i1400().isConform("Jy"));
+            }
+        }
+
+        void testValues() {
+            const double dblEpsilon = std::numeric_limits<double>::epsilon();
+
+            for (size_t i = 0; i < itsIceComponents.size(); i++) {
+
+                CPPUNIT_ASSERT_DOUBLES_EQUAL(
+                    itsIceComponents[i].ra,
+                    (*itsClientComponents)[i].rightAscension().getValue(),
+                    dblEpsilon);
+                CPPUNIT_ASSERT_DOUBLES_EQUAL(
+                    itsIceComponents[i].dec,
+                    (*itsClientComponents)[i].declination().getValue(),
+                    dblEpsilon);
+                CPPUNIT_ASSERT_DOUBLES_EQUAL(
+                    itsIceComponents[i].posAng,
+                    (*itsClientComponents)[i].positionAngle().getValue(),
+                    dblEpsilon);
+                CPPUNIT_ASSERT_DOUBLES_EQUAL(
+                    itsIceComponents[i].majAxis,
+                    (*itsClientComponents)[i].majorAxis().getValue(),
+                    dblEpsilon);
+                CPPUNIT_ASSERT_DOUBLES_EQUAL(
+                    itsIceComponents[i].minAxis,
+                    (*itsClientComponents)[i].minorAxis().getValue(),
+                    dblEpsilon);
+                CPPUNIT_ASSERT_DOUBLES_EQUAL(
+                    itsIceComponents[i].fluxInt,
+                    (*itsClientComponents)[i].i1400().getValue(),
+                    dblEpsilon);
+                CPPUNIT_ASSERT_DOUBLES_EQUAL(
+                    itsIceComponents[i].spectralIndex,
+                    (*itsClientComponents)[i].spectralIndex(),
+                    dblEpsilon);
+                CPPUNIT_ASSERT_DOUBLES_EQUAL(
+                    itsIceComponents[i].spectralCurvature,
+                    (*itsClientComponents)[i].spectralCurvature(),
+                    dblEpsilon);
             }
         }
 
