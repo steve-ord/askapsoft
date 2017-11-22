@@ -54,7 +54,11 @@ ServiceCalSolutionAccessorStub::ServiceCalSolutionAccessorStub() {
 ServiceCalSolutionAccessorStub::ServiceCalSolutionAccessorStub(const LOFAR::ParameterSet &parset, casa::Long iD, bool readonly)
 
 {
-;
+  
+  const string locatorHost = parset.getString("ice.locator.host");
+  const string locatorPort = parset.getString("ice.locator.port");
+  const string serviceName = parset.getString("calibrationdataservice.name");
+
 }
 
 /// @brief obtain gains (J-Jones)

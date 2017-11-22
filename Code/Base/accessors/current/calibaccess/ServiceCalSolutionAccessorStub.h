@@ -55,8 +55,9 @@ class ServiceCalSolutionAccessorStub : virtual public accessors::ICalSolutionAcc
   {
 public:
 
+  /// @ default no-args constructor 
   ServiceCalSolutionAccessorStub();
-  
+
   /// @brief constructor
   /// @details It reads the given parset file, configures the service client
   /// @param[in] parset parset file name

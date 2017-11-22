@@ -32,8 +32,11 @@
 #ifndef ASKAP_ACCESSORS_SERVICECALSOLUTION_ACCESSOR_H
 #define ASKAP_ACCESSORS_SERVICECALSOLUTION_ACCESSOR_H
 
-// own includes
+// thirdparty
+#include <Ice/Ice.h>
+#include "CalibrationDataService.h" // Ice generated interface
 
+// own includes
 #include <calibaccess/ServiceCalSolutionAccessorStub.h>
 // std includes
 #include <string>
@@ -134,7 +137,13 @@ protected:
 
 
 private:
-  
+  // Ice Communicator
+  Ice::CommunicatorPtr itsComm;
+
+  // Proxy object for remote service
+  askap::interfaces::caldataservice::ICalibrationDataServicePrx itsService;
+
+
 
 };
 
