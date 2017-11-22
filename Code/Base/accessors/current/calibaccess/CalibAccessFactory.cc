@@ -37,7 +37,7 @@
 #include <calibaccess/ParsetCalSolutionConstSource.h>
 #include <calibaccess/TableCalSolutionSource.h>
 #include <calibaccess/TableCalSolutionConstSource.h>
-#include <calibaccess/ServiceCalSolutionSource.h>
+#include <calibaccess/ServiceCalSolutionSourceStub.h>
 
 #include <askap/AskapError.h>
 
@@ -112,7 +112,7 @@ boost::shared_ptr<ICalSolutionConstSource> CalibAccessFactory::calSolutionSource
        }
    } else if (calAccType == "service") {
       ASKAPLOG_INFO_STR(logger, "Using implementation of the calibration solution accessor working with the calibration service" );
-      result.reset(new ServiceCalSolutionSource(parset));
+      result.reset(new ServiceCalSolutionSourceStub(parset));
    }
 
    ASKAPDEBUGASSERT(result);
