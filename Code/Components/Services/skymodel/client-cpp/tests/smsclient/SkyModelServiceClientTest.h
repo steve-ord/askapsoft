@@ -43,8 +43,8 @@
 #include <SkyModelServiceDTO.h>
 
 // Classes to test
-#include "client/Component.h"
-#include "client/SkyModelServiceClient.h"
+#include "smsclient/Component.h"
+#include "smsclient/SkyModelServiceClient.h"
 
 namespace askap {
 namespace cp {

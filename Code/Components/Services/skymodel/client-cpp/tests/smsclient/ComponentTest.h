@@ -34,7 +34,7 @@
 #include "casacore/casa/Quanta/Quantum.h"
 
 // Classes to test
-#include "client/Component.h"
+#include "smsclient/Component.h"
 
 namespace askap {
 namespace cp {

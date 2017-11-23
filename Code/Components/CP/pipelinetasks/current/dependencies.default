@@ -10,6 +10,9 @@ casa_components=3rdParty/casa-components/casa-components-1.6.0
 
 # DC: note that cpdataservices is an old data services prototype. It doesn't actually
 # do anything. The Component accessor class uses methods on the old Ice interface which
-# no longer compile. These functions have been disabled until CModel can be updated 
+# no longer compile. These functions have been disabled until CModel can be updated
 # to use the new SMS API. Until then, cpdataservices::Component is still being used.
-cpdataservices-client=Code/Components/Services/archive/cpdataservices/client-cpp/current
+# cpdataservices-client=Code/Components/Services/archive/cpdataservices/client-cpp/current
+# cpdataservices-client=Code/Components/Services/cpdataservices/client-cpp/current
+
+smsclient=Code/Components/Services/skymodel/client-cpp
