@@ -34,10 +34,16 @@
 
 // thirdparty
 #include <Ice/Ice.h>
-#include "CalibrationDataService.h" // Ice generated interface
+#include <CalibrationDataService.h> // Ice generated interface
+#include <calibrationclient/CalibrationDataServiceClient.h>
+#include <calibrationclient/GenericSolution.h>
+
+
+#include <Common/ParameterSet.h>
 
 // own includes
-#include <calibaccess/ServiceCalSolutionAccessorStub.h>
+#include <calibaccess/ICalSolutionAccessor.h>
+
 // std includes
 #include <string>
 
@@ -50,7 +56,7 @@ namespace accessors {
 /// it implements both a source and sink depending upon the context.
 
 /// @ingroup calibaccess
-class ServiceCalSolutionAccessor : public accessors::ServiceCalSolutionAccessorStub
+class ServiceCalSolutionAccessor : public accessors::ICalSolutionAccessor
 
 
   {
@@ -60,14 +66,15 @@ public:
   /// @param[in] parset parset file name
   /// @param[in] readonly if true, additional checks are done that file exists
 
-  explicit ServiceCalSolutionAccessor(const std::string &parset, casa::Long iD = 0, bool readonly = false);
+  explicit ServiceCalSolutionAccessor(const LOFAR::ParameterSet &parset, casa::Long iD = 0, bool readonly = false);
 
   /// @brief destructor
   /// @details Not yet sure what functionality that needs to be here
 
   virtual ~ServiceCalSolutionAccessor();
 
-  // override write methods to handle service access
+  /// override write methods to handle service access - probably do all of this
+  /// via the service client or some replication of its functionality
 
   /// @brief obtain gains (J-Jones)
   /// @details This method retrieves parallel-hand gains for both
@@ -135,13 +142,25 @@ public:
 protected:
 
 
-
 private:
-  // Ice Communicator
-  Ice::CommunicatorPtr itsComm;
 
-  // Proxy object for remote service
-  askap::interfaces::caldataservice::ICalibrationDataServicePrx itsService;
+  /// should we store solutions within this accessor - so we dont continually
+  /// access the service for individual Jones matrices. Other accessors have the
+  /// the table or some other Cache. I say yes. I suspect that the solution will
+  /// be updated for each call so I'll need - I'll use shared_ptr as I dont want to
+  /// allocate storage and instantiate them when I construct this accessor - but I'll
+  /// need some sort of "connect" or "initialise" method to fill them dependent upon
+  /// whether this is RO or RW instance ...
+
+  typedef boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> theClientPtr;
+
+
+  typedef boost::shared_ptr<askap::cp::caldataservice::GainSolution> itsGainSolutionPtr;
+
+  typedef boost::shared_ptr<askap::cp::caldataservice::LeakageSolution> itsLeakageSolutionPtr;
+
+  typedef boost::shared_ptr<askap::cp::caldataservice::BandpassSolution> itsBandpassSolutionPtr;
+
 
 
 

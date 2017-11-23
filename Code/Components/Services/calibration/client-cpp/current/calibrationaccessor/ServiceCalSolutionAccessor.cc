@@ -28,9 +28,22 @@
 /// @author Max Voronkov <Maxim.Voronkov@csiro.au>
 /// @author Stephen Ord <Stephen.Ord@csiro.au>
 
-#include <calibaccess/ServiceCalSolutionAccessorStub.h>
+
+
+#include <Ice/Ice.h>
+
+#include <iceutils/CommunicatorConfig.h>
+#include <iceutils/CommunicatorFactory.h>
+#include <CalibrationDataService.h> // Ice generated interface
+
+#include <calibaccess/ICalSolutionAccessor.h>
+
 #include "ServiceCalSolutionAccessor.h"
+
+#include <calibrationclient/IceMapper.h>
+
 #include <askap/AskapError.h>
+#include <Common/ParameterSet.h>
 
 using namespace askap::accessors;
 
@@ -46,10 +59,11 @@ namespace accessors {
 /// @param[in] parset parset file name
 /// @param[in] the iD of the solution to get - or to make
 /// @param[in] readonly if true, additional checks are done that file exists
-ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const std::string &parset, casa::Long iD, bool readonly) : ServiceCalSolutionAccessorStub()
+ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet &parset, casa::Long iD, bool readonly)
 
 {
-;
+
+
 }
 
 /// @brief obtain gains (J-Jones)
@@ -133,7 +147,7 @@ void ServiceCalSolutionAccessor::setBandpass(const accessors::JonesIndex &index,
 /// @details We need it to call syncCache at the end
 ServiceCalSolutionAccessor::~ServiceCalSolutionAccessor()
 {
-
+  
 }
 
 
