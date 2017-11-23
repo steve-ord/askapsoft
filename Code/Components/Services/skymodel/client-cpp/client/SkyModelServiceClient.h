@@ -93,6 +93,20 @@ class SkyModelServiceClient :
                 const casa::Quantity& searchRadius,
                 const casa::Quantity& fluxLimit);
 
+        /// @brief Rectangular search. Searches for components matching the criteria
+        /// in the spatial region defined by a top-left (ra, dec) and 
+        /// bottom-right (ra, dec) point pair.
+        ///
+        /// @param[in] rect The rectangular region of interest (J2000 decimal degrees)
+        /// @param[in] query the additional component query.
+        /// @throw  AskapError  in the case one ore more of the Quantities does not
+        ///                     conform to the appropriate unit.
+        ///
+        /// @return a sequence of components matching the query.
+        ComponentListPtr rectSearch(
+            askap::interfaces::skymodelservice::Rect roi,
+            askap::interfaces::skymodelservice::SearchCriteria criteria);
+
     private:
         /// Default ctor used only for unit tests. 
         /// Do not call any search methods after using this constructor.

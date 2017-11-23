@@ -106,6 +106,18 @@ SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::coneSearch(
     return transformData(ice_resultset);
 }
 
+SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::rectSearch(
+    ice_interfaces::Rect roi,
+    ice_interfaces::SearchCriteria criteria)
+{
+    ice_interfaces::ComponentSeq ice_resultset =
+        itsService->rectSearch(
+            roi,
+            criteria);
+
+    return transformData(ice_resultset);
+}
+
 SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::transformData(
     const ice_interfaces::ComponentSeq& ice_resultset) const
 {
