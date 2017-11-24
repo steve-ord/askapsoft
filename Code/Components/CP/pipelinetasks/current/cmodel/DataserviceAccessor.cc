@@ -55,7 +55,7 @@ DataserviceAccessor::~DataserviceAccessor()
 {
 }
 
-SkyModelServiceClient::ComponentListPtr DataserviceAccessor::coneSearch(
+ComponentListPtr DataserviceAccessor::coneSearch(
     const casa::Quantity& ra,
     const casa::Quantity& dec,
     const casa::Quantity& searchRadius,

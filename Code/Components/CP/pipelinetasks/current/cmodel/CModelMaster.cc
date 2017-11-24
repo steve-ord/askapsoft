@@ -115,7 +115,7 @@ void CModelMaster::run(void)
             std::max(xcellsize.getValue("deg") * nx, ycellsize.getValue("deg") * ny),
             "deg");
 
-    const SkyModelServiceClient::ComponentListPtr pList = gsm->coneSearch(ra, dec, searchRadius, fluxLimit);
+    const ComponentListPtr pList = gsm->coneSearch(ra, dec, searchRadius, fluxLimit);
     gsm.reset(0);
     ASKAPLOG_INFO_STR(logger, "Number of components in result set: " << pList->size());
 

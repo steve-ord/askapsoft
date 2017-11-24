@@ -76,7 +76,7 @@ SkyModelServiceClient::~SkyModelServiceClient()
 {
 }
 
-SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::coneSearch(
+ComponentListPtr SkyModelServiceClient::coneSearch(
     const casa::Quantity& ra,
     const casa::Quantity& dec,
     const casa::Quantity& searchRadius,
@@ -106,7 +106,7 @@ SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::coneSearch(
     return transformData(ice_resultset);
 }
 
-SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::rectSearch(
+ComponentListPtr SkyModelServiceClient::rectSearch(
     ice_interfaces::Rect roi,
     ice_interfaces::SearchCriteria criteria)
 {
@@ -118,7 +118,7 @@ SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::rectSearch(
     return transformData(ice_resultset);
 }
 
-SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::transformData(
+ComponentListPtr SkyModelServiceClient::transformData(
     const ice_interfaces::ComponentSeq& ice_resultset) const
 {
     ComponentListPtr results(new ComponentList());

@@ -107,7 +107,7 @@ class SkyModelServiceClientTest : public CppUnit::TestFixture {
         }
 
         void testUnits() {
-            for (SkyModelServiceClient::ComponentList::iterator it = itsClientComponents->begin();
+            for (ComponentList::iterator it = itsClientComponents->begin();
                 it != itsClientComponents->end();
                 it++) {
                 CPPUNIT_ASSERT(it->rightAscension().isConform("deg"));
@@ -167,7 +167,7 @@ class SkyModelServiceClientTest : public CppUnit::TestFixture {
         size_t itsCount;
         ice_interfaces::ComponentSeq itsIceComponents;
         SkyModelServiceClient itsSmsClient;
-        SkyModelServiceClient::ComponentListPtr itsClientComponents;
+        ComponentListPtr itsClientComponents;
 };
 
 }

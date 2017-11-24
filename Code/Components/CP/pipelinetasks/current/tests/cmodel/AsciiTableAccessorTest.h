@@ -83,7 +83,7 @@ class AsciiTableAccessorTest : public CppUnit::TestFixture {
             casa::Quantity ra(187.5, "deg");
             casa::Quantity dec(-45.0, "deg");
             AsciiTableAccessor acc(ss, itsParset);
-            SkyModelServiceClient::ComponentListPtr list = acc.coneSearch(ra, dec, radius, fluxLimit);
+            ComponentListPtr list = acc.coneSearch(ra, dec, radius, fluxLimit);
             CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), list->size());
         }
 
@@ -98,7 +98,7 @@ class AsciiTableAccessorTest : public CppUnit::TestFixture {
             casa::Quantity ra(187.5, "deg");
             casa::Quantity dec(-45.0, "deg");
             AsciiTableAccessor acc(ss, itsParset);
-            SkyModelServiceClient::ComponentListPtr list = acc.coneSearch(ra, dec, radius, fluxLimit);
+            ComponentListPtr list = acc.coneSearch(ra, dec, radius, fluxLimit);
             CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), list->size());
         }
 
@@ -112,7 +112,7 @@ class AsciiTableAccessorTest : public CppUnit::TestFixture {
             casa::Quantity ra(359.5, "deg");
             casa::Quantity dec(-45.0, "deg");
             AsciiTableAccessor acc(ss, itsParset);
-            SkyModelServiceClient::ComponentListPtr list = acc.coneSearch(ra, dec, radius, fluxLimit);
+            ComponentListPtr list = acc.coneSearch(ra, dec, radius, fluxLimit);
             CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), list->size());
         }
 
@@ -126,7 +126,7 @@ class AsciiTableAccessorTest : public CppUnit::TestFixture {
             casa::Quantity ra(7.5, "deg");
             casa::Quantity dec(-89.5, "deg");
             AsciiTableAccessor acc(ss, itsParset);
-            SkyModelServiceClient::ComponentListPtr list = acc.coneSearch(ra, dec, radius, fluxLimit);
+            ComponentListPtr list = acc.coneSearch(ra, dec, radius, fluxLimit);
             CPPUNIT_ASSERT_EQUAL(static_cast<size_t>(1), list->size());
         }
 

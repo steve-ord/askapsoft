@@ -75,7 +75,7 @@ VOTableAccessor::~VOTableAccessor()
 {
 }
 
-SkyModelServiceClient::ComponentListPtr VOTableAccessor::coneSearch(
+ComponentListPtr VOTableAccessor::coneSearch(
     const casa::Quantity& ra,
     const casa::Quantity& dec,
     const casa::Quantity& searchRadius,
@@ -121,7 +121,7 @@ SkyModelServiceClient::ComponentListPtr VOTableAccessor::coneSearch(
     ASKAPLOG_INFO_STR(logger, "Sourced discarded due to being outside the search cone: " << itsOutsideSearchCone);
 
     // Returned as a vector to minimise memory usage
-    return SkyModelServiceClient::ComponentListPtr(new SkyModelServiceClient::ComponentList(list.begin(), list.end()));
+    return ComponentListPtr(new ComponentList(list.begin(), list.end()));
     //return std::vector<askap::cp::skymodelservice::Component>(list.begin(), list.end());
 }
 

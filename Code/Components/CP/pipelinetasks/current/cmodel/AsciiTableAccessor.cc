@@ -82,7 +82,7 @@ AsciiTableAccessor::~AsciiTableAccessor()
 {
 }
 
-SkyModelServiceClient::ComponentListPtr AsciiTableAccessor::coneSearch(
+ComponentListPtr AsciiTableAccessor::coneSearch(
     const casa::Quantity& ra,
     const casa::Quantity& dec,
     const casa::Quantity& searchRadius,
@@ -118,7 +118,7 @@ SkyModelServiceClient::ComponentListPtr AsciiTableAccessor::coneSearch(
     ASKAPLOG_INFO_STR(logger, "Sourced discarded due to being outside the search cone: " << itsOutsideSearchCone);
 
     // Returned as a vector to minimise memory usage
-    return SkyModelServiceClient::ComponentListPtr(new SkyModelServiceClient::ComponentList(list.begin(), list.end()));
+    return ComponentListPtr(new ComponentList(list.begin(), list.end()));
 }
 
 void AsciiTableAccessor::processLine(
@@ -204,7 +204,7 @@ std::pair< short, casa::Unit > AsciiTableAccessor::makeFieldDescEntry(
     const casa::Unit units(parset.getString(unitskey));
     return make_pair(pos, units);
 }
-        
+
 
 AsciiTableAccessor::FieldDesc AsciiTableAccessor::makeFieldDesc(const LOFAR::ParameterSet& parset)
 {

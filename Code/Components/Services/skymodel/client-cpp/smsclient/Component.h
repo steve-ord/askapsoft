@@ -39,7 +39,6 @@ namespace client {
 
 /// Component identifier typedef
 typedef askap::int64 ComponentId;
-//typedef casa::Long ComponentId;
 
 class Component {
 

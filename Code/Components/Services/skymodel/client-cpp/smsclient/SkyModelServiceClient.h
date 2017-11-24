@@ -49,15 +49,14 @@ namespace cp {
 namespace sms {
 namespace client {
 
+typedef std::vector<askap::cp::sms::client::Component> ComponentList;
+typedef boost::shared_ptr<ComponentList> ComponentListPtr;
 
 class SkyModelServiceClient :
     private boost::noncopyable {
 
     public:
         friend class SkyModelServiceClientTest;
-
-        typedef std::vector<askap::cp::sms::client::Component> ComponentList;
-        typedef boost::shared_ptr<ComponentList> ComponentListPtr;
 
         /// Constructor
         /// The three parameters passed allow an instance of the sky model
