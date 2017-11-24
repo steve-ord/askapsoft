@@ -73,6 +73,7 @@ ice_interfaces::ComponentSeq marshallComponentsToDTO(
         it++, i++) {
 
         // Copy the component data
+        dst[i].id = it->continuum_component_id;
         dst[i].componentId = it->component_id;
         dst[i].ra = it->ra;
         dst[i].dec = it->dec;

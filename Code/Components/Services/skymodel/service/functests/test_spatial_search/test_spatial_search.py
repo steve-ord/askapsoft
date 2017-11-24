@@ -154,3 +154,15 @@ class Test(CPFuncTestBase):
                 "SB1958_image.i.LMC.cont.sb1958.taylor.0.restored_1b",
                 "SB1958_image.i.LMC.cont.sb1958.taylor.0.restored_4a",
             ])
+
+    def test_cone_search_id_values(self):
+        results = self.sms_client.coneSearch(
+                centre=Coordinate(76.0, -71.0),
+                radius=15,
+                criteria=SearchCriteria())
+
+        assert len(results) == 10
+
+        # test that each ID is unique
+        ids = (r.id for r in results)
+        assert len(set(ids)) == 10

@@ -124,6 +124,9 @@ CONTINUUM_COMPONENT_HEADER = '''
         /// @brief Should only ever contain 0 or 1 elements.
         PolarisationOpt polarisation;
 
+        /// @brief Globally unique 64 bit integer ID
+        long id;
+
 '''
 
 POLARISATION_HEADER = COMMON_SLICE_HEADER + SLICE_NAMESPACES + \
@@ -635,6 +638,9 @@ def generate_orm_to_dto_marshaller():
 
         # Copy the component data
         out.write(I8 + '// Copy the component data\n')
+
+        # 64-bit integer ID
+        out.write(I8 + 'dst[i].id = it->continuum_component_id;\n')
         for f in get_fields(load(CONTINUUM_COMPONENT_SPEC, skiprows=[0]), TYPE_MAP, False):
             # only fields with lsm_view=True are written to the Ice structs
             if f.lsm_view:
