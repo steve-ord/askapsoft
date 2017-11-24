@@ -91,6 +91,9 @@ module skymodelservice
         /// @brief Should only ever contain 0 or 1 elements.
         PolarisationOpt polarisation;
 
+        /// @brief Globally unique 64 bit integer ID
+        long id;
+
         /// @brief Component identifier
         /// UCD: meta.id;meta.main
         string componentId;
