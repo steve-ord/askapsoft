@@ -254,7 +254,7 @@ void Cli::coneSearch()
         "Dec: " << dec << ", " <<
         "Radius: " << radius << std::endl;
 
-    GlobalSkyModel::ComponentListPtr pComponents = pGsm->coneSearch(
+    ComponentListPtr pComponents = pGsm->coneSearch(
             Coordinate(ra, dec),
             radius);
 

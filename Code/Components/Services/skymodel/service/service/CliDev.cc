@@ -95,7 +95,7 @@ int CliDev::generateRandomComponents(int64_t componentCount)
         boost::shared_ptr<GlobalSkyModel> pGsm(GlobalSkyModel::create(config()));
         int64_t sbid = -1;
 
-        GlobalSkyModel::ComponentList components(componentCount);
+        ComponentList components(componentCount);
         populateRandomComponents(components, sbid);
         pGsm->uploadComponents(components);
     }
@@ -104,7 +104,7 @@ int CliDev::generateRandomComponents(int64_t componentCount)
 }
 
 void CliDev::populateRandomComponents(
-        GlobalSkyModel::ComponentList& components,
+        ComponentList& components,
         int64_t sbid)
 {
     // Set up (painfully!) the boost PRNGs
@@ -120,7 +120,7 @@ void CliDev::populateRandomComponents(
     boost::variate_generator<boost::minstd_rand&, boost::uniform_real<double> > dec_rng(generator, dec_dist);
 
     int i = 0;
-    for (GlobalSkyModel::ComponentList::iterator it = components.begin();
+    for (ComponentList::iterator it = components.begin();
             it != components.end();
             it++, i++) {
         it->component_id = boost::str(boost::format("randomly generated component %d") % i);

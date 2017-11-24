@@ -85,7 +85,7 @@ ComponentSeq SkyModelServiceImpl::coneSearch(
     const sms_interface::SearchCriteria& criteria,
     const Ice::Current&)
 {
-    GlobalSkyModel::ComponentListPtr results = itsGsm->coneSearch(
+    ComponentListPtr results = itsGsm->coneSearch(
         Coordinate(centre),
         radius,
         queryBuilder(criteria));
@@ -97,7 +97,7 @@ ComponentSeq SkyModelServiceImpl::rectSearch(
     const sms_interface::SearchCriteria& criteria,
     const Ice::Current&)
 {
-    GlobalSkyModel::ComponentListPtr results = itsGsm->rectSearch(
+    ComponentListPtr results = itsGsm->rectSearch(
         Rect(roi),
         queryBuilder(criteria));
     return marshallComponentsToDTO(results);

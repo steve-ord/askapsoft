@@ -129,7 +129,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
 
         void testGetMissingComponentById() {
             initEmptyDatabase();
-            GlobalSkyModel::ComponentPtr component = gsm->getComponentByID(9);
+            ComponentPtr component = gsm->getComponentByID(9);
             CPPUNIT_ASSERT(!component.get());
         }
 
@@ -137,7 +137,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             parset.replace("sqlite.name", "./tests/service/ingested.dbtmp");
             initEmptyDatabase();
             // perform the ingest
-            GlobalSkyModel::IdListPtr ids = gsm->ingestVOTable(
+            IdListPtr ids = gsm->ingestVOTable(
                     small_components,
                     "",
                     10,
@@ -157,7 +157,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             parset.replace("sqlite.name", "./tests/service/polarisation.dbtmp");
             initEmptyDatabase();
             // perform the ingest
-            GlobalSkyModel::IdListPtr ids = gsm->ingestVOTable(
+            IdListPtr ids = gsm->ingestVOTable(
                     small_components,
                     small_polarisation,
                     1337,
@@ -165,7 +165,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             CPPUNIT_ASSERT_EQUAL(size_t(10), ids->size());
 
             // each component should have a corresponding polarisation object
-            for (GlobalSkyModel::IdList::const_iterator it = ids->begin();
+            for (IdList::const_iterator it = ids->begin();
                 it != ids->end();
                 it++) {
                 boost::shared_ptr<ContinuumComponent> component(gsm->getComponentByID(*it));
@@ -188,12 +188,12 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             expectedDataSource->catalogue_id = "RDTB";
 
             // perform the ingest
-            GlobalSkyModel::IdListPtr ids = gsm->ingestVOTable(
+            IdListPtr ids = gsm->ingestVOTable(
                     small_components,
                     small_polarisation,
                     expectedDataSource);
 
-            for (GlobalSkyModel::IdList::const_iterator it = ids->begin();
+            for (IdList::const_iterator it = ids->begin();
                 it != ids->end();
                 it++) {
                 boost::shared_ptr<ContinuumComponent> component(gsm->getComponentByID(*it));
@@ -217,13 +217,13 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             ptime expected_obs_date = second_clock::universal_time();
 
             // perform the ingest
-            GlobalSkyModel::IdListPtr ids = gsm->ingestVOTable(
+            IdListPtr ids = gsm->ingestVOTable(
                     small_components,
                     "",
                     expected_sb_id,
                     expected_obs_date);
 
-            for (GlobalSkyModel::IdList::const_iterator it = ids->begin();
+            for (IdList::const_iterator it = ids->begin();
                 it != ids->end();
                 it++) {
                 boost::shared_ptr<ContinuumComponent> component(gsm->getComponentByID(*it));
@@ -247,7 +247,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
 
         void testSimpleConeSearch() {
             initSearch();
-            GlobalSkyModel::ComponentListPtr results = gsm->coneSearch(Coordinate(70.2, -61.8), 1.0);
+            ComponentListPtr results = gsm->coneSearch(Coordinate(70.2, -61.8), 1.0);
             CPPUNIT_ASSERT_EQUAL(size_t(1), results->size());
             CPPUNIT_ASSERT_EQUAL(
                 string("SB1958_image.i.LMC.cont.sb1958.taylor.0.restored_1a"),
@@ -276,12 +276,12 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             initSearch();
 
             // create a component query for frequencies in the range [1230..1250]
-            GlobalSkyModel::ComponentQuery query(
-                GlobalSkyModel::ComponentQuery::freq >= 1230.0 &&
-                GlobalSkyModel::ComponentQuery::freq <= 1250.0);
+            ComponentQuery query(
+                ComponentQuery::freq >= 1230.0 &&
+                ComponentQuery::freq <= 1250.0);
             Coordinate centre(76.0, -71.0);
             double radius = 1.5;
-            GlobalSkyModel::ComponentListPtr results = gsm->coneSearch(centre, radius, query);
+            ComponentListPtr results = gsm->coneSearch(centre, radius, query);
 
             CPPUNIT_ASSERT_EQUAL(size_t(3), results->size());
             CPPUNIT_ASSERT_EQUAL(1l, std::count_if(results->begin(), results->end(),
@@ -294,11 +294,11 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
 
         void testConeSearch_flux_int() {
             initSearch();
-            GlobalSkyModel::ComponentQuery query(
-                GlobalSkyModel::ComponentQuery::flux_int >= 80.0);
+            ComponentQuery query(
+                ComponentQuery::flux_int >= 80.0);
             Coordinate centre(76.0, -71.0);
             double radius = 1.5;
-            GlobalSkyModel::ComponentListPtr results = gsm->coneSearch(centre, radius, query);
+            ComponentListPtr results = gsm->coneSearch(centre, radius, query);
 
             CPPUNIT_ASSERT_EQUAL(size_t(3), results->size());
             CPPUNIT_ASSERT_EQUAL(1l, std::count_if(results->begin(), results->end(),
@@ -313,7 +313,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             initSearch();
 
             Rect roi(Coordinate(79.375, -71.5), Extents(0.75, 1.0));
-            GlobalSkyModel::ComponentListPtr results = gsm->rectSearch(roi);
+            ComponentListPtr results = gsm->rectSearch(roi);
 
             CPPUNIT_ASSERT_EQUAL(size_t(4), results->size());
             CPPUNIT_ASSERT_EQUAL(1l, std::count_if(results->begin(), results->end(),
@@ -332,11 +332,11 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             // use the same bounds as testSimpleRectSearch
             Rect roi(Coordinate(79.375, -71.5), Extents(0.75, 1.0));
 
-            GlobalSkyModel::ComponentQuery query(
-                GlobalSkyModel::ComponentQuery::freq >= 1200.0 &&
-                GlobalSkyModel::ComponentQuery::freq <= 1260.0);
+            ComponentQuery query(
+                ComponentQuery::freq >= 1200.0 &&
+                ComponentQuery::freq <= 1260.0);
 
-            GlobalSkyModel::ComponentListPtr results = gsm->rectSearch(roi, query);
+            ComponentListPtr results = gsm->rectSearch(roi, query);
 
             CPPUNIT_ASSERT_EQUAL(size_t(2), results->size());
             CPPUNIT_ASSERT_EQUAL(1l, std::count_if(results->begin(), results->end(),
@@ -347,7 +347,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
 
         void testLargeAreaSearch() {
             initSearch();
-            GlobalSkyModel::ComponentListPtr results = gsm->coneSearch(Coordinate(70.2, -61.8), 20.0);
+            ComponentListPtr results = gsm->coneSearch(Coordinate(70.2, -61.8), 20.0);
             CPPUNIT_ASSERT_EQUAL(size_t(10), results->size());
         }
 
@@ -379,11 +379,11 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
                     42,
                     second_clock::universal_time());
 
-                GlobalSkyModel::ComponentQuery query(
-                    GlobalSkyModel::ComponentQuery::flux_int >= 80.0);
+                ComponentQuery query(
+                    ComponentQuery::flux_int >= 80.0);
                 Coordinate centre(76.0, -71.0);
                 double radius = 1.5;
-                GlobalSkyModel::ComponentListPtr results = gsm->coneSearch(centre, radius, query);
+                ComponentListPtr results = gsm->coneSearch(centre, radius, query);
                 CPPUNIT_ASSERT_EQUAL(size_t(3), results->size());
             }
         }
@@ -395,7 +395,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             gsm->createSchema();
         }
 
-        GlobalSkyModel::IdListPtr initSearch() {
+        IdListPtr initSearch() {
             // Generate the database file for use in functional tests
             //parset.replace("sqlite.name", "./tests/service/small_spatial_search.db");
             initEmptyDatabase();

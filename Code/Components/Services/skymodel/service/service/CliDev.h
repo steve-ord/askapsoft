@@ -55,7 +55,7 @@ class CliDev : public Cli {
         int createSchema();
         int generateRandomComponents(int64_t componentCount);
         void populateRandomComponents(
-            GlobalSkyModel::ComponentList& components,
+            ComponentList& components,
             int64_t sbid);
 };
 

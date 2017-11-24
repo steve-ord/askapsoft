@@ -53,6 +53,13 @@ namespace askap {
 namespace cp {
 namespace sms {
 
+typedef std::vector<datamodel::ContinuumComponent> ComponentList;
+typedef std::vector<datamodel::id_type> IdList;
+typedef boost::shared_ptr<IdList> IdListPtr;
+typedef boost::shared_ptr<ComponentList> ComponentListPtr;
+typedef boost::shared_ptr<datamodel::ContinuumComponent> ComponentPtr;
+typedef odb::query<datamodel::ContinuumComponent> ComponentQuery;
+
 /// @brief Service facade to the Global Sky Model database.
 ///
 /// Separating this from the Ice interface implementation allows
@@ -60,13 +67,6 @@ namespace sms {
 class GlobalSkyModel :
     private boost::noncopyable {
     public:
-
-        typedef std::vector<datamodel::ContinuumComponent> ComponentList;
-        typedef std::vector<datamodel::id_type> IdList;
-        typedef boost::shared_ptr<IdList> IdListPtr;
-        typedef boost::shared_ptr<ComponentList> ComponentListPtr;
-        typedef boost::shared_ptr<datamodel::ContinuumComponent> ComponentPtr;
-        typedef odb::query<datamodel::ContinuumComponent> ComponentQuery;
 
         /// @brief Factory method for constructing the GlobalSkyModel implementation.
         ///

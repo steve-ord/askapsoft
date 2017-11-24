@@ -249,7 +249,7 @@ void GlobalSkyModel::createSchemaSqlite(bool dropTables)
     c->execute("PRAGMA foreign_keys=ON");
 }
 
-GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTable(
+IdListPtr GlobalSkyModel::ingestVOTable(
     const std::string& componentsCatalog,
     const std::string& polarisationCatalog,
     int64_t sb_id,
@@ -263,7 +263,7 @@ GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTable(
             obs_date);
 }
 
-GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTable(
+IdListPtr GlobalSkyModel::ingestVOTable(
     const std::string& componentsCatalog,
     const std::string& polarisationCatalog,
     boost::shared_ptr<datamodel::DataSource> dataSource)
@@ -277,14 +277,14 @@ GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTable(
             date_time::not_a_date_time);
 }
 
-GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTableWithRetry(
+IdListPtr GlobalSkyModel::ingestVOTableWithRetry(
     const std::string& componentsCatalog,
     const std::string& polarisationCatalog,
     boost::shared_ptr<datamodel::DataSource> dataSource,
     int64_t sb_id,
     posix_time::ptime obs_date)
 {
-    GlobalSkyModel::IdListPtr p;
+    IdListPtr p;
     for (unsigned int n = 0; n < itsTransactionRetries + 1; n++) {
         try {
             p = ingestVOTable(
@@ -307,7 +307,7 @@ GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTableWithRetry(
     return p;
 }
 
-GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTable(
+IdListPtr GlobalSkyModel::ingestVOTable(
     const std::string& componentsCatalog,
     const std::string& polarisationCatalog,
     boost::shared_ptr<datamodel::DataSource> dataSource,
@@ -369,7 +369,7 @@ GlobalSkyModel::IdListPtr GlobalSkyModel::ingestVOTable(
     return results;
 }
 
-GlobalSkyModel::ComponentPtr GlobalSkyModel::getComponentByID(datamodel::id_type id) const
+ComponentPtr GlobalSkyModel::getComponentByID(datamodel::id_type id) const
 {
     ASKAPLOG_INFO_STR(logger, "getComponentByID: id = " << id);
 
@@ -380,14 +380,14 @@ GlobalSkyModel::ComponentPtr GlobalSkyModel::getComponentByID(datamodel::id_type
     return component;
 }
 
-GlobalSkyModel::ComponentListPtr GlobalSkyModel::coneSearch(
+ComponentListPtr GlobalSkyModel::coneSearch(
     Coordinate centre,
     double radius) const
 {
     return coneSearch(centre, radius, ComponentQuery());
 }
 
-GlobalSkyModel::ComponentListPtr GlobalSkyModel::coneSearch(
+ComponentListPtr GlobalSkyModel::coneSearch(
     Coordinate centre,
     double radius,
     ComponentQuery query) const
@@ -399,12 +399,12 @@ GlobalSkyModel::ComponentListPtr GlobalSkyModel::coneSearch(
             query);
 }
 
-GlobalSkyModel::ComponentListPtr GlobalSkyModel::rectSearch(Rect rect) const
+ComponentListPtr GlobalSkyModel::rectSearch(Rect rect) const
 {
     return rectSearch(rect, ComponentQuery());
 }
 
-GlobalSkyModel::ComponentListPtr GlobalSkyModel::rectSearch(
+ComponentListPtr GlobalSkyModel::rectSearch(
     Rect rect, ComponentQuery query) const
 {
     ASKAPLOG_DEBUG_STR(logger, "centre=" << rect.centre.ra << ", " <<
@@ -414,7 +414,7 @@ GlobalSkyModel::ComponentListPtr GlobalSkyModel::rectSearch(
             query);
 }
 
-GlobalSkyModel::ComponentListPtr GlobalSkyModel::queryComponentsByPixel(
+ComponentListPtr GlobalSkyModel::queryComponentsByPixel(
     HealPixFacade::IndexListPtr pixels,
     ComponentQuery query) const
 {
@@ -454,7 +454,7 @@ GlobalSkyModel::ComponentListPtr GlobalSkyModel::queryComponentsByPixel(
     return results;
 }
 
-GlobalSkyModel::IdListPtr GlobalSkyModel::uploadComponents(ComponentList& components)
+IdListPtr GlobalSkyModel::uploadComponents(ComponentList& components)
 {
     IdListPtr results(new std::vector<datamodel::id_type>());
 
