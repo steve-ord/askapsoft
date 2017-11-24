@@ -31,11 +31,8 @@
 #include "askap_pipelinetasks.h"
 
 // System includes
-#include <string>
 #include <cstring>
-#include <sstream>
 #include <stdexcept>
-#include <vector>
 #include <stdint.h>
 #include <limits>
 
@@ -44,9 +41,7 @@
 
 // ASKAPsoft includes
 #include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
 #include "casacore/casa/OS/Timer.h"
-#include "skymodelclient/Component.h"
 
 using namespace askap::cp::pipelinetasks;
 
