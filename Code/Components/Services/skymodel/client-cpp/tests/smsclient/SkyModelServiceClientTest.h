@@ -124,6 +124,9 @@ class SkyModelServiceClientTest : public CppUnit::TestFixture {
 
             for (size_t i = 0; i < itsIceComponents.size(); i++) {
 
+                CPPUNIT_ASSERT_EQUAL(
+                    (ComponentId)itsIceComponents[i].id,
+                    (*itsClientComponents)[i].id());
                 CPPUNIT_ASSERT_DOUBLES_EQUAL(
                     itsIceComponents[i].ra,
                     (*itsClientComponents)[i].rightAscension().getValue(),

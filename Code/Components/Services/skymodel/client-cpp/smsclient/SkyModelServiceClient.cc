@@ -128,6 +128,8 @@ SkyModelServiceClient::ComponentListPtr SkyModelServiceClient::transformData(
          it++) {
 
         results->push_back(Component(
+            // integer id
+            it->id,
             //rightAscension
             casa::Quantity(it->ra, "deg"),
             //declination

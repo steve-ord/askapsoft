@@ -66,25 +66,29 @@ class ComponentTest : public CppUnit::TestFixture {
             // Test with various non-conformant units
             casa::Quantity conformJy(0.1, "Jy");
             casa::Quantity conformDeg(187.5, "deg");
-            CPPUNIT_ASSERT_THROW(Component(conformJy, itsDec, itsPositionAngle,
+            CPPUNIT_ASSERT_THROW(Component(1l,conformJy, itsDec, itsPositionAngle,
                     itsMajorAxis, itsMinorAxis, itsI1400, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
-            CPPUNIT_ASSERT_THROW(Component(itsRA, conformJy, itsPositionAngle,
+            CPPUNIT_ASSERT_THROW(Component(1l,itsRA, conformJy, itsPositionAngle,
                     itsMajorAxis, itsMinorAxis, itsI1400, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
-            CPPUNIT_ASSERT_THROW(Component(itsRA, itsDec, conformJy,
+            CPPUNIT_ASSERT_THROW(Component(1l,itsRA, itsDec, conformJy,
                     itsMajorAxis, itsMinorAxis, itsI1400, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
-            CPPUNIT_ASSERT_THROW(Component(itsRA, itsDec, itsPositionAngle,
+            CPPUNIT_ASSERT_THROW(Component(1l,itsRA, itsDec, itsPositionAngle,
                     conformJy, itsMinorAxis, itsI1400, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
-            CPPUNIT_ASSERT_THROW(Component(itsRA, itsDec, itsPositionAngle,
+            CPPUNIT_ASSERT_THROW(Component(1l,itsRA, itsDec, itsPositionAngle,
                     itsMajorAxis, conformJy, itsI1400, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
-            CPPUNIT_ASSERT_THROW(Component(itsRA, itsDec, itsPositionAngle,
+            CPPUNIT_ASSERT_THROW(Component(1l,itsRA, itsDec, itsPositionAngle,
                     itsMajorAxis, itsMinorAxis, conformDeg, itsSpectralIndex, itsSpectralCurvature), askap::AskapError);
         }
 
         void testGetters() {
-            Component c(itsRA, itsDec, itsPositionAngle,
-                    itsMajorAxis, itsMinorAxis, itsI1400, itsSpectralIndex, itsSpectralCurvature);
+            ComponentId id = 34l;
+            Component c(id, itsRA, itsDec,
+                    itsPositionAngle, itsMajorAxis,
+                    itsMinorAxis, itsI1400, itsSpectralIndex,
+                    itsSpectralCurvature);
 
             const double dblEpsilon = std::numeric_limits<double>::epsilon();
+            CPPUNIT_ASSERT(id == c.id());
             CPPUNIT_ASSERT_DOUBLES_EQUAL(itsRA.getValue(), c.rightAscension().getValue(), dblEpsilon);
             CPPUNIT_ASSERT_DOUBLES_EQUAL(itsDec.getValue(), c.declination().getValue(), dblEpsilon);
             CPPUNIT_ASSERT_DOUBLES_EQUAL(itsPositionAngle.getValue(), c.positionAngle().getValue(), dblEpsilon);

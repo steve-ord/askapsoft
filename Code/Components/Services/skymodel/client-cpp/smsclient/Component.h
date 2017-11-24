@@ -28,6 +28,7 @@
 #define ASKAP_CP_SMS_COMPONENT_H
 
 /// ASKAPsoft includes
+#include <askap/AskapTypes.h>
 #include "casacore/casa/aipstype.h"
 #include "casacore/casa/Quanta/Quantum.h"
 
@@ -35,6 +36,10 @@ namespace askap {
 namespace cp {
 namespace sms {
 namespace client {
+
+/// Component identifier typedef
+typedef askap::int64 ComponentId;
+//typedef casa::Long ComponentId;
 
 class Component {
 
@@ -45,7 +50,8 @@ class Component {
         /// @throw  AskapError  in the case one ore more of the Quantities does
         /// not conform to the appropriate unit. See the accessor methods for
         /// the specification of units for each attribute.
-        Component(const casa::Quantity& rightAscension,
+        Component(const ComponentId id,
+                  const casa::Quantity& rightAscension,
                   const casa::Quantity& declination,
                   const casa::Quantity& positionAngle,
                   const casa::Quantity& majorAxis,
@@ -53,6 +59,9 @@ class Component {
                   const casa::Quantity& i1400,
                   const casa::Double& spectralIndex,
                   const casa::Double& spectralCurvature);
+
+        /// Unique component index number
+        ComponentId id() const;
 
         /// Right ascension in the J2000 coordinate system
         /// Base units: degrees
@@ -87,6 +96,7 @@ class Component {
         casa::Double spectralCurvature() const;
 
     private:
+        ComponentId itsId;
         casa::Quantity itsRightAscension;
         casa::Quantity itsDeclination;
         casa::Quantity itsPositionAngle;
