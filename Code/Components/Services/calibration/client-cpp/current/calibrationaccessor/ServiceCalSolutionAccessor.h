@@ -56,10 +56,7 @@ namespace accessors {
 /// it implements both a source and sink depending upon the context.
 
 /// @ingroup calibaccess
-class ServiceCalSolutionAccessor : public accessors::ICalSolutionAccessor
-
-
-  {
+class ServiceCalSolutionAccessor : public accessors::ICalSolutionAccessor {
 public:
   /// @brief constructor
   /// @details It reads the given parset file, configures the service client
@@ -152,14 +149,13 @@ private:
   /// need some sort of "connect" or "initialise" method to fill them dependent upon
   /// whether this is RO or RW instance ...
 
-  typedef boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> theClientPtr;
+  boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> theClientPtr;
 
+  boost::shared_ptr<askap::cp::caldataservice::GainSolution> itsGainSolutionPtr;
 
-  typedef boost::shared_ptr<askap::cp::caldataservice::GainSolution> itsGainSolutionPtr;
+  boost::shared_ptr<askap::cp::caldataservice::LeakageSolution> itsLeakageSolutionPtr;
 
-  typedef boost::shared_ptr<askap::cp::caldataservice::LeakageSolution> itsLeakageSolutionPtr;
-
-  typedef boost::shared_ptr<askap::cp::caldataservice::BandpassSolution> itsBandpassSolutionPtr;
+  boost::shared_ptr<askap::cp::caldataservice::BandpassSolution> itsBandpassSolutionPtr;
 
 
 

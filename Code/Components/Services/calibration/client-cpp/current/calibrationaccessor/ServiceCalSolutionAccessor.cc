@@ -45,13 +45,13 @@
 #include <askap/AskapError.h>
 #include <Common/ParameterSet.h>
 
+#include <boost/make_shared.hpp>
+
 using namespace askap::accessors;
 
 namespace askap {
 
 namespace accessors {
-
-
 
 
 /// @brief constructor
@@ -62,6 +62,33 @@ namespace accessors {
 ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet &parset, casa::Long iD, bool readonly)
 
 {
+
+  // Need to generate the calibrationclient and set up all the solutions
+
+  const string locatorHost = parset.getString("ice.locator.host");
+  const string locatorPort = parset.getString("ice.locator.port");
+  const string serviceName = parset.getString("calibrationdataservice.name");
+
+  theClientPtr = boost::make_shared<askap::cp::caldataservice::CalibrationDataServiceClient> (locatorHost, locatorPort, serviceName);
+
+  /*
+  // for the application methods
+  const casa::Double timestamp = 55790.1;
+
+  casa::Long newID = svc.newSolutionID();
+
+  // this is from the application
+  addGainSolution(svc, newID, timestamp, nAntenna, nBeam);
+
+  // this is also from the application
+  addLeakageSolution(svc, newID, timestamp, nAntenna, nBeam);
+
+
+  // this is also from the application
+  addBandpassSolution(svc, newID, timestamp, nAntenna, nBeam, nChan);
+
+  */
+
 
 
 }
@@ -147,7 +174,7 @@ void ServiceCalSolutionAccessor::setBandpass(const accessors::JonesIndex &index,
 /// @details We need it to call syncCache at the end
 ServiceCalSolutionAccessor::~ServiceCalSolutionAccessor()
 {
-  
+
 }
 
 
