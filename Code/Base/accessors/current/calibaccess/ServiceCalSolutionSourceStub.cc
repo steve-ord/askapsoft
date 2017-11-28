@@ -47,7 +47,7 @@ namespace accessors {
 /// (whether it is for writing or reading depends on the actual methods
 /// used).
 /// @param[in] parset parset file name
-ServiceCalSolutionSourceStub::ServiceCalSolutionSourceStub(const LOFAR::ParameterSet &parset)  {
+ServiceCalSolutionSourceStub::ServiceCalSolutionSourceStub(const LOFAR::ParameterSet &parset) : itsParset(parset) {
 }
 
 /// @brief obtain ID for the most recent solution

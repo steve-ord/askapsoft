@@ -116,6 +116,8 @@ protected:
   /// @brief get shared pointer to accessor
   /// @return shared pointer to the accessor
   inline boost::shared_ptr<ICalSolutionAccessor> accessor() const { return itsAccessor;}
+  const LOFAR::ParameterSet& itsParset;
+
 private:
   /// @brief accessor doing actual work
   boost::shared_ptr<ICalSolutionAccessor> itsAccessor;
