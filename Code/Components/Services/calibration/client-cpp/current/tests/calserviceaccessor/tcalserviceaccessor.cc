@@ -1,4 +1,4 @@
-/// @copyright (c) 2007 CSIRO
+/// @copyright (c) 2017 CSIRO
 /// Australia Telescope National Facility (ATNF)
 /// Commonwealth Scientific and Industrial Research Organisation (CSIRO)
 /// PO Box 76, Epping NSW 1710, Australia
@@ -20,7 +20,7 @@
 /// along with this program; if not, write to the Free Software
 /// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 ///
-
+/// @author Stephen Ord <stephen.ord@csiro.au>
 // ASKAPsoft includes
 #include <AskapTestRunner.h>
 

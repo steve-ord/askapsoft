@@ -148,6 +148,7 @@ protected:
 
 private:
 
+  long solutionID;
   /// should we store solutions within this accessor - so we dont continually
   /// access the service for individual Jones matrices. Other accessors have the
   /// the table or some other Cache. I say yes. I suspect that the solution will
@@ -164,6 +165,11 @@ private:
 
   boost::shared_ptr<askap::cp::caldataservice::BandpassSolution> itsBandpassSolutionPtr;
 
+  /// @brief use the client pull the solutions
+  void pullSolutions();
+
+  /// @brief push the current solutions to the service via the client
+  void pushSolutions();
 
 
 

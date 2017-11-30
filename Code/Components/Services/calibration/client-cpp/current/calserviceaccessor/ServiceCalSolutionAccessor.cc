@@ -35,6 +35,8 @@
 #include <iceutils/CommunicatorConfig.h>
 #include <iceutils/CommunicatorFactory.h>
 #include <CalibrationDataService.h> // Ice generated interface
+#include <calibrationclient/CalibrationDataServiceClient.h>
+#include <calibrationclient/GenericSolution.h>
 
 #include <calibaccess/ICalSolutionAccessor.h>
 
@@ -42,6 +44,7 @@
 
 #include <calibrationclient/IceMapper.h>
 
+#include <askap/AskapLogging.h>
 #include <askap/AskapError.h>
 #include <Common/ParameterSet.h>
 
@@ -49,7 +52,7 @@
 #include <boost/make_shared.hpp>
 
 using namespace askap::accessors;
-
+ASKAP_LOGGER(logger, ".ServiceCalSolutionAccessor");
 namespace askap {
 
 namespace accessors {
@@ -65,31 +68,17 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet
 {
 
   // Need to generate the calibrationclient and set up all the solutions
-
+  ASKAPLOG_INFO_STR(logger,"Setting up client");
   const string locatorHost = parset.getString("ice.locator.host");
   const string locatorPort = parset.getString("ice.locator.port");
   const string serviceName = parset.getString("calibrationdataservice.name");
 
   theClientPtr = boost::make_shared<askap::cp::caldataservice::CalibrationDataServiceClient> (locatorHost, locatorPort, serviceName);
+  ASKAPLOG_INFO_STR(logger,"Done - client connected");
 
-  /*
-  // for the application methods
-  const casa::Double timestamp = 55790.1;
+  this->solutionID = iD;
 
-  casa::Long newID = svc.newSolutionID();
-
-  // this is from the application
-  addGainSolution(svc, newID, timestamp, nAntenna, nBeam);
-
-  // this is also from the application
-  addLeakageSolution(svc, newID, timestamp, nAntenna, nBeam);
-
-
-  // this is also from the application
-  addBandpassSolution(svc, newID, timestamp, nAntenna, nBeam, nChan);
-
-  */
-
+  this->pullSolutions();
 
 
 }
@@ -97,7 +86,7 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet
 ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> inClient, casa::Long iD, bool readonly)
 
 {
-
+  ASKAPLOG_INFO_STR(logger,"Constructed with CalibrationDataServiceClient");
 }
 /// @brief obtain gains (J-Jones)
 /// @details This method retrieves parallel-hand gains for both
@@ -176,8 +165,28 @@ void ServiceCalSolutionAccessor::setBandpass(const accessors::JonesIndex &index,
 
 }
 
+/// private member functions
+void ServiceCalSolutionAccessor::pullSolutions() {
+
+  itsGainSolutionPtr = boost::make_shared<askap::cp::caldataservice::GainSolution>(this->theClientPtr->getGainSolution(this->solutionID));
+
+  itsLeakageSolutionPtr = boost::make_shared<askap::cp::caldataservice::LeakageSolution>(this->theClientPtr->getLeakageSolution(this->solutionID));
+
+  itsBandpassSolutionPtr = boost::make_shared<askap::cp::caldataservice::BandpassSolution>(this->theClientPtr->getBandpassSolution(this->solutionID));
+
+
+}
+void ServiceCalSolutionAccessor::pushSolutions() {
+  /// should I split this into 3 different calls ....
+  theClientPtr->addGainSolution(this->solutionID,*(this->itsGainSolutionPtr));
+
+  theClientPtr->addLeakageSolution(this->solutionID,*(this->itsLeakageSolutionPtr));
+
+  theClientPtr->addBandpassSolution(this->solutionID,*(this->itsBandpassSolutionPtr));
+
+}
 /// @brief destructor
-/// @details We need it to call syncCache at the end
+/// @details Do we need it to call pushSolutions at the end
 ServiceCalSolutionAccessor::~ServiceCalSolutionAccessor()
 {
 
