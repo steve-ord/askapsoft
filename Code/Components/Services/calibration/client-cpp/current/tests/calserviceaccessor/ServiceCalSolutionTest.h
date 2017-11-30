@@ -44,6 +44,7 @@ namespace accessors {
 class ServiceCalSolutionTest : public CppUnit::TestFixture
 {
    CPPUNIT_TEST_SUITE(ServiceCalSolutionTest);
+   CPPUNIT_TEST(testStub);
    CPPUNIT_TEST_SUITE_END();
 
 protected:
@@ -51,7 +52,17 @@ protected:
 
 public:
 
+    void setUp() {
+    /// need to set up the server
+    }
+    void tearDown() {
+    /// shutdown the test server
+    }
 
+    void testStub() {
+      CPPUNIT_ASSERT(true);
+
+    }
 
 };
 
