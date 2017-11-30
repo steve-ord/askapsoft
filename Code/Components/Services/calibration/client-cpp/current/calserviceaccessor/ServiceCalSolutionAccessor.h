@@ -65,8 +65,15 @@ public:
 
   explicit ServiceCalSolutionAccessor(const LOFAR::ParameterSet &parset, casa::Long iD = 0, bool readonly = false);
 
+  /// @brief constructor
+  /// @details It is passed a service client - so therefore does not need the parset
+  /// @param[in] CalibrationDataServiceClient
+  /// @param[in] readonly if true, additional checks are done that file exists
   /// @brief destructor
   /// @details Not yet sure what functionality that needs to be here
+
+  explicit ServiceCalSolutionAccessor(boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> inClient, casa::Long iD = 0, bool readonly = false);
+
 
   virtual ~ServiceCalSolutionAccessor();
 

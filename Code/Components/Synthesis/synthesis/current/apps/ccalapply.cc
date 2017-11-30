@@ -157,11 +157,11 @@ class CcalApplyApp : public askap::Application
             if (calAccType == "service") {
               solutionSource.reset(new ServiceCalSolutionSource(parset));
               ASKAPLOG_INFO_STR(logger,"Yay I am a service source");
-              exit(0);
+
             }
             else {
               ASKAPLOG_INFO_STR(logger,"Boo I am not a service source");
-              exit(0);
+            
             }
 
             // Create applicator

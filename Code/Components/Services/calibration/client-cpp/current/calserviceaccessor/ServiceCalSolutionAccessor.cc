@@ -45,6 +45,7 @@
 #include <askap/AskapError.h>
 #include <Common/ParameterSet.h>
 
+#include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 
 using namespace askap::accessors;
@@ -93,6 +94,11 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet
 
 }
 
+ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> inClient, casa::Long iD, bool readonly)
+
+{
+
+}
 /// @brief obtain gains (J-Jones)
 /// @details This method retrieves parallel-hand gains for both
 /// polarisations (corresponding to XX and YY). If no gains are defined

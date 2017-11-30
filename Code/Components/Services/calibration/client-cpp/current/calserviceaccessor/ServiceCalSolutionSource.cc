@@ -32,6 +32,11 @@
 
 #include <calibaccess/ServiceCalSolutionSourceStub.h>
 #include "ServiceCalSolutionSource.h"
+#include "ServiceCalSolutionAccessor.h"
+
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+
 
 // logging stuff
 #include <askap_accessors.h>
@@ -45,11 +50,27 @@ namespace accessors {
 /// @brief constructor
 /// @details Creates solution source object for a given parset file
 /// (whether it is for writing or reading depends on the actual methods
-/// used).
+/// used). Also need to decide whether it is the source or the accessor that
+/// creates the client. I think it should be the source then an accessor of any
+/// particular type can be instaniated when required.
+/// But the accessor does need a communicator....
+/// how about the source instantiates the client and the accessor is instantiaed using the client
+///
 /// @param[in] parset parset file name
 ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &parset) : ServiceCalSolutionSourceStub(parset)
   {
-  ASKAPLOG_WARN_STR(logger, "ServiceCalSolutionSource constructor - this is unlikely to be directly called as we will use it to override the stub");
+  ASKAPLOG_WARN_STR(logger, "ServiceCalSolutionSource constructor - override the stub ... or just reimplement");
+
+  // Need to generate the calibrationclient and set up all the solutions
+
+
+  const string locatorHost = parset.getString("ice.locator.host");
+  const string locatorPort = parset.getString("ice.locator.port");
+  const string serviceName = parset.getString("calibrationdataservice.name");
+
+  itsClient = boost::make_shared<askap::cp::caldataservice::CalibrationDataServiceClient> (locatorHost, locatorPort, serviceName);
+
+  itsAccessor.reset(new ServiceCalSolutionAccessor(itsClient, 0, false));
 
 }
 
@@ -83,8 +104,9 @@ long ServiceCalSolutionSource::solutionID(const double) const
 /// @return shared pointer to an accessor object
 /// @note This particular implementation doesn't support multiple solutions and
 /// always returns the same accessor (for both reading and writing)
-boost::shared_ptr<ICalSolutionConstAccessor> ServiceCalSolutionSource::roSolution(const long) const
+boost::shared_ptr<ICalSolutionConstAccessor> ServiceCalSolutionSource::roSolution(const long ID) const
 {
+
   ASKAPDEBUGASSERT(accessor());
   boost::shared_ptr<ICalSolutionAccessor> acc = boost::dynamic_pointer_cast<ICalSolutionAccessor>(accessor());
   ASKAPCHECK(acc,
@@ -113,8 +135,9 @@ long ServiceCalSolutionSource::newSolutionID(const double time)
 /// @return shared pointer to an accessor object
 /// @note This particular implementation returns the same accessor regardless of the
 /// chosen ID (for both reading and writing)
-boost::shared_ptr<ICalSolutionAccessor> ServiceCalSolutionSource::rwSolution(const long) const
+boost::shared_ptr<ICalSolutionAccessor> ServiceCalSolutionSource::rwSolution(const long ID) const
 {
+
   ASKAPDEBUGASSERT(accessor());
   boost::shared_ptr<ICalSolutionAccessor> acc = boost::dynamic_pointer_cast<ICalSolutionAccessor>(accessor());
   ASKAPCHECK(acc,

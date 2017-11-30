@@ -48,6 +48,8 @@ namespace accessors {
 /// used).
 /// @param[in] parset parset file name
 ServiceCalSolutionSourceStub::ServiceCalSolutionSourceStub(const LOFAR::ParameterSet &parset) : itsParset(parset) {
+
+  ASKAPLOG_INFO_STR(logger, "ServiceCalSolutionSourceStub constructor - just a stub for the calibaccess factory method");
 }
 
 /// @brief obtain ID for the most recent solution

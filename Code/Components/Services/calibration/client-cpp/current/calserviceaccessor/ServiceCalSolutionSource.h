@@ -37,6 +37,7 @@
 #include <Common/ParameterSet.h>
 
 #include <calibaccess/ServiceCalSolutionSourceStub.h>
+#include <calibrationclient/CalibrationDataServiceClient.h>
 
 
 namespace askap {
@@ -121,6 +122,8 @@ protected:
 private:
   /// @brief accessor doing actual work
   boost::shared_ptr<ICalSolutionAccessor> itsAccessor;
+  /// @bried client to actually connect to the server
+  boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> itsClient;
 
 };
 
