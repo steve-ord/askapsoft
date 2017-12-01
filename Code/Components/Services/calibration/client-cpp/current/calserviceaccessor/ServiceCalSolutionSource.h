@@ -125,6 +125,21 @@ private:
   /// @bried client to actually connect to the server
   boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> itsClient;
 
+  void addDefaultGainSolution(const long id,
+          const double timestamp,
+          const short nAntenna, const short nBeam);
+
+
+  void addDefaultLeakageSolution(const long id,
+          const double timestamp,
+          const short nAntenna, const short nBeam);
+
+
+  void addDefaultBandpassSolution(const long id,
+          const double timestamp,
+          const short nAntenna, const short nBeam, const int nChan);
+
+
 };
 
 

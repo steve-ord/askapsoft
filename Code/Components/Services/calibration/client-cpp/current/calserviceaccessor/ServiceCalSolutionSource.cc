@@ -67,11 +67,63 @@ ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &pa
   const string locatorHost = parset.getString("ice.locator.host");
   const string locatorPort = parset.getString("ice.locator.port");
   const string serviceName = parset.getString("calibrationdataservice.name");
+  long solution = parset.getInt("solution.id",-1);
+  const double solutionTime = parset.getDouble("solution.time",-1.0);
+  bool newSol = parset.getBool("solution.new",false);
+
 
   itsClient = boost::make_shared<askap::cp::caldataservice::CalibrationDataServiceClient> (locatorHost, locatorPort, serviceName);
 
-  itsAccessor.reset(new ServiceCalSolutionAccessor(itsClient, 0, false));
+  if (solutionTime > 0) {
+    if (solution > 0) {
+      ASKAPTHROW(AskapError, "Ambiguous parameters: Specified a solution ID and a time");
+    }
+    if (!newSol) {
+      solution = this->solutionID(solutionTime);
+    }
+    else {
+      // new solution requested
+      // need to know the solution size for this to work
 
+      const short nAnt = parset.getInt("solution.nant",0);
+      const short nBeam = parset.getInt("solution.beam",0);
+
+      if (nAnt == 0 || nBeam == 0) {
+        ASKAPTHROW(AskapError, "Ambiguous parameters:Specified new solution but did not provide nAnt or NBeam");
+      }
+      else {
+        this->addDefaultGainSolution(solution, solutionTime, nAnt, nBeam);
+        this->addDefaultLeakageSolution(solution, solutionTime, nAnt, nBeam);
+      }
+      const int nChan = parset.getInt("solution.nchan",0);
+
+      if (nChan == 0) {
+        ASKAPLOG_WARN_STR(logger, "Cannot add a bandpass solution for this ID - no chan in parset");
+
+      }
+      else {
+        this->addDefaultBandpassSolution(solution, solutionTime, nAnt, nBeam,nChan);
+      }
+    }
+  }
+
+  // should have a valid solution ID now.
+
+  if (solution > 0) {
+    /// Requesting a specific solutionID
+    itsAccessor.reset(new ServiceCalSolutionAccessor(itsClient, solution, true));
+  }
+  else if (solution == 0){
+    itsAccessor.reset(new ServiceCalSolutionAccessor(itsClient,this->mostRecentSolution(),true));
+  }
+  else if (solution < 0) {
+    /// Going to make a completely new solution
+    /// specify a blank one?
+    if (solutionTime < 0) {
+      ASKAPTHROW(AskapError, "Ambiguous parameters: Specified a new solution but did not give a timestamp");
+    }
+
+  }
 }
 
 /// @brief obtain ID for the most recent solution
@@ -81,7 +133,7 @@ ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &pa
 long ServiceCalSolutionSource::mostRecentSolution() const
 {
 
-  return 0;
+  return itsClient->getLatestSolutionID();
 
 }
 
@@ -91,9 +143,10 @@ long ServiceCalSolutionSource::mostRecentSolution() const
 /// called with a time sufficiently into the future.
 /// @return solution ID
 ///
-long ServiceCalSolutionSource::solutionID(const double) const
+long ServiceCalSolutionSource::solutionID(const double timetag) const
 {
-  ASKAPTHROW(AskapError, "ServiceCalSolutionSource::solutionID not yet implemented");
+  ASKAPTHROW(AskapError,"solutionID(const double timetag) not yet implemented");
+  return 0;
 }
 
 /// @brief obtain read-only accessor for a given solution ID
@@ -121,10 +174,10 @@ boost::shared_ptr<ICalSolutionConstAccessor> ServiceCalSolutionSource::roSolutio
 /// @param[in] time time stamp of the new solution in seconds since MJD of 0.
 /// @return solution ID
 
-long ServiceCalSolutionSource::newSolutionID(const double time)
+long ServiceCalSolutionSource::newSolutionID(const double timetag)
 {
-
-  return 0;
+  // the time tag is added to the solution when it is created.
+  return itsClient->newSolutionID();
 
 }
 /// @brief obtain a writeable accessor for a given solution ID
@@ -144,7 +197,57 @@ boost::shared_ptr<ICalSolutionAccessor> ServiceCalSolutionSource::rwSolution(con
      "Unable to cast solution accessor to read-write type, CalSolutionSourceStub has been initialised with an incompatible object");
   return acc;
 }
+void ServiceCalSolutionSource::addDefaultGainSolution(const long id,
+        const double timestamp,
+        const short nAntenna, const short nBeam)
+{
+    askap::cp::caldataservice::GainSolution sol(timestamp);
+    // Create a map entry for each antenna/beam combination
+    for (short  antenna = 1; antenna <= nAntenna; ++antenna) {
+        for (short beam = 1; beam <= nBeam; ++beam) {
+            JonesJTerm jterm(casa::Complex(1.0, 1.0), true,
+                    casa::Complex(1.0, 1.0), true);
+            sol.map()[askap::accessors::JonesIndex(antenna, beam)] = jterm;
+        }
+    }
 
+    itsClient->addGainSolution(id,sol);
+}
+
+
+void ServiceCalSolutionSource::addDefaultLeakageSolution( const long id,
+        const double timestamp,
+        const short nAntenna, const short nBeam)
+{
+    askap::cp::caldataservice::LeakageSolution sol(timestamp);
+    // Create a map entry for each antenna/beam combination
+    for (short antenna = 1; antenna <= nAntenna; ++antenna) {
+        for (short beam = 1; beam <= nBeam; ++beam) {
+            sol.map()[askap::accessors::JonesIndex(antenna, beam)] = askap::accessors::JonesDTerm(
+                    casa::Complex(1.0, 1.0), casa::Complex(1.0, 1.0));
+        }
+    }
+
+    itsClient->addLeakageSolution(id,sol);
+}
+
+void ServiceCalSolutionSource::addDefaultBandpassSolution(const long id,
+        const double timestamp,
+        const short nAntenna, const short nBeam, const int nChan)
+{
+    askap::cp::caldataservice::BandpassSolution sol(timestamp);
+    // Create a map entry for each antenna/beam combination
+    for (short antenna = 1; antenna <= nAntenna; ++antenna) {
+        for (short beam = 1; beam <= nBeam; ++beam) {
+            JonesJTerm jterm(casa::Complex(1.0, 1.0), true,
+                    casa::Complex(1.0, 1.0), true);
+            std::vector<askap::accessors::JonesJTerm> jterms(nChan, jterm);
+            sol.map()[askap::accessors::JonesIndex(antenna, beam)] = jterms;
+        }
+    }
+
+    itsClient->addBandpassSolution(id,sol);
+}
 } // accessors
 
 } // namespace askap

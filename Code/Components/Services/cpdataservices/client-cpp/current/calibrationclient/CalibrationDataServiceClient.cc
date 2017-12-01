@@ -36,6 +36,7 @@
 
 // ASKAPsoft includes
 #include "casacore/casa/aipstype.h"
+#include <askap/AskapLogging.h>
 #include "askap/AskapError.h"
 #include "Ice/Ice.h"
 #include "iceutils/CommunicatorConfig.h"
@@ -51,6 +52,8 @@ using namespace std;
 using namespace askap;
 using namespace askap::cp::caldataservice;
 using askap::interfaces::caldataservice::UnknownSolutionIdException;
+
+ASKAP_LOGGER(logger, ".CalibrationDataServiceClient");
 
 CalibrationDataServiceClient::CalibrationDataServiceClient(const std::string& locatorHost,
         const std::string& locatorPort,
@@ -68,7 +71,9 @@ CalibrationDataServiceClient::CalibrationDataServiceClient(const std::string& lo
 
     if (!itsService) {
         ASKAPTHROW(AskapError, "CalibrationDataService proxy is invalid");
+
     }
+    ASKAPLOG_INFO_STR(logger,"Conected to CalibrationDataService");
 }
 
 CalibrationDataServiceClient::~CalibrationDataServiceClient()
