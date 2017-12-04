@@ -137,15 +137,23 @@ long ServiceCalSolutionSource::mostRecentSolution() const
 
 }
 
-/// @brief obtain solution ID for a given time
-/// @details This method looks for a solution valid at the given time
-/// and returns its ID. It is equivalent to mostRecentSolution() if
-/// called with a time sufficiently into the future.
-/// @return solution ID
-///
+
+/**
+ * Obtain smallest solution ID corresponding to the time >= the given timestamp
+ * @param timestamp absolute time given as MJD in the UTC frame (same as timestamp
+ *                  in solutions - can be compared directly)
+ * @return solution ID
+ * @note gain, bandpass and leakage solutions corresponding to one solution ID
+ *       can have different timestamps. Use the greatest for comparison.
+ * if all the timestamps in the stored solutions are less than the given timestamp,
+ * this method is equivalent to getLatestSolutionID().
+ */
+
 long ServiceCalSolutionSource::solutionID(const double timetag) const
 {
-  ASKAPTHROW(AskapError,"solutionID(const double timetag) not yet implemented");
+
+  itsClient->getUpperBoundID(timetag);
+
   return 0;
 }
 

@@ -142,7 +142,9 @@ public:
   /// @brief shared pointer definition
   typedef boost::shared_ptr<ServiceCalSolutionAccessor> ShPtr;
 
-
+  /// are the solutions valid
+  bool solutionsValid;
+  
 protected:
 
 

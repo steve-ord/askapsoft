@@ -77,7 +77,7 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet
   ASKAPLOG_INFO_STR(logger,"Done - client connected");
 
   this->solutionID = iD;
-
+  this->solutionsValid=false;
   this->pullSolutions();
 
 
@@ -87,6 +87,11 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::
 
 {
   ASKAPLOG_INFO_STR(logger,"Constructed with CalibrationDataServiceClient");
+  this->solutionID = iD;
+  this->solutionsValid=false;
+
+  this->pullSolutions();
+
 }
 /// @brief obtain gains (J-Jones)
 /// @details This method retrieves parallel-hand gains for both
@@ -97,7 +102,11 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::
 /// @return JonesJTerm object with gains and validity flags
 accessors::JonesJTerm ServiceCalSolutionAccessor::gain(const accessors::JonesIndex &index) const
 {
-  return accessors::JonesJTerm();
+  ASKAPASSERT(this->solutionsValid);
+  map<accessors::JonesIndex,accessors::JonesJTerm>& gains = itsGainSolutionPtr->map();
+  return gains[index];
+
+
 }
 
 /// @brief obtain leakage (D-Jones)
@@ -110,7 +119,9 @@ accessors::JonesJTerm ServiceCalSolutionAccessor::gain(const accessors::JonesInd
 /// @return JonesDTerm object with leakages and validity flags
 accessors::JonesDTerm ServiceCalSolutionAccessor::leakage(const accessors::JonesIndex &index) const
 {
-  return accessors::JonesDTerm();
+  ASKAPASSERT(this->solutionsValid);
+  map<accessors::JonesIndex,accessors::JonesDTerm>& leakages = itsLeakageSolutionPtr->map();
+  return leakages[index];
 }
 
 /// @brief obtain bandpass (frequency dependent J-Jones)
@@ -128,7 +139,11 @@ accessors::JonesDTerm ServiceCalSolutionAccessor::leakage(const accessors::Jones
 /// @return JonesJTerm object with gains and validity flags
 accessors::JonesJTerm ServiceCalSolutionAccessor::bandpass(const accessors::JonesIndex &index, const casa::uInt chan) const
 {
-  return accessors::JonesJTerm();
+
+  ASKAPASSERT(this->solutionsValid);
+  map<accessors::JonesIndex, std::vector<accessors::JonesJTerm> >& bpall = itsBandpassSolutionPtr->map();
+  std::vector<accessors::JonesJTerm>& bp = bpall[index];
+  return bp[chan];
 }
 
 /// @brief set gains (J-Jones)
@@ -173,6 +188,8 @@ void ServiceCalSolutionAccessor::pullSolutions() {
   itsLeakageSolutionPtr = boost::make_shared<askap::cp::caldataservice::LeakageSolution>(this->theClientPtr->getLeakageSolution(this->solutionID));
 
   itsBandpassSolutionPtr = boost::make_shared<askap::cp::caldataservice::BandpassSolution>(this->theClientPtr->getBandpassSolution(this->solutionID));
+
+  this->solutionsValid = true;
 
 
 }
