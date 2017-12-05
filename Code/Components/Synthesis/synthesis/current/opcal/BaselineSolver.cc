@@ -262,13 +262,32 @@ void BaselineSolver::solveForXY(const ScanStats &scans, const casa::Matrix<Gener
   }
   std::sort(scanIndices.begin(),scanIndices.end(), utility::indexedCompare<size_t>(scans.begin(), LesserHAorDec(mroPos,true)));
 
-  // use casa fitter
-  casa::Vector<double> hangles(scans.size());
-  casa::Vector<double> phases(scans.size());
-  casa::Vector<double> sigma(scans.size(),1.);
   ASKAPDEBUGASSERT(scanIndices.size() == scans.size());
-  
   for (casa::uInt ant=0; ant < caldata.ncolumn(); ++ant) {
+       // figure out the number of valid points
+       size_t nGoodPoints = 0;
+       for (casa::uInt cnt = 0; cnt < scans.size(); ++cnt) {
+            if (caldata(scanIndices[cnt],ant).gainDefined()) {
+                ++nGoodPoints;
+            }
+       }
+       const std::string spcfilename = "phase.xy.ant"+utility::toString(ant)+".dat";
+       std::ofstream os(spcfilename.c_str());
+       if (nGoodPoints == 0) {
+           ASKAPLOG_WARN_STR(logger, "No valid data points for antenna "<<ant);
+           // just to avoid accidental reuse of an old file
+           os<<"No valid data"<<std::endl;
+       }
+       if (nGoodPoints < scans.size()) {
+           ASKAPLOG_INFO_STR(logger, "Only "<<nGoodPoints<<" valid data points out of "<<scans.size()<<
+                             " possible for antenna "<<ant);
+       }
+
+       // use casa fitter
+       casa::Vector<double> hangles(nGoodPoints);
+       casa::Vector<double> phases(nGoodPoints);
+       casa::Vector<double> sigma(nGoodPoints,1.);
+
        casa::NonLinearFitLM<double> fitter;
        SinusoidDueToXY<double> func;
        func.parameters()[0] = 1.;
@@ -280,45 +299,51 @@ void BaselineSolver::solveForXY(const ScanStats &scans, const casa::Matrix<Gener
   
        // could've cached the hour angles, but for now leave as is
        scimath::PhaseUnwrapper<double> unwrapper;
-       const std::string spcfilename = "phase.xy.ant"+utility::toString(ant)+".dat";
-       std::ofstream os(spcfilename.c_str());
-       for (casa::uInt cnt = 0; cnt < scans.size(); ++cnt) {
+       for (casa::uInt cnt = 0, pointCnt = 0; cnt < scans.size(); ++cnt) {
+            const GenericCalInfo& cInfo = caldata(scanIndices[cnt],ant);
+            if (!cInfo.gainDefined()) {
+                continue;
+            }
             const ObservationDescription& scan = scans[scanIndices[cnt]];
             const double time = 0.5*(scan.startTime() + scan.endTime());
             const casa::MEpoch epoch(casa::Quantity(time/86400.,"d"), casa::MEpoch::Ref(casa::MEpoch::UTC));
             casa::MeasFrame frame(mroPos, epoch);    
-            /*
+            
             const casa::MVDirection hadec = casa::MDirection::Convert(casa::MDirection(scan.direction(),casa::MDirection::J2000), 
                                    casa::MDirection::Ref(casa::MDirection::HADEC,frame))().getValue();
             
-            hangles[cnt] = hadec.getLong() - mroPos.getValue().getLong(); // Hour angle at latitude 0
-            */
+            ASKAPASSERT(pointCnt < nGoodPoints);
+            hangles[pointCnt] = hadec.getLong() - mroPos.getValue().getLong(); // Hour angle at latitude 0
+            
+            /*
             // Phase centre in the apparent topocentric frame
             casa::MVDirection fpc = casa::MDirection::Convert(casa::MDirection(scan.direction(),casa::MDirection::J2000), 
                                    casa::MDirection::Ref(casa::MDirection::TOPO,frame))().getValue();
             const double gastDayFrac = casa::MEpoch::Convert(epoch,casa::MEpoch::Ref(casa::MEpoch::GAST))().get("d").getValue("d");
             const double gast = (gastDayFrac - casa::Int(gastDayFrac)) * casa::C::_2pi; // in radians
-            hangles[cnt] = gast - fpc.getLong();
+            hangles[pointCnt] = gast - fpc.getLong();
             // to ensure corresponding local hour angle is contiguous without the need to unwrap
-            if (hangles[cnt] + mroPos.getValue().getLong() > casa::C::pi) {
-                hangles[cnt] -= 2.*casa::C::pi;
+            if (hangles[pointCnt] + mroPos.getValue().getLong() > casa::C::pi) {
+                hangles[pointCnt] -= 2.*casa::C::pi;
             }
-            if (hangles[cnt] + mroPos.getValue().getLong() < -casa::C::pi) {
-                hangles[cnt] += 2.*casa::C::pi;
+            if (hangles[pointCnt] + mroPos.getValue().getLong() < -casa::C::pi) {
+                hangles[pointCnt] += 2.*casa::C::pi;
             }
+            */
             /*
-            ASKAPLOG_DEBUG_STR(logger, "cnt = "<<cnt<<" newH: "<<hangles[cnt]*180./casa::C::pi<<
+            ASKAPLOG_DEBUG_STR(logger, "cnt = "<<cnt<<" newH: "<<hangles[pointCnt]*180./casa::C::pi<<
                      " oldH:"<<(hadec.getLong() - mroPos.getValue().getLong())*180./casa::C::pi<<" diff: "<<
-                      (hangles[cnt] - hadec.getLong() + mroPos.getValue().getLong()) / casa::C::pi * 648000.<<" "
+                      (hangles[pointCnt] - hadec.getLong() + mroPos.getValue().getLong()) / casa::C::pi * 648000.<<" "
                      <<" decDiff: "<<(fpc.getLat() - hadec.getLat()) / casa::C::pi * 648000.);
             */
 
-            const double cd = cos(fpc.getLat()); 
+            const double cd = cos(hadec.getLat()); 
             ASKAPCHECK(cd > 0, "Cannot work with sources at either pole");
             const casa::MVDirection azel = casa::MDirection::Convert(casa::MDirection(scan.direction(),casa::MDirection::J2000), 
                                    casa::MDirection::Ref(casa::MDirection::AZEL,frame))().getValue();
-            phases[cnt] = unwrapper(arg(caldata(scanIndices[cnt],ant).gain())) / cd;
-            os<<cnt<<" "<<hangles[cnt] / casa::C::pi * 180<<" "<<phases[cnt] / casa::C::pi * 180.<<" "<<scan.scanID()<<" "<<scan.fieldID()<<" "<<azel.getLat() / casa::C::pi * 180.<<" "<<azel.getLong() / casa::C::pi * 180.<<std::endl;
+            phases[pointCnt] = unwrapper(arg(cInfo.gain())) / cd;
+            os<<cnt<<" "<<hangles[pointCnt] / casa::C::pi * 180<<" "<<phases[pointCnt] / casa::C::pi * 180.<<" "<<scan.scanID()<<" "<<scan.fieldID()<<" "<<azel.getLat() / casa::C::pi * 180.<<" "<<azel.getLong() / casa::C::pi * 180.<<std::endl;
+            ++pointCnt;
        }
        casa::Vector<double> param = fitter.fit(hangles,phases,sigma);
        ASKAPCHECK(param.nelements() == 3, "Expect 3 parameters out of the fitter, you have size="<<param.nelements());
@@ -394,14 +419,18 @@ void BaselineSolver::solveForZ(const ScanStats &scans, const casa::Matrix<Generi
        std::ofstream os(spcfilename.c_str());
        casa::uInt counter = 0;
        for (casa::uInt cnt = 0; cnt < scans.size(); ++cnt) {
+            const GenericCalInfo& cInfo = caldata(scanIndices[cnt],ant);
+            if (!cInfo.gainDefined()) {
+                continue;
+            }
             const ObservationDescription& scan = scans[scanIndices[cnt]];
             const double time = 0.5*(scan.startTime() + scan.endTime());
             const casa::MEpoch epoch(casa::Quantity(time/86400.,"d"), casa::MEpoch::Ref(casa::MEpoch::UTC));
             casa::MeasFrame frame(mroPos, epoch);    
-            casa::MVDirection topoPos = casa::MDirection::Convert(casa::MDirection(scan.direction(),casa::MDirection::J2000), 
-                                   casa::MDirection::Ref(casa::MDirection::TOPO,frame))().getValue();
-            const double sd = sin(topoPos.getLat());
-            const double phase = unwrapper(arg(caldata(scanIndices[cnt],ant).gain()));
+            casa::MVDirection hadec = casa::MDirection::Convert(casa::MDirection(scan.direction(),casa::MDirection::J2000), 
+                                   casa::MDirection::Ref(casa::MDirection::HADEC,frame))().getValue();
+            const double sd = sin(hadec.getLat());
+            const double phase = unwrapper(arg(cInfo.gain()));
             /*
             // the following code can be useful is unwrapper fails to do a decent job
             // due to gaps in declination coverage and large Z correction

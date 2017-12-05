@@ -180,6 +180,30 @@ void ObservationDescription::update(casa::uInt cycle, double time)
   itsEndTime = time;
 }
 
+/// @brief extend exsting observation by merging in another structure
+/// @details Unlike update, it also processes flagging informaton.
+/// @param[in] other structure to merge in
+/// @note an exception is thrown if added structure does not follow in time or cycle
+void ObservationDescription::merge(const ObservationDescription &other)
+{
+  ASKAPCHECK(isValid(), "An attempt to extend an undefined observation");
+  ASKAPCHECK(other.isValid(), "An attempt merge in an undefined observation");
+  ASKAPCHECK(other.itsStartCycle > itsEndCycle, "Merged in structure should start with tje cycle number which is greater than the previous value");
+  ASKAPCHECK(other.itsStartTime > itsEndTime, "New chunk is supposed to be later in time than the previous one");
+  ASKAPCHECK(other.itsStokes.nelements() == itsStokes.nelements(), "Merged observations are supposed to have matching polarisations");
+  ASKAPDEBUGASSERT(other.itsEndCycle > itsEndCycle);
+  ASKAPDEBUGASSERT(other.itsEndTime > itsEndTime);
+  // could've also double check directions, fequencies, etc 
+  itsEndCycle = other.itsEndCycle;
+  itsEndTime = other.itsEndTime;
+  // now aggregate flags
+  for (size_t pol=0; pol<itsAntennasWithValidData.size(); ++pol) {
+       ASKAPDEBUGASSERT(pol < itsStokes.nelements());
+       ASKAPCHECK(itsStokes[pol] == other.itsStokes[pol], "Merged observations are supposed to have matcing polarisations, product "<<pol+1<<" is different");
+       itsAntennasWithValidData[pol].insert(other.itsAntennasWithValidData[pol].begin(),other.itsAntennasWithValidData[pol].end());
+  }
+}
+
   
 /// @brief observed direction
 /// @return phase centre of the observation (same frame as used in the accessor)
@@ -199,6 +223,122 @@ double ObservationDescription::frequency() const
   ASKAPCHECK(isValid(), "An attempt to get frequency for an undefined observation structure");
   return itsFreq;
 }
+
+/// @brief stokes vector
+/// @return vector with polarisation descriptors for each recorded product
+/// @note an exception is thrown if the structure is uninitialised
+const casa::Vector<casa::Stokes::StokesTypes>& ObservationDescription::stokes() const
+{
+   ASKAPCHECK(isValid(), "An attempt to get stokes vector for an undefined observation structure");
+   return itsStokes;
+}
+
+/// @brief initialise the stokes vector
+/// @param[in] stokes vector with polarisation descriptors for each recorded product
+void ObservationDescription::setStokes(const casa::Vector<casa::Stokes::StokesTypes> &stokes)
+{
+   itsStokes.reference(stokes.copy());
+   ASKAPCHECK(itsAntennasWithValidData.size() == 0, 
+        "Flagging information can only be set after initialisation of the stokes vector");
+   itsAntennasWithValidData.resize(itsStokes.nelements());
+}
+
+/// @brief update antennas with valid data
+/// @details This method processes a flag vector for the given baseline and updates
+///          the list of antennas with valid data.
+/// @param[in] ant1 first antenna of the baseline
+/// @param[in] ant2 second antenna of the baseline
+/// @param[in] flags per-polarisation flags for the given baseline (should match the 
+///                  length of stokes vector)
+/// @note This method is not supposed to be called by the reader, it is called when
+///       the structure is populated
+void ObservationDescription::processBaselineFlags(casa::uInt ant1, casa::uInt ant2, 
+                              const casa::Vector<casa::Bool> &flags)
+{
+   // note, a better performance implementation is possible if we iterate over row for
+   // each polarisation. But it is not a bottleneck at the moment
+   ASKAPCHECK(flags.nelements() == itsStokes.nelements(), "Flag vector should have the same dimension as the Stokes vector. Most likely attempting to process baseline flags before initialisation of Stokes vector");
+   ASKAPDEBUGASSERT(flags.nelements() == itsAntennasWithValidData.size());
+   for (size_t i=0; i<itsAntennasWithValidData.size(); ++i) {
+        if (!flags[i]) {
+            // good data for this product
+            itsAntennasWithValidData[i].insert(ant1);
+            itsAntennasWithValidData[i].insert(ant2);
+        }
+   }
+}
+
+// access to the valid antenna information - we can add other methods if necessary
+  
+/// @brief obtain a set of flagged antennas
+/// @details This method returns a set of antenna indices corresponding to antennas completely
+/// flagged in the data 'scan' described by this structure for the given polarisation. It is 
+/// handy to have bad antennas listed rather than good ones because by the nature of this tool,
+/// little input data should be flagged. The total number of antennas is a parameter (antennas with
+/// higher indices may be present but completely flagged). The returned set may contain indices up to
+/// the total number of antennas minus 1.
+/// @param[in] stokes polarisation product of interest
+/// @param[in] nAnt total number of antennas, indices probed go from 0 to nAnt-1
+/// @return set flagged antennas represented by their indices
+std::set<casa::uInt> ObservationDescription::flaggedAntennas(casa::Stokes::StokesTypes stokes, casa::uInt nAnt) const
+{
+   ASKAPCHECK(isValid(), "An attempt to get stokes vector for an undefined observation structure");
+   ASKAPCHECK(itsAntennasWithValidData.size() > 0, "Perhaps, the Stokes vector is uninitialised");
+   ASKAPDEBUGASSERT(itsStokes.nelements() == itsAntennasWithValidData.size());
+   size_t pol = 0;
+   for (; pol < itsStokes.nelements(); ++pol) {
+        if (itsStokes[pol] == stokes) {
+            break;
+        }
+   }
+   ASKAPCHECK(pol < itsStokes.nelements(), "Requested stokes type has not been observed");
+   
+   // now check all antennas from 0 to nAnt-1
+   std::set<casa::uInt> result;
+   const std::set<casa::uInt>& flags = itsAntennasWithValidData[pol];
+   for (casa::uInt ant = 0; ant < nAnt; ++ant) {
+        if (flags.find(ant) == flags.end()) {
+            result.insert(ant);
+        }       
+   }
+   return result;
+}
+
+/// @brief copy constructor
+/// @details casa arrays use reference semantics, so need a copy constructor
+/// @param[in] src input object
+ObservationDescription::ObservationDescription(const ObservationDescription &src) :
+    itsName(src.itsName), itsStartCycle(src.itsStartCycle), itsEndCycle(src.itsEndCycle),
+    itsStartTime(src.itsStartTime), itsEndTime(src.itsEndTime), itsBeam(src.itsBeam),
+    itsScanID(src.itsScanID), itsFieldID(src.itsFieldID), 
+    itsDirection(casa::MVDirection(src.itsDirection)), itsFreq(src.itsFreq),
+    itsStokes(src.itsStokes.copy()), itsAntennasWithValidData(src.itsAntennasWithValidData)
+{
+}
+
+/// @brief assignment operator
+/// @details casa arrays use reference semantics, so need a copy constructor
+/// @param[in] src input object
+ObservationDescription& ObservationDescription::operator=(const ObservationDescription &src)
+{
+   if (this != &src) {
+    itsName=src.itsName;
+    itsStartCycle=src.itsStartCycle;
+    itsEndCycle=src.itsEndCycle;
+    itsStartTime=src.itsStartTime;
+    itsEndTime=src.itsEndTime; 
+    itsBeam=src.itsBeam;
+    itsScanID = src.itsScanID;
+    itsFieldID = src.itsFieldID; 
+    itsDirection = casa::MVDirection(src.itsDirection);
+    itsFreq = src.itsFreq;
+    itsStokes.reference(src.itsStokes.copy());
+    itsAntennasWithValidData = src.itsAntennasWithValidData;
+   }
+   return *this;
+}
+
+  
 
 } // namespace synthesis
 

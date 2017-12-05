@@ -89,6 +89,8 @@ void ScanStats::inspect(const std::string &name, const accessors::IConstDataShar
   for (accessors::IConstDataSharedIter it = iter; it!=it.end(); ++it,++cycle) {
        const casa::Vector<casa::uInt>& beam1 = it->feed1();
        const casa::Vector<casa::uInt>& beam2 = it->feed2();
+       const casa::Vector<casa::uInt>& antenna1 = it->antenna1();
+       const casa::Vector<casa::uInt>& antenna2 = it->antenna2();
        
        // buffer for observations of the current integration, one per beam
        std::map<casa::uInt, ObservationDescription> currentObs;
@@ -98,6 +100,10 @@ void ScanStats::inspect(const std::string &name, const accessors::IConstDataShar
        const casa::uInt centreChan = it->nChannel() / 2;
        ASKAPDEBUGASSERT(it->frequency().nelements() > centreChan);
        const double freq = it->frequency()[centreChan];
+       const casa::Matrix<casa::Bool> flags = allChannelsFlagged(it->flag());
+       const casa::Vector<casa::Stokes::StokesTypes> stokes = it->stokes();
+       ASKAPDEBUGASSERT(flags.ncolumn() == stokes.nelements());
+       ASKAPDEBUGASSERT(flags.nrow() == it->nRow());
        // go through all rows and aggregate baselines
        for (casa::uInt row=0; row<it->nRow(); ++row) {
             const casa::uInt beam = beam1[row];
@@ -115,6 +121,12 @@ void ScanStats::inspect(const std::string &name, const accessors::IConstDataShar
                           "Pointing direction is different for different baselines of the same integration, unsupported scenario");
                 ASKAPCHECK(obs.direction().separation(it->pointingDir2()[row]) < dirTolerance, 
                           "Pointing direction is different for two antennas, unsupported scenario");                
+
+                const casa::Vector<casa::Stokes::StokesTypes>& stokes = obs.stokes();
+                ASKAPCHECK(stokes.nelements() == it->nPol(), "Number of polarisations appears to have changed");
+                for (casa::uInt pol = 0; pol < stokes.nelements(); ++pol) {
+                     ASKAPCHECK(stokes[pol] == it->stokes()[pol], "Polarisation product "<<pol+1<<" appears to have changed type");
+                }
             } else {
                 // brand new element in the map
                 obs.set(name, cycle, it->time(), beam, it->pointingDir1()[row],freq);
@@ -124,7 +136,10 @@ void ScanStats::inspect(const std::string &name, const accessors::IConstDataShar
                     // fill implementation-specific fields (scan and field IDs)
                     obs.setScanAndFieldIDs(tableIt->currentScanID(), tableIt->currentFieldID());
                 }          
+                obs.setStokes(it->stokes());
             }        
+            // now process flagging information for the given row
+            obs.processBaselineFlags(antenna1[row], antenna2[row], flags.row(row));
        } // loop over row
        // aggregate the map into the final buffer
        for (std::map<casa::uInt, ObservationDescription>::const_iterator ci = currentObs.begin(); ci != currentObs.end(); ++ci) {
@@ -150,7 +165,8 @@ void ScanStats::inspect(const std::string &name, const accessors::IConstDataShar
             if (sameScan) {
                 // continuing the same scan
                 ASKAPDEBUGASSERT(lastObsThisBeam != itsObs.rend());
-                lastObsThisBeam->update(ci->second.endCycle(), ci->second.endTime());
+                //lastObsThisBeam->update(ci->second.endCycle(), ci->second.endTime());
+                lastObsThisBeam->merge(ci->second);
             } else {
                 // start a new scan
                 itsObs.push_back(ci->second);
@@ -158,6 +174,28 @@ void ScanStats::inspect(const std::string &name, const accessors::IConstDataShar
        } // loop over existing scans
        
   }
+}
+
+/// @brief helper method to compact flags across frequency axis
+/// @details Each row each polarisation is considered flagged if all corresponding frequency channels
+/// are flagged
+/// @param[in] flags nRow x nChan x nPol cube as provided by the accessor
+/// @return nRow x nPol matrix with aggregated flags 
+casa::Matrix<casa::Bool> ScanStats::allChannelsFlagged(const casa::Cube<casa::Bool> &flags)
+{
+   ASKAPDEBUGASSERT(flags.nelements() > 0);
+   casa::Matrix<casa::Bool> result(flags.nrow(), flags.nplane(), true);
+   for (casa::uInt row = 0; row < flags.nrow(); ++row) {
+        for (casa::uInt pol = 0; pol < flags.nplane(); ++pol) {
+             for (casa::uInt chan = 0; chan < flags.ncolumn(); ++chan) {
+                  if (!flags(row,chan,pol)) {
+                      result(row,pol) = false;
+                      break;
+                  }
+             }
+        }
+   }
+   return result;
 }
 
 /// @brief access to the selected scan
