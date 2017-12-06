@@ -7,6 +7,8 @@ import ConfigParser
 #version = "1.11.4"
 #version = "12.0"
 version = "14.0.6"
+#version = "12.0"
+#version = "14.0.6"
 #version = "14.0.6"
 virtualenv = "virtualenv-%s" % version
 python_ver = sys.version[:3]
@@ -42,7 +44,7 @@ os.system("%s virtualenv.py --no-site-packages %s" % (python_exe, askap_root))
 os.system("%s virtualenv.py --no-site-packages %s" % (python_exe, install_dir))
 
 for name, version in cfg_parser.items("Python Dependencies"):
-        install_line="source %s/bin/activate && pip install %s" % (askap_root,version)
+        install_line=". %s/bin/activate && pip install %s" % (askap_root,version)
         
         print "running ", install_line
         os.system(install_line)
