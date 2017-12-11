@@ -33,11 +33,13 @@
 #include <calibaccess/JonesIndex.h>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/thread.hpp>
 #include <string>
 
 namespace askap {
 
 namespace accessors {
+
 
 class ServiceCalSolutionTest : public CppUnit::TestFixture
 {
@@ -51,7 +53,8 @@ protected:
 public:
 
     void setUp() {
-    /// need to set up the server
+    /// spawn a thread to fire up the server
+
     }
     void tearDown() {
     /// shutdown the test server
@@ -61,6 +64,10 @@ public:
       CPPUNIT_ASSERT(true);
 
     }
+
+
+
+
 
 };
 

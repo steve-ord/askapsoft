@@ -3,6 +3,7 @@
 
 # Always import this
 from askapenv import env
+import os
 
 # create build object with library name
 pkg = env.AskapPackage("calserviceaccessor")
@@ -10,6 +11,7 @@ pkg = env.AskapPackage("calserviceaccessor")
 pkg.AddSubPackage("calserviceaccessor")
 
 env.AppendUnique(CCFLAGS=['-DASKAP_DEBUG'])
+
 
 # run the build process
 pkg()

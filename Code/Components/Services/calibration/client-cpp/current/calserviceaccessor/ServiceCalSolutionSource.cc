@@ -59,7 +59,7 @@ namespace accessors {
 /// @param[in] parset parset file name
 ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &parset) : ServiceCalSolutionSourceStub(parset)
   {
-  ASKAPLOG_WARN_STR(logger, "ServiceCalSolutionSource constructor - override the stub ... or just reimplement");
+  ASKAPLOG_WARN_STR(logger, "ServiceCalSolutionSource constructor - override the stub");
 
   // Need to generate the calibrationclient and set up all the solutions
 
@@ -84,9 +84,16 @@ ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &pa
     else {
       // new solution requested
       // need to know the solution size for this to work
+      solution = this->newSolutionID(solutionTime);
 
-      const short nAnt = parset.getInt("solution.nant",0);
-      const short nBeam = parset.getInt("solution.beam",0);
+      int nAnt = parset.getInt("solution.nant",0);
+      if (nAnt == 0) {
+        nAnt = parset.getInt("nAnt",0);
+      }
+      int nBeam = parset.getInt("solution.nbeam",0);
+      if (nBeam == 0) {
+        nBeam = parset.getInt("nBeam",0);
+      }
 
       if (nAnt == 0 || nBeam == 0) {
         ASKAPTHROW(AskapError, "Ambiguous parameters:Specified new solution but did not provide nAnt or NBeam");
@@ -95,8 +102,10 @@ ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &pa
         this->addDefaultGainSolution(solution, solutionTime, nAnt, nBeam);
         this->addDefaultLeakageSolution(solution, solutionTime, nAnt, nBeam);
       }
-      const int nChan = parset.getInt("solution.nchan",0);
-
+      int nChan = parset.getInt("solution.nchan",0);
+      if (nChan == 0) {
+        nChan = parset.getInt("nChan",0);
+      }
       if (nChan == 0) {
         ASKAPLOG_WARN_STR(logger, "Cannot add a bandpass solution for this ID - no chan in parset");
 
@@ -111,14 +120,23 @@ ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &pa
 
   if (solution > 0) {
     /// Requesting a specific solutionID
-    itsAccessor.reset(new ServiceCalSolutionAccessor(itsClient, solution, true));
+    if (!newSol) {
+        ASKAPLOG_WARN_STR(logger, "ServiceCalSolutionAccessor Read Only with a known solution ID");
+        itsAccessor.reset(new ServiceCalSolutionAccessor(itsClient, solution, true));
+    }
+    else {
+        ASKAPLOG_WARN_STR(logger, "ServiceCalSolutionAccessor RW with a new solution ID");
+        itsAccessor.reset(new ServiceCalSolutionAccessor(itsClient, solution,false));
+    }
   }
   else if (solution == 0){
+    ASKAPLOG_WARN_STR(logger, "ServiceCalSolutionAccessor Read Only with the most recent ID");
     itsAccessor.reset(new ServiceCalSolutionAccessor(itsClient,this->mostRecentSolution(),true));
   }
   else if (solution < 0) {
     /// Going to make a completely new solution
     /// specify a blank one?
+    ASKAPLOG_WARN_STR(logger, "ServiceCalSolutionAccessor NO ACCESSOR");
     if (solutionTime < 0) {
       ASKAPTHROW(AskapError, "Ambiguous parameters: Specified a new solution but did not give a timestamp");
     }
@@ -209,6 +227,7 @@ void ServiceCalSolutionSource::addDefaultGainSolution(const long id,
         const double timestamp,
         const short nAntenna, const short nBeam)
 {
+    ASKAPLOG_INFO_STR(logger, "addDefaultGainSolution");
     askap::cp::caldataservice::GainSolution sol(timestamp);
     // Create a map entry for each antenna/beam combination
     for (short  antenna = 1; antenna <= nAntenna; ++antenna) {
@@ -227,6 +246,7 @@ void ServiceCalSolutionSource::addDefaultLeakageSolution( const long id,
         const double timestamp,
         const short nAntenna, const short nBeam)
 {
+    ASKAPLOG_INFO_STR(logger, "addDefaultLeakageSolution");
     askap::cp::caldataservice::LeakageSolution sol(timestamp);
     // Create a map entry for each antenna/beam combination
     for (short antenna = 1; antenna <= nAntenna; ++antenna) {
@@ -243,6 +263,7 @@ void ServiceCalSolutionSource::addDefaultBandpassSolution(const long id,
         const double timestamp,
         const short nAntenna, const short nBeam, const int nChan)
 {
+    ASKAPLOG_INFO_STR(logger, "addDefaultBandpassSolution");
     askap::cp::caldataservice::BandpassSolution sol(timestamp);
     // Create a map entry for each antenna/beam combination
     for (short antenna = 1; antenna <= nAntenna; ++antenna) {

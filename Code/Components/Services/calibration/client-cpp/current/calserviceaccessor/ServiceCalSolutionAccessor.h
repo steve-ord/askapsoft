@@ -144,7 +144,7 @@ public:
 
   /// are the solutions valid
   bool solutionsValid;
-  
+
 protected:
 
 
@@ -161,11 +161,11 @@ private:
 
   boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> theClientPtr;
 
-  boost::shared_ptr<askap::cp::caldataservice::GainSolution> itsGainSolutionPtr;
+  askap::cp::caldataservice::GainSolution itsGainSolution;
 
-  boost::shared_ptr<askap::cp::caldataservice::LeakageSolution> itsLeakageSolutionPtr;
+  askap::cp::caldataservice::LeakageSolution itsLeakageSolution;
 
-  boost::shared_ptr<askap::cp::caldataservice::BandpassSolution> itsBandpassSolutionPtr;
+  askap::cp::caldataservice::BandpassSolution itsBandpassSolution;
 
   /// @brief use the client pull the solutions
   void pullSolutions();

@@ -63,7 +63,7 @@ namespace accessors {
 /// @param[in] parset parset file name
 /// @param[in] the iD of the solution to get - or to make
 /// @param[in] readonly if true, additional checks are done that file exists
-ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet &parset, casa::Long iD, bool readonly)
+ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet &parset, casa::Long iD, bool readonly) : itsGainSolution(0), itsLeakageSolution(0), itsBandpassSolution(0)
 
 {
 
@@ -78,20 +78,33 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet
 
   this->solutionID = iD;
   this->solutionsValid=false;
-  this->pullSolutions();
+
+  try {
+      this->pullSolutions();
+  }
+  catch (const interfaces::caldataservice::UnknownSolutionIdException& e) {
+      ASKAPTHROW(AskapError, "Unknown Solution ID");
+  }
+
 
 
 }
 
-ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> inClient, casa::Long iD, bool readonly)
+ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> inClient, casa::Long iD, bool readonly) : itsGainSolution(0), itsLeakageSolution(0), itsBandpassSolution(0)
 
 {
   ASKAPLOG_INFO_STR(logger,"Constructed with CalibrationDataServiceClient");
+  theClientPtr = inClient;
+
   this->solutionID = iD;
   this->solutionsValid=false;
-
-  this->pullSolutions();
-
+  try {
+      this->pullSolutions();
+  }
+  catch (const interfaces::caldataservice::UnknownSolutionIdException& e) {
+      ASKAPTHROW(AskapError, "Unknown Solution ID");
+  }
+  ASKAPLOG_INFO_STR(logger,"Solution pulled (or created)");
 }
 /// @brief obtain gains (J-Jones)
 /// @details This method retrieves parallel-hand gains for both
@@ -103,7 +116,7 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::
 accessors::JonesJTerm ServiceCalSolutionAccessor::gain(const accessors::JonesIndex &index) const
 {
   ASKAPASSERT(this->solutionsValid);
-  map<accessors::JonesIndex,accessors::JonesJTerm>& gains = itsGainSolutionPtr->map();
+  map<accessors::JonesIndex,accessors::JonesJTerm> gains = itsGainSolution.map();
   return gains[index];
 
 
@@ -120,7 +133,7 @@ accessors::JonesJTerm ServiceCalSolutionAccessor::gain(const accessors::JonesInd
 accessors::JonesDTerm ServiceCalSolutionAccessor::leakage(const accessors::JonesIndex &index) const
 {
   ASKAPASSERT(this->solutionsValid);
-  map<accessors::JonesIndex,accessors::JonesDTerm>& leakages = itsLeakageSolutionPtr->map();
+  map<accessors::JonesIndex,accessors::JonesDTerm> leakages = itsLeakageSolution.map();
   return leakages[index];
 }
 
@@ -141,8 +154,8 @@ accessors::JonesJTerm ServiceCalSolutionAccessor::bandpass(const accessors::Jone
 {
 
   ASKAPASSERT(this->solutionsValid);
-  map<accessors::JonesIndex, std::vector<accessors::JonesJTerm> >& bpall = itsBandpassSolutionPtr->map();
-  std::vector<accessors::JonesJTerm>& bp = bpall[index];
+  map<accessors::JonesIndex, std::vector<accessors::JonesJTerm> > bpall = itsBandpassSolution.map();
+  std::vector<accessors::JonesJTerm> bp = bpall[index];
   return bp[chan];
 }
 
@@ -154,6 +167,7 @@ accessors::JonesJTerm ServiceCalSolutionAccessor::bandpass(const accessors::Jone
 void ServiceCalSolutionAccessor::setGain(const accessors::JonesIndex &index, const accessors::JonesJTerm &gains)
 {
 
+    itsGainSolution.map()[index] = gains;
 }
 
 /// @brief set leakages (D-Jones)
@@ -163,7 +177,7 @@ void ServiceCalSolutionAccessor::setGain(const accessors::JonesIndex &index, con
 /// @param[in] leakages JonesDTerm object with leakages and validity flags
 void ServiceCalSolutionAccessor::setLeakage(const accessors::JonesIndex &index, const accessors::JonesDTerm &leakages)
 {
-
+    itsLeakageSolution.map()[index] = leakages;
 }
 
 /// @brief set gains for a single bandpass channel
@@ -177,36 +191,44 @@ void ServiceCalSolutionAccessor::setLeakage(const accessors::JonesIndex &index, 
 /// gains set explicitly for each channel.
 void ServiceCalSolutionAccessor::setBandpass(const accessors::JonesIndex &index, const accessors::JonesJTerm &bp, const casa::uInt chan)
 {
-
+    itsBandpassSolution.map()[index][chan] = bp;
 }
 
 /// private member functions
 void ServiceCalSolutionAccessor::pullSolutions() {
 
-  itsGainSolutionPtr = boost::make_shared<askap::cp::caldataservice::GainSolution>(this->theClientPtr->getGainSolution(this->solutionID));
+  try {
+    ASKAPLOG_INFO_STR(logger, "Attempting to pull Gain Solution from client");
+    itsGainSolution = this->theClientPtr->getGainSolution(this->solutionID);
 
-  itsLeakageSolutionPtr = boost::make_shared<askap::cp::caldataservice::LeakageSolution>(this->theClientPtr->getLeakageSolution(this->solutionID));
+    ASKAPLOG_INFO_STR(logger, "Attempting to pull Leakage Solution from client");
+    itsLeakageSolution = this->theClientPtr->getLeakageSolution(this->solutionID);
 
-  itsBandpassSolutionPtr = boost::make_shared<askap::cp::caldataservice::BandpassSolution>(this->theClientPtr->getBandpassSolution(this->solutionID));
+    ASKAPLOG_INFO_STR(logger, "Attempting to pull Bandpass Solution from client");
+    itsBandpassSolution = this->theClientPtr->getBandpassSolution(this->solutionID);
 
-  this->solutionsValid = true;
 
+    this->solutionsValid = true;
+  }
+  catch (const interfaces::caldataservice::UnknownSolutionIdException& e) {
+      ASKAPTHROW(AskapError, "Unknown Solution ID");
+  }
 
 }
 void ServiceCalSolutionAccessor::pushSolutions() {
   /// should I split this into 3 different calls ....
-  theClientPtr->addGainSolution(this->solutionID,*(this->itsGainSolutionPtr));
+  theClientPtr->addGainSolution(this->solutionID,(this->itsGainSolution));
 
-  theClientPtr->addLeakageSolution(this->solutionID,*(this->itsLeakageSolutionPtr));
+  theClientPtr->addLeakageSolution(this->solutionID,(this->itsLeakageSolution));
 
-  theClientPtr->addBandpassSolution(this->solutionID,*(this->itsBandpassSolutionPtr));
+  theClientPtr->addBandpassSolution(this->solutionID,(this->itsBandpassSolution));
 
 }
 /// @brief destructor
 /// @details Do we need it to call pushSolutions at the end
 ServiceCalSolutionAccessor::~ServiceCalSolutionAccessor()
 {
-
+  this->pushSolutions();
 }
 
 
