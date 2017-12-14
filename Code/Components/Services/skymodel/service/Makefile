@@ -4,7 +4,7 @@ RBUILD_FLAGS=-na
 #RBUILD_FLAGS+= -v
 
 # C++11 support
-#RBUILD_FLAGS+=-p "cpp11=1" -p "squash=1"
+RBUILD_FLAGS+=-p "cpp11=1" -p "squash=1"
 
 .PHONY: install
 install:
@@ -41,3 +41,7 @@ generate:
 .PHONY: generate_ice
 generate_ice: generate
 	mv *.ice ../../../../Interfaces/slice/current/
+
+.PHONY: odb
+odb:
+	cd $(ASKAP_ROOT)/3rdParty/odb/odb-2.4.0/odb && rbuild -naf

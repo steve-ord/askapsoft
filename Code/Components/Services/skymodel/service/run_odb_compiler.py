@@ -27,7 +27,8 @@ def run_odb_compiler():
     libodb_boost_dir = os.path.join(odb_base_dir, 'libodb-boost/install')
     boost_dir = os.path.join(thirdparty_dir, 'boost/boost-1.56.0/install')
 
-    odb_compiler = os.path.join(odb_dir, 'bin/odb')
+    odb_compiler = '/usr/bin/odb'
+    # odb_compiler = os.path.join(odb_dir, 'bin/odb')
     schema_dir = os.path.abspath('./schema')
     odb_includes = os.path.join(libodb_dir, 'include')
     odb_boost_includes = os.path.join(libodb_boost_dir, 'include')
@@ -99,7 +100,7 @@ def run_odb_compiler():
     if (exitCode == 0):
         return output
     else:
-        raise ProcessException(command, exitCode, output)
+        raise OSError(cmd, exitCode, output)
 
 
 if __name__ == '__main__':

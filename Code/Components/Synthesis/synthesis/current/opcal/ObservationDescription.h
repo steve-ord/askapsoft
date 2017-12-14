@@ -35,9 +35,13 @@
 
 // casa includes
 #include <casacore/measures/Measures/MDirection.h>
+#include <casacore/measures/Measures/Stokes.h>
+#include <casacore/casa/Arrays/Vector.h>
 
 // std includes
 #include <string>
+#include <set>
+#include <vector>
 
 namespace askap {
 
@@ -61,6 +65,17 @@ struct ObservationDescription {
   ObservationDescription(const std::string &name, casa::uInt cycle, double time, casa::uInt beam, 
                          const casa::MVDirection &dir, double freq);
   
+  
+  /// @brief copy constructor
+  /// @details casa arrays use reference semantics, so need a copy constructor
+  /// @param[in] src input object
+  ObservationDescription(const ObservationDescription &src);
+
+  /// @brief assignment operator
+  /// @details casa arrays use reference semantics, so need a copy constructor
+  /// @param[in] src input object
+  ObservationDescription& operator=(const ObservationDescription &src);
+
   /// @brief check whether the structure has been initialised
   /// @return true, if the structure has data, false otherwise
   /// @note the convention is that non-negative beam ID is a signature of initialised structure
@@ -78,8 +93,14 @@ struct ObservationDescription {
   /// @brief extend existing observation for additional cycle(s)  
   /// @param[in] cycle current cycle (i.e. iteration number)
   /// @param[in] time current time (in accessor units)
-  /// @note an exception is thrown if the structure is uninitialised
+  /// @note an exception is thrown if the structure is uninitialised. The flags are not updated!
   void update(casa::uInt cycle, double time);
+
+  /// @brief extend exsting observation by merging in another structure
+  /// @details Unlike update, it also processes flagging informaton.
+  /// @param[in] other structure to merge in
+  /// @note an exception is thrown if added structure does not follow in time or cycle
+  void merge(const ObservationDescription &other);
   
   /// @brief set scan and field IDs
   /// @details This information can only be obtained for table-based datasets. Therefore, we deal with these misc fields
@@ -139,6 +160,41 @@ struct ObservationDescription {
   /// @return frequency corresponding to the centre of the band (in units used in the accessor)
   /// @note an exception is thrown if the structure is uninitialised 
   double frequency() const;
+
+
+  /// @brief stokes vector
+  /// @return vector with polarisation descriptors for each recorded product
+  /// @note an exception is thrown if the structure is uninitialised
+  const casa::Vector<casa::Stokes::StokesTypes>& stokes() const;
+
+  /// @brief initialise the stokes vector
+  /// @param[in] stokes vector with polarisation descriptors for each recorded product
+  void setStokes(const casa::Vector<casa::Stokes::StokesTypes> &stokes);
+
+  /// @brief update antennas with valid data
+  /// @details This method processes a flag vector for the given baseline and updates
+  ///          the list of antennas with valid data.
+  /// @param[in] ant1 first antenna of the baseline
+  /// @param[in] ant2 second antenna of the baseline
+  /// @param[in] flags per-polarisation flags for the given baseline (should match the 
+  ///                  length of stokes vector)
+  /// @note This method is not supposed to be called by the reader, it is called when
+  ///       the structure is populated
+  void processBaselineFlags(casa::uInt ant1, casa::uInt ant2, const casa::Vector<casa::Bool> &flags);
+
+  // access to the valid antenna information - we can add other methods if necessary
+  
+  /// @brief obtain a set of flagged antennas
+  /// @details This method returns a set of antenna indices corresponding to antennas completely
+  /// flagged in the data 'scan' described by this structure for the given polarisation. It is 
+  /// handy to have bad antennas listed rather than good ones because by the nature of this tool,
+  /// little input data should be flagged. The total number of antennas is a parameter (antennas with
+  /// higher indices may be present but completely flagged). The returned set may contain indices up to
+  /// the total number of antennas minus 1.
+  /// @param[in] stokes polarisation product of interest
+  /// @param[in] nAnt total number of antennas, indices probed go from 0 to nAnt-1
+  /// @return set flagged antennas represented by their indices
+  std::set<casa::uInt> flaggedAntennas(casa::Stokes::StokesTypes stokes, casa::uInt nAnt) const;
   
 private:  
   /// @brief file name or other string key defined by the user
@@ -174,6 +230,17 @@ private:
   /// catering for different bandwidth/resolution, etc. It can be changed in the future if there is
   /// a different use case on the horizon
   double itsFreq;  
+
+  /// @brief measured polarisations
+  /// @details The size of the vector is the number of polarisations, content describes frame and which
+  /// product is where. Largely added for an extra consistency check - we don't expect this code to be
+  /// used for polarisation work
+  casa::Vector<casa::Stokes::StokesTypes> itsStokes;
+
+  /// @brief set of antennas with valid data for each polarisation
+  /// @details If a given antenna has some unflagged data for the given polarisation it will be
+  /// added to the apppropriate set. Antennas are referred to by their indices.
+  std::vector<std::set<casa::uInt> > itsAntennasWithValidData;
 };
 
 } // namespace synthesis
