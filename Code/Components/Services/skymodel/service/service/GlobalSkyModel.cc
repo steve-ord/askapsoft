@@ -80,25 +80,18 @@ boost::shared_ptr<GlobalSkyModel> GlobalSkyModel::create(const LOFAR::ParameterS
 
     // Get the max number of HEALPix pixels per database query from the parset,
     // with clamping to a reasonable range
-    const size_t DEFAULT_PIXELS_PER_QUERY = 2000;
-    const size_t MAX_MAX_PIXELS_PER_QUERY = 40000;
-    size_t maxPixelsPerQuery = parset.getUint("database.max_pixels_per_query", DEFAULT_PIXELS_PER_QUERY);
-    if (maxPixelsPerQuery < 1)
-        maxPixelsPerQuery = DEFAULT_PIXELS_PER_QUERY;
-    else if (maxPixelsPerQuery >= MAX_MAX_PIXELS_PER_QUERY)
-        maxPixelsPerQuery = MAX_MAX_PIXELS_PER_QUERY;
-
+    size_t maxPixelsPerQuery = utility::clamp<size_t>(
+        parset.getUint("database.max_pixels_per_query", 2000),  // Get value with default
+        1,
+        10000);
     ASKAPLOG_INFO_STR(logger, "Using " << maxPixelsPerQuery << " pixels per database query");
-    
+
     // Get the max number of transaction retries, clamped to the max value
     // Probably need a clamp<T> utility function ...
-    const int MAX_MAX_RETRIES = 20;
-    const int DEFAULT_RETRIES = 5;
-    int maxTransactionRetries = parset.getInt("database.max_transaction_retries", DEFAULT_RETRIES);
-    if (maxTransactionRetries > MAX_MAX_RETRIES)
-        maxTransactionRetries = MAX_MAX_RETRIES;
-    if (maxTransactionRetries < 0)
-        maxTransactionRetries = 0;
+    size_t maxTransactionRetries = utility::clamp<size_t>(
+        parset.getInt("database.max_transaction_retries", 5),
+        0,
+        20);
     ASKAPLOG_INFO_STR(logger, "Using a max of " << maxTransactionRetries << " transaction retries");
 
     if (dbType.compare("sqlite") == 0) {
@@ -191,7 +184,7 @@ boost::shared_ptr<GlobalSkyModel> GlobalSkyModel::create(const LOFAR::ParameterS
 GlobalSkyModel::GlobalSkyModel(
     boost::shared_ptr<odb::database> database,
     size_t maxPixelsPerQuery,
-    unsigned int maxTransactionRetries)
+    size_t maxTransactionRetries)
     :
     itsDb(database),
     itsHealPix(getHealpixOrder()),
@@ -285,6 +278,7 @@ IdListPtr GlobalSkyModel::ingestVOTableWithRetry(
     posix_time::ptime obs_date)
 {
     IdListPtr p;
+    COUT << "Using " << itsTransactionRetries << " transaction retries" << endl;
     for (unsigned int n = 0; n < itsTransactionRetries + 1; n++) {
         try {
             p = ingestVOTable(
@@ -343,26 +337,19 @@ IdListPtr GlobalSkyModel::ingestVOTable(
         for (VOTableData::ComponentList::iterator it = components.begin();
              it != components.end();
              it++, i++) {
-            COUT << endl << "i" << i;
             it->sb_id = sb_id;
             it->observation_date = obs_date;
             it->data_source = dataSource;
 
             // If this component has polarisation data, then persist it
             if (it->polarisation.get()) {
-                COUT << " pp";
                 itsDb->persist(it->polarisation);
-                COUT << "+";
             }
 
-            COUT << "p";
             results->push_back(itsDb->persist(*it));
-            COUT << "+";
         }
 
-        COUT << "c";
         t.commit();
-        COUT << "+" << endl;
         ASKAPLOG_DEBUG_STR(logger, "transaction committed. Ingested " << results->size() << " components");
     }
 

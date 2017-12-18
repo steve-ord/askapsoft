@@ -193,7 +193,7 @@ class GlobalSkyModel :
         GlobalSkyModel(
             boost::shared_ptr<odb::database> database,
             size_t maxPixelsPerQuery,
-            unsigned int maxTransactionRetries=1);
+            size_t maxTransactionRetries=1);
 
         /// @brief SQLite-specific schema creation method
         ///
@@ -251,7 +251,7 @@ class GlobalSkyModel :
         size_t itsMaxPixelsPerQuery;
 
         /// @brief Max number of transaction retries for failed transactions
-        const unsigned int itsTransactionRetries;
+        const size_t itsTransactionRetries;
 };
 
 }

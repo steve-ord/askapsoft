@@ -29,6 +29,7 @@
 #define ASKAP_CP_SMS_UTILITY_H
 
 // System includes
+#include <algorithm>
 
 // ASKAPsoft includes
 #include <boost/noncopyable.hpp>
@@ -59,6 +60,13 @@ inline double wrapAngleDegrees(double angle) {
     if (angle < 0.0)
         angle += 360.0;
     return angle;
+}
+
+template<class Numeric> inline Numeric clamp(
+     Numeric x,
+     Numeric lower,
+     Numeric upper) {
+    return std::min<Numeric>(upper, std::max<Numeric>(x, lower));
 }
 
 };

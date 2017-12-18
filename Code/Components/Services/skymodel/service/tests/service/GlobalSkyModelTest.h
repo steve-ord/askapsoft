@@ -52,6 +52,13 @@ namespace askap {
 namespace cp {
 namespace sms {
 
+//#define DC_DBG
+#ifdef DC_DBG
+    #define COUT std::cout
+#else
+    #define COUT if(false) std::cout
+#endif
+
 using namespace datamodel;
 
 class GlobalSkyModelTest : public CppUnit::TestFixture {
@@ -370,8 +377,8 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
         void test_bug_2771() {
             // Test attempting to reproduce the intermittent test failures.
             // See https://jira.csiro.au/browse/ASKAPSDP-2771
-            //parset.replace("sqlite.name", "./tests/service/null_constraint_bug.db");
-            for (int i = 0; i < 500; i++) {
+            for (int i = 0; i < 100; i++) {
+                COUT << "Ingest attempt " << i << std::endl;
                 initEmptyDatabase();
                 gsm->ingestVOTable(
                     simple_cone_search,
