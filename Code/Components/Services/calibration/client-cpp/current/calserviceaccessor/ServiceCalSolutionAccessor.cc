@@ -63,7 +63,7 @@ namespace accessors {
 /// @param[in] parset parset file name
 /// @param[in] the iD of the solution to get - or to make
 /// @param[in] readonly if true, additional checks are done that file exists
-ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet &parset, casa::Long iD, bool readonly) : itsGainSolution(0), itsLeakageSolution(0), itsBandpassSolution(0)
+ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet &parset, casa::Long iD, bool readonly) : itsGainSolution(0), itsLeakageSolution(0), itsBandpassSolution(0), itsReadOnly(readonly)
 
 {
 
@@ -154,9 +154,33 @@ accessors::JonesJTerm ServiceCalSolutionAccessor::bandpass(const accessors::Jone
 {
 
   ASKAPASSERT(this->solutionsValid);
-  map<accessors::JonesIndex, std::vector<accessors::JonesJTerm> > bpall = itsBandpassSolution.map();
-  std::vector<accessors::JonesJTerm> bp = bpall[index];
-  return bp[chan];
+  typedef accessors::JonesIndex keyType;
+  typedef std::vector<accessors::JonesJTerm> valueType;
+
+  ASKAPLOG_INFO_STR(logger, "searching for antenna " << index.antenna() << " beam " << index.beam());
+
+  const std::map< keyType, valueType >& bandpass = itsBandpassSolution.map();
+  const valueType& terms = (bandpass.find(index))->second;
+  return terms[chan];
+
+  // std::map<keyType, valueType>::const_iterator it;
+  // for (it = bandpass.begin(); it != bandpass.end(); ++it) {
+  //    const valueType& terms = it->second;
+  //    const keyType ind = it->first;
+  //
+  //    std::cout << "Found antenna " << ind.antenna() << " beam " << ind.beam() << std::endl;
+  //
+  //    for (size_t ch = 0; ch < terms.size(); ++ch) {
+  //
+  //        std::cout << "chan " << ch << " g1 " << terms[ch].g1() << " g2 " << terms[ch].g2() << std::endl;
+  //    }
+  //    if (ind == index) {
+  //       std::cout << "Match " << std::endl;
+  //       return terms[chan];
+  //    }
+  // }
+
+
 }
 
 /// @brief set gains (J-Jones)
@@ -217,18 +241,20 @@ void ServiceCalSolutionAccessor::pullSolutions() {
 }
 void ServiceCalSolutionAccessor::pushSolutions() {
   /// should I split this into 3 different calls ....
-  theClientPtr->addGainSolution(this->solutionID,(this->itsGainSolution));
+  theClientPtr->adjustGains(this->solutionID,(this->itsGainSolution));
 
-  theClientPtr->addLeakageSolution(this->solutionID,(this->itsLeakageSolution));
+  theClientPtr->adjustLeakages(this->solutionID,(this->itsLeakageSolution));
 
-  theClientPtr->addBandpassSolution(this->solutionID,(this->itsBandpassSolution));
+  theClientPtr->adjustBandpass(this->solutionID,(this->itsBandpassSolution));
 
 }
 /// @brief destructor
 /// @details Do we need it to call pushSolutions at the end
 ServiceCalSolutionAccessor::~ServiceCalSolutionAccessor()
 {
-  this->pushSolutions();
+  if (!itsReadOnly) {
+    this->pushSolutions();
+  }
 }
 
 

@@ -173,6 +173,10 @@ private:
   /// @brief push the current solutions to the service via the client
   void pushSolutions();
 
+  /// readonly?
+  bool itsReadOnly;
+
+
 
 
 };

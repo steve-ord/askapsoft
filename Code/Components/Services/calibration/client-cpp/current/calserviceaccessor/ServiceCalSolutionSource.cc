@@ -99,6 +99,7 @@ ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &pa
         ASKAPTHROW(AskapError, "Ambiguous parameters:Specified new solution but did not provide nAnt or NBeam");
       }
       else {
+
         this->addDefaultGainSolution(solution, solutionTime, nAnt, nBeam);
         this->addDefaultLeakageSolution(solution, solutionTime, nAnt, nBeam);
       }
@@ -230,8 +231,8 @@ void ServiceCalSolutionSource::addDefaultGainSolution(const long id,
     ASKAPLOG_INFO_STR(logger, "addDefaultGainSolution");
     askap::cp::caldataservice::GainSolution sol(timestamp);
     // Create a map entry for each antenna/beam combination
-    for (short  antenna = 1; antenna <= nAntenna; ++antenna) {
-        for (short beam = 1; beam <= nBeam; ++beam) {
+    for (short  antenna = 0; antenna < nAntenna; ++antenna) {
+        for (short beam = 0; beam < nBeam; ++beam) {
             JonesJTerm jterm(casa::Complex(1.0, 1.0), true,
                     casa::Complex(1.0, 1.0), true);
             sol.map()[askap::accessors::JonesIndex(antenna, beam)] = jterm;
@@ -249,8 +250,8 @@ void ServiceCalSolutionSource::addDefaultLeakageSolution( const long id,
     ASKAPLOG_INFO_STR(logger, "addDefaultLeakageSolution");
     askap::cp::caldataservice::LeakageSolution sol(timestamp);
     // Create a map entry for each antenna/beam combination
-    for (short antenna = 1; antenna <= nAntenna; ++antenna) {
-        for (short beam = 1; beam <= nBeam; ++beam) {
+    for (short antenna = 0; antenna < nAntenna; ++antenna) {
+        for (short beam = 0; beam < nBeam; ++beam) {
             sol.map()[askap::accessors::JonesIndex(antenna, beam)] = askap::accessors::JonesDTerm(
                     casa::Complex(1.0, 1.0), casa::Complex(1.0, 1.0));
         }
@@ -266,8 +267,8 @@ void ServiceCalSolutionSource::addDefaultBandpassSolution(const long id,
     ASKAPLOG_INFO_STR(logger, "addDefaultBandpassSolution");
     askap::cp::caldataservice::BandpassSolution sol(timestamp);
     // Create a map entry for each antenna/beam combination
-    for (short antenna = 1; antenna <= nAntenna; ++antenna) {
-        for (short beam = 1; beam <= nBeam; ++beam) {
+    for (short antenna = 0; antenna < nAntenna; ++antenna) {
+        for (short beam = 0; beam < nBeam; ++beam) {
             JonesJTerm jterm(casa::Complex(1.0, 1.0), true,
                     casa::Complex(1.0, 1.0), true);
             std::vector<askap::accessors::JonesJTerm> jterms(nChan, jterm);

@@ -126,13 +126,10 @@ BPCalibratorParallel::BPCalibratorParallel(askap::askapparallel::AskapParallel& 
 
       if (calAccType == "service") {
         itsSolutionSource.reset(new ServiceCalSolutionSource(parset));
-        ASKAPLOG_INFO_STR(logger,"Yay I am a service source");
+        ASKAPLOG_INFO_STR(logger,"Obtaining calibration information from service source");
 
       }
-      else {
-        ASKAPLOG_INFO_STR(logger,"Boo I am not a service source");
-
-      }
+    
   }
   if (itsComms.isWorker()) {
       // set datasets (we cannot rely on the code in base classes because we don't distribute by node here
