@@ -108,7 +108,7 @@ CalibratorParallel::CalibratorParallel(askap::askapparallel::AskapParallel& comm
       itsPerfectModel(new scimath::Params()), itsSolveGains(false), itsSolveLeakage(false),
       itsSolveBandpass(false), itsChannelsPerWorker(0), itsStartChan(0),
       itsBeamIndependentGains(false), itsNormaliseGains(false), itsSolutionInterval(-1.),
-      itsMaxNAntForPreAvg(0u), itsMaxNBeamForPreAvg(0u), itsMaxNChanForPreAvg(1u)
+      itsMaxNAntForPreAvg(0u), itsMaxNBeamForPreAvg(0u), itsMaxNChanForPreAvg(1u), itsSolutionID(-1), itsSolutionIDValid(false)
 {
   const std::string what2solve = parset.getString("solve","gains");
   if (what2solve.find("gains") != std::string::npos) {
@@ -176,9 +176,10 @@ CalibratorParallel::CalibratorParallel(askap::askapparallel::AskapParallel& comm
       if (calAccType == "service") {
         itsSolutionSource.reset(new ServiceCalSolutionSource(parset));
         ASKAPLOG_INFO_STR(logger,"Obtaining calibration information from service source");
+        itsSolutionIDValid = true;
 
       }
-    
+
   }
   if (itsComms.isWorker()) {
 
@@ -757,9 +758,15 @@ void CalibratorParallel::writeModel(const std::string &postfix)
       ASKAPCHECK(postfix == "", "postfix parameter is not supposed to be used in the calibration code");
 
       ASKAPCHECK(itsSolutionSource, "Solution source has to be defined by this stage");
+      if (!itsSolutionIDValid) {
+          // obtain solution ID only once, the results can come in random order and the
+          // accessor is responsible for aggregating all of them together. This is done based on this ID.
+          //@todo Can probably get rid of this
+          itsSolutionID = itsSolutionSource->newSolutionID(solutionTime());
+          itsSolutionIDValid = true;
+      }
 
-      const long solutionID = itsSolutionSource->newSolutionID(solutionTime());
-      boost::shared_ptr<ICalSolutionAccessor> solAcc = itsSolutionSource->rwSolution(solutionID);
+      boost::shared_ptr<ICalSolutionAccessor> solAcc = itsSolutionSource->rwSolution(itsSolutionID);
       ASKAPASSERT(solAcc);
 
       ASKAPDEBUGASSERT(itsModel);
