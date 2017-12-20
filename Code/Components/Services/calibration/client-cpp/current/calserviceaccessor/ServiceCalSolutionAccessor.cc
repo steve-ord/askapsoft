@@ -77,32 +77,41 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet
   ASKAPLOG_INFO_STR(logger,"Done - client connected");
 
   this->solutionID = iD;
-  this->solutionsValid=false;
 
-  try {
+  ASKAPLOG_INFO_STR(logger, "Current ID " << this->solutionID);
+  ASKAPLOG_INFO_STR(logger, "Latest ID " << theClientPtr->getLatestSolutionID());
+
+  if (itsReadOnly) { // solutions exist and are being pulled from the service
+    try {
       this->pullSolutions();
-  }
-  catch (const interfaces::caldataservice::UnknownSolutionIdException& e) {
+    }
+    catch (const interfaces::caldataservice::UnknownSolutionIdException& e) {
       ASKAPTHROW(AskapError, "Unknown Solution ID");
-  }
+    }
+  } // else the solution source has filled the local solutions with defaults.
 
 
 
 }
 
-ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> inClient, casa::Long iD, bool readonly) : itsGainSolution(0), itsLeakageSolution(0), itsBandpassSolution(0)
+ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> inClient, casa::Long iD, bool readonly) : itsGainSolution(0), itsLeakageSolution(0), itsBandpassSolution(0),itsReadOnly(readonly)
 
 {
   ASKAPLOG_INFO_STR(logger,"Constructed with CalibrationDataServiceClient");
   theClientPtr = inClient;
 
   this->solutionID = iD;
-  this->solutionsValid=false;
-  try {
+  // debug ...
+  // debug ...
+  ASKAPLOG_INFO_STR(logger, "Current ID " << this->solutionID);
+  ASKAPLOG_INFO_STR(logger, "Latest ID " << theClientPtr->getLatestSolutionID());
+  if (itsReadOnly) { // ReadOnly solutions pulled from server
+    try {
       this->pullSolutions();
-  }
-  catch (const interfaces::caldataservice::UnknownSolutionIdException& e) {
+    }
+    catch (const interfaces::caldataservice::UnknownSolutionIdException& e) {
       ASKAPTHROW(AskapError, "Unknown Solution ID");
+    }
   }
   ASKAPLOG_INFO_STR(logger,"Solution pulled (or created)");
 }
@@ -157,7 +166,7 @@ accessors::JonesJTerm ServiceCalSolutionAccessor::bandpass(const accessors::Jone
   typedef accessors::JonesIndex keyType;
   typedef std::vector<accessors::JonesJTerm> valueType;
 
-  ASKAPLOG_INFO_STR(logger, "searching for antenna " << index.antenna() << " beam " << index.beam());
+  // ASKAPLOG_INFO_STR(logger, "searching for antenna " << index.antenna() << " beam " << index.beam());
 
   const std::map< keyType, valueType >& bandpass = itsBandpassSolution.map();
   const valueType& terms = (bandpass.find(index))->second;
@@ -231,7 +240,6 @@ void ServiceCalSolutionAccessor::pullSolutions() {
     ASKAPLOG_INFO_STR(logger, "Attempting to pull Bandpass Solution from client");
     itsBandpassSolution = this->theClientPtr->getBandpassSolution(this->solutionID);
 
-
     this->solutionsValid = true;
   }
   catch (const interfaces::caldataservice::UnknownSolutionIdException& e) {
@@ -240,12 +248,21 @@ void ServiceCalSolutionAccessor::pullSolutions() {
 
 }
 void ServiceCalSolutionAccessor::pushSolutions() {
+
   /// should I split this into 3 different calls ....
-  theClientPtr->adjustGains(this->solutionID,(this->itsGainSolution));
+  /// These need to be around conditionals as the service does not allow solutions to
+  /// be adjusted
 
-  theClientPtr->adjustLeakages(this->solutionID,(this->itsLeakageSolution));
+  ASKAPLOG_INFO_STR(logger, "Pushing Gain solution for ID " << this->solutionID);
+  theClientPtr->addGainSolution(this->solutionID,(this->itsGainSolution));
 
-  theClientPtr->adjustBandpass(this->solutionID,(this->itsBandpassSolution));
+  ASKAPLOG_INFO_STR(logger, "Pushing Leakage solution for ID " << this->solutionID);
+  theClientPtr->addLeakageSolution(this->solutionID,(this->itsLeakageSolution));
+
+  ASKAPLOG_INFO_STR(logger, "Pushing Bandpass solution for ID " << this->solutionID);
+  theClientPtr->addBandpassSolution(this->solutionID,(this->itsBandpassSolution));
+
+  ASKAPLOG_INFO_STR(logger, "Latest (after push) ID " << theClientPtr->getLatestSolutionID());
 
 }
 /// @brief destructor

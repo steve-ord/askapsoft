@@ -145,6 +145,20 @@ public:
   /// are the solutions valid
   bool solutionsValid;
 
+  void addGainSolution(askap::cp::caldataservice::GainSolution sol ) {
+    itsGainSolution = sol;
+  };
+
+  void addLeakageSolution(askap::cp::caldataservice::LeakageSolution sol ) {
+    itsLeakageSolution = sol;
+  };
+
+  void addBandpassSolution(askap::cp::caldataservice::BandpassSolution sol ) {
+    itsBandpassSolution = sol;
+  };
+
+
+
 protected:
 
 

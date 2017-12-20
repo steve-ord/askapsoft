@@ -127,6 +127,8 @@ BPCalibratorParallel::BPCalibratorParallel(askap::askapparallel::AskapParallel& 
       if (calAccType == "service") {
         itsSolutionSource.reset(new ServiceCalSolutionSource(parset));
         ASKAPLOG_INFO_STR(logger,"Obtaining calibration information from service source");
+        ASKAPLOG_INFO_STR(logger,"SolutionID determined by ServiceSource");
+        itsSolutionIDValid=true;
 
       }
     

@@ -86,38 +86,12 @@ ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &pa
       // need to know the solution size for this to work
       solution = this->newSolutionID(solutionTime);
 
-      int nAnt = parset.getInt("solution.nant",0);
-      if (nAnt == 0) {
-        nAnt = parset.getInt("nAnt",0);
-      }
-      int nBeam = parset.getInt("solution.nbeam",0);
-      if (nBeam == 0) {
-        nBeam = parset.getInt("nBeam",0);
-      }
 
-      if (nAnt == 0 || nBeam == 0) {
-        ASKAPTHROW(AskapError, "Ambiguous parameters:Specified new solution but did not provide nAnt or NBeam");
-      }
-      else {
-
-        this->addDefaultGainSolution(solution, solutionTime, nAnt, nBeam);
-        this->addDefaultLeakageSolution(solution, solutionTime, nAnt, nBeam);
-      }
-      int nChan = parset.getInt("solution.nchan",0);
-      if (nChan == 0) {
-        nChan = parset.getInt("nChan",0);
-      }
-      if (nChan == 0) {
-        ASKAPLOG_WARN_STR(logger, "Cannot add a bandpass solution for this ID - no chan in parset");
-
-      }
-      else {
-        this->addDefaultBandpassSolution(solution, solutionTime, nAnt, nBeam,nChan);
-      }
     }
   }
 
   // should have a valid solution ID now.
+
 
   if (solution > 0) {
     /// Requesting a specific solutionID
@@ -127,7 +101,40 @@ ServiceCalSolutionSource::ServiceCalSolutionSource(const LOFAR::ParameterSet &pa
     }
     else {
         ASKAPLOG_WARN_STR(logger, "ServiceCalSolutionAccessor RW with a new solution ID");
+
         itsAccessor.reset(new ServiceCalSolutionAccessor(itsClient, solution,false));
+
+        int nAnt = parset.getInt("solution.nant",0);
+        if (nAnt == 0) {
+          nAnt = parset.getInt("nAnt",0);
+        }
+        int nBeam = parset.getInt("solution.nbeam",0);
+        if (nBeam == 0) {
+          nBeam = parset.getInt("nBeam",0);
+        }
+
+        if (nAnt == 0 || nBeam == 0) {
+          ASKAPTHROW(AskapError, "Ambiguous parameters:Specified new solution but did not provide nAnt or NBeam");
+        }
+        else {
+
+          this->addDefaultGainSolution(solution, solutionTime, nAnt, nBeam);
+          this->addDefaultLeakageSolution(solution, solutionTime, nAnt, nBeam);
+        }
+        int nChan = parset.getInt("solution.nchan",0);
+        if (nChan == 0) {
+          nChan = parset.getInt("nChan",0);
+        }
+        if (nChan == 0) {
+          ASKAPLOG_WARN_STR(logger, "Cannot add a bandpass solution for this ID - no chan in parset");
+
+        }
+        else {
+          this->addDefaultBandpassSolution(solution, solutionTime, nAnt, nBeam,nChan);
+        }
+        boost::shared_ptr<ServiceCalSolutionAccessor> acc = boost::dynamic_pointer_cast<ServiceCalSolutionAccessor>(accessor());
+        acc->solutionsValid = true; // valid but default ....
+
     }
   }
   else if (solution == 0){
@@ -228,6 +235,9 @@ void ServiceCalSolutionSource::addDefaultGainSolution(const long id,
         const double timestamp,
         const short nAntenna, const short nBeam)
 {
+    ASKAPASSERT(accessor());
+    boost::shared_ptr<ServiceCalSolutionAccessor> acc = boost::dynamic_pointer_cast<ServiceCalSolutionAccessor>(accessor());
+
     ASKAPLOG_INFO_STR(logger, "addDefaultGainSolution");
     askap::cp::caldataservice::GainSolution sol(timestamp);
     // Create a map entry for each antenna/beam combination
@@ -239,7 +249,7 @@ void ServiceCalSolutionSource::addDefaultGainSolution(const long id,
         }
     }
 
-    itsClient->addGainSolution(id,sol);
+    acc->addGainSolution(sol);
 }
 
 
@@ -247,6 +257,8 @@ void ServiceCalSolutionSource::addDefaultLeakageSolution( const long id,
         const double timestamp,
         const short nAntenna, const short nBeam)
 {
+    ASKAPASSERT(accessor());
+    boost::shared_ptr<ServiceCalSolutionAccessor> acc = boost::dynamic_pointer_cast<ServiceCalSolutionAccessor>(accessor());
     ASKAPLOG_INFO_STR(logger, "addDefaultLeakageSolution");
     askap::cp::caldataservice::LeakageSolution sol(timestamp);
     // Create a map entry for each antenna/beam combination
@@ -257,13 +269,15 @@ void ServiceCalSolutionSource::addDefaultLeakageSolution( const long id,
         }
     }
 
-    itsClient->addLeakageSolution(id,sol);
+    acc->addLeakageSolution(sol);
 }
 
 void ServiceCalSolutionSource::addDefaultBandpassSolution(const long id,
         const double timestamp,
         const short nAntenna, const short nBeam, const int nChan)
 {
+    ASKAPASSERT(accessor());
+    boost::shared_ptr<ServiceCalSolutionAccessor> acc = boost::dynamic_pointer_cast<ServiceCalSolutionAccessor>(accessor());
     ASKAPLOG_INFO_STR(logger, "addDefaultBandpassSolution");
     askap::cp::caldataservice::BandpassSolution sol(timestamp);
     // Create a map entry for each antenna/beam combination
@@ -276,7 +290,7 @@ void ServiceCalSolutionSource::addDefaultBandpassSolution(const long id,
         }
     }
 
-    itsClient->addBandpassSolution(id,sol);
+    acc->addBandpassSolution(sol);
 }
 } // accessors
 
