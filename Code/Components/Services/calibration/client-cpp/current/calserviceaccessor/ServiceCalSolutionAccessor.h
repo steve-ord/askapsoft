@@ -147,17 +147,31 @@ public:
 
   void addGainSolution(askap::cp::caldataservice::GainSolution sol ) {
     itsGainSolution = sol;
+
   };
 
   void addLeakageSolution(askap::cp::caldataservice::LeakageSolution sol ) {
     itsLeakageSolution = sol;
+
   };
 
   void addBandpassSolution(askap::cp::caldataservice::BandpassSolution sol ) {
     itsBandpassSolution = sol;
+
   };
 
-
+  // these control access to the client. We currently do not implement the update
+  // method - and throw an exception if we try to change a solution that already exists
+  
+  void willPushGains() {
+    pushGains = true;
+  };
+  void willPushLeakages() {
+    pushLeakages = true;
+  };
+  void willPushBandpass() {
+    pushBandpass = true;
+  };
 
 protected:
 
@@ -189,6 +203,15 @@ private:
 
   /// readonly?
   bool itsReadOnly;
+
+  ///
+  bool pushGains;
+
+  ///
+  bool pushLeakages;
+
+  ///
+  bool pushBandpass;
 
 
 

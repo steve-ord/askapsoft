@@ -84,6 +84,7 @@ ASKAP_LOGGER(logger, ".parallel");
 #include <calibaccess/CalibAccessFactory.h>
 #include <calibaccess/ServiceCalSolutionSourceStub.h>
 #include <calserviceaccessor/ServiceCalSolutionSource.h>
+#include <calserviceaccessor/ServiceCalSolutionAccessor.h>
 
 
 // casa includes
@@ -177,6 +178,31 @@ CalibratorParallel::CalibratorParallel(askap::askapparallel::AskapParallel& comm
         itsSolutionSource.reset(new ServiceCalSolutionSource(parset));
         ASKAPLOG_INFO_STR(logger,"Obtaining calibration information from service source");
         itsSolutionIDValid = true;
+
+        // get the string vector of solutions we are going to solve for ....
+        const vector<string> willSolve = parset.getStringVector("solve", false);
+        string leakages("leakages");
+        string gains("gains");
+        string bandpass("bandpass");
+
+        boost::shared_ptr<ServiceCalSolutionSource> src = boost::dynamic_pointer_cast<ServiceCalSolutionSource>(itsSolutionSource);
+        for (size_t sol = 0; sol < willSolve.size(); ++sol) {
+          ASKAPLOG_INFO_STR(logger,"Will solve for :" << willSolve[sol]);
+          if (gains.compare(willSolve[sol]) == 0) {
+            src->solveGains();
+            ASKAPLOG_INFO_STR(logger,"Solving for and will push gains");
+          }
+          if (leakages.compare(willSolve[sol]) == 0) {
+            ASKAPLOG_INFO_STR(logger,"Solving for and will push leakages");
+            src->solveLeakages();
+          }
+
+          if (bandpass.compare(willSolve[sol]) == 0) {
+              ASKAPLOG_INFO_STR(logger,"Solving for and will push bandpass");
+              src->solveBandpass();
+          }
+
+        }
 
       }
 

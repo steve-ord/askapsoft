@@ -63,7 +63,7 @@ namespace accessors {
 /// @param[in] parset parset file name
 /// @param[in] the iD of the solution to get - or to make
 /// @param[in] readonly if true, additional checks are done that file exists
-ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet &parset, casa::Long iD, bool readonly) : itsGainSolution(0), itsLeakageSolution(0), itsBandpassSolution(0), itsReadOnly(readonly)
+ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet &parset, casa::Long iD, bool readonly) : itsGainSolution(0), itsLeakageSolution(0), itsBandpassSolution(0), itsReadOnly(readonly), pushGains(false),pushLeakages(false),pushBandpass(false)
 
 {
 
@@ -94,7 +94,7 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(const LOFAR::ParameterSet
 
 }
 
-ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> inClient, casa::Long iD, bool readonly) : itsGainSolution(0), itsLeakageSolution(0), itsBandpassSolution(0),itsReadOnly(readonly)
+ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::cp::caldataservice::CalibrationDataServiceClient> inClient, casa::Long iD, bool readonly) : itsGainSolution(0), itsLeakageSolution(0), itsBandpassSolution(0),itsReadOnly(readonly),pushGains(false),pushLeakages(false),pushBandpass(false)
 
 {
   ASKAPLOG_INFO_STR(logger,"Constructed with CalibrationDataServiceClient");
@@ -113,7 +113,6 @@ ServiceCalSolutionAccessor::ServiceCalSolutionAccessor(boost::shared_ptr<askap::
       ASKAPTHROW(AskapError, "Unknown Solution ID");
     }
   }
-  ASKAPLOG_INFO_STR(logger,"Solution pulled (or created)");
 }
 /// @brief obtain gains (J-Jones)
 /// @details This method retrieves parallel-hand gains for both
@@ -253,16 +252,21 @@ void ServiceCalSolutionAccessor::pushSolutions() {
   /// These need to be around conditionals as the service does not allow solutions to
   /// be adjusted
 
-  ASKAPLOG_INFO_STR(logger, "Pushing Gain solution for ID " << this->solutionID);
-  theClientPtr->addGainSolution(this->solutionID,(this->itsGainSolution));
 
-  ASKAPLOG_INFO_STR(logger, "Pushing Leakage solution for ID " << this->solutionID);
-  theClientPtr->addLeakageSolution(this->solutionID,(this->itsLeakageSolution));
+  if (pushGains) {
+    ASKAPLOG_INFO_STR(logger, "Pushing Gain solution for ID " << this->solutionID);
+    theClientPtr->addGainSolution(this->solutionID,(this->itsGainSolution));
+  }
+  if (pushLeakages) {
+    ASKAPLOG_INFO_STR(logger, "Pushing Leakage solution for ID " << this->solutionID);
+    theClientPtr->addLeakageSolution(this->solutionID,(this->itsLeakageSolution));
+  }
+  if (pushBandpass) {
+    ASKAPLOG_INFO_STR(logger, "Pushing Bandpass solution for ID " << this->solutionID);
+    theClientPtr->addBandpassSolution(this->solutionID,(this->itsBandpassSolution));
+  }
 
-  ASKAPLOG_INFO_STR(logger, "Pushing Bandpass solution for ID " << this->solutionID);
-  theClientPtr->addBandpassSolution(this->solutionID,(this->itsBandpassSolution));
-
-  ASKAPLOG_INFO_STR(logger, "Latest (after push) ID " << theClientPtr->getLatestSolutionID());
+  //ASKAPLOG_INFO_STR(logger, "Latest (after push) ID " << theClientPtr->getLatestSolutionID());
 
 }
 /// @brief destructor

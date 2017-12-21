@@ -292,6 +292,32 @@ void ServiceCalSolutionSource::addDefaultBandpassSolution(const long id,
 
     acc->addBandpassSolution(sol);
 }
+
+/// @brief this source will be used to solve for the following:
+/// @details this works by setting flags in the accessor to allow it to
+/// update the solution in the database. Without these the solution will still
+/// be found but <not> pushed to the service
+
+void ServiceCalSolutionSource::solveGains() {
+  ASKAPASSERT(accessor());
+  boost::shared_ptr<ServiceCalSolutionAccessor> acc = boost::dynamic_pointer_cast<ServiceCalSolutionAccessor>(accessor());
+  acc->willPushGains();
+
+}
+void ServiceCalSolutionSource::solveLeakages() {
+  ASKAPASSERT(accessor());
+  boost::shared_ptr<ServiceCalSolutionAccessor> acc = boost::dynamic_pointer_cast<ServiceCalSolutionAccessor>(accessor());
+  acc->willPushLeakages();
+
+}
+void ServiceCalSolutionSource::solveBandpass() {
+  ASKAPASSERT(accessor());
+  boost::shared_ptr<ServiceCalSolutionAccessor> acc = boost::dynamic_pointer_cast<ServiceCalSolutionAccessor>(accessor());
+  acc->willPushBandpass();
+
+}
+
+
 } // accessors
 
 } // namespace askap

@@ -192,9 +192,13 @@ int main(int argc, char *argv[])
         cout << "Calibration data service reports latest gain solution is: "
             << gainID << endl;
     }
-    cout << "Obtaining gain solution " << gainID << endl;
-    GainSolution gainSolution = svc.getGainSolution(gainID);
-    dumpGainSolution(gainSolution, file);
+
+    if (svc.hasGainSolution(gainID)) {
+      cout << "Obtaining gain solution " << gainID << endl;
+
+      GainSolution gainSolution = svc.getGainSolution(gainID);
+      dumpGainSolution(gainSolution, file);
+    }
 
     // Leakage Solution
     if (leakageID == -1) {
@@ -202,9 +206,11 @@ int main(int argc, char *argv[])
         cout << "Calibration data service reports latest leakage solution is: "
             << leakageID << endl;
     }
-    cout << "Obtaining leakage solution " << leakageID << endl;
-    LeakageSolution leakageSolution = svc.getLeakageSolution(leakageID);
-    dumpLeakageSolution(leakageSolution, file);
+    if (svc.hasLeakageSolution(leakageID)) {
+      cout << "Obtaining leakage solution " << leakageID << endl;
+      LeakageSolution leakageSolution = svc.getLeakageSolution(leakageID);
+      dumpLeakageSolution(leakageSolution, file);
+    }
 
     // Bandpass Solution
     if (bandpassID == -1) {
@@ -212,10 +218,12 @@ int main(int argc, char *argv[])
         cout << "Calibration data service reports latest bandpass solution is: "
             << bandpassID << endl;
     }
-    cout << "Obtaining bandpass solution " << bandpassID << endl;
-    BandpassSolution bandpassSolution = svc.getBandpassSolution(bandpassID);
-    dumpBandpassSolution(bandpassSolution, file);
-
+    if (svc.hasBandpassSolution(bandpassID)) {
+      cout << "Obtaining bandpass solution " << bandpassID << endl;
+      BandpassSolution bandpassSolution = svc.getBandpassSolution(bandpassID);
+      dumpBandpassSolution(bandpassSolution, file);
+    }
+    
     file.close();
     return 0;
 }
