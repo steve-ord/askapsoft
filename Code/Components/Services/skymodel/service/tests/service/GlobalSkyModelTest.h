@@ -83,6 +83,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
         CPPUNIT_TEST(testLargeAreaSearch);
         CPPUNIT_TEST(testPixelsPerDatabaseSearchIsMultipleOfPixelsInSearch);
         CPPUNIT_TEST(test_bug_2771);
+        CPPUNIT_TEST(testIngestNewCatalog);
         CPPUNIT_TEST_SUITE_END();
 
     public:
@@ -94,7 +95,8 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
             large_components("./tests/data/votable_large_components.xml"),
             invalid_components("./tests/data/votable_error_freq_units.xml"),
             small_polarisation("./tests/data/votable_small_polarisation.xml"),
-            simple_cone_search("./tests/data/votable_simple_cone_search.xml")
+            simple_cone_search("./tests/data/votable_simple_cone_search.xml"),
+            new_catalog("./tests/data/new_catalog.xml")
         {
         }
 
@@ -105,6 +107,22 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
 
         void tearDown() {
             parset.clear();
+        }
+
+        // Test that the new fields from the latest Selavy version work
+        void testIngestNewCatalog() {
+            parset.replace("sqlite.name", "./tests/service/new_catalog.dbtmp");
+            initEmptyDatabase();
+            // perform the ingest
+            IdListPtr ids = gsm->ingestVOTable(
+                    new_catalog,
+                    "",
+                    10,
+                    second_clock::universal_time());
+            CPPUNIT_ASSERT_EQUAL(size_t(206), ids->size());
+
+            ComponentStats stats = gsm->getComponentStats();
+            CPPUNIT_ASSERT_EQUAL(std::size_t(206), stats.count);
         }
 
         void testGsmStatsEmpty() {
@@ -421,6 +439,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
         const string invalid_components;
         const string small_polarisation;
         const string simple_cone_search;
+        const string new_catalog;
 };
 
 }
