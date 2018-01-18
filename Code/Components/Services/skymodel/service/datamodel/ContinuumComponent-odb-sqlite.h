@@ -421,6 +421,78 @@ namespace odb
 
     static const fit_is_estimate_type_ fit_is_estimate;
 
+    // island_id
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        ::std::string,
+        sqlite::id_text >::query_type,
+      sqlite::id_text >
+    island_id_type_;
+
+    static const island_id_type_ island_id;
+
+    // maj_axis_deconv_err
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        float,
+        sqlite::id_real >::query_type,
+      sqlite::id_real >
+    maj_axis_deconv_err_type_;
+
+    static const maj_axis_deconv_err_type_ maj_axis_deconv_err;
+
+    // min_axis_deconv_err
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        float,
+        sqlite::id_real >::query_type,
+      sqlite::id_real >
+    min_axis_deconv_err_type_;
+
+    static const min_axis_deconv_err_type_ min_axis_deconv_err;
+
+    // pos_ang_deconv_err
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        float,
+        sqlite::id_real >::query_type,
+      sqlite::id_real >
+    pos_ang_deconv_err_type_;
+
+    static const pos_ang_deconv_err_type_ pos_ang_deconv_err;
+
+    // spectral_index_err
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        float,
+        sqlite::id_real >::query_type,
+      sqlite::id_real >
+    spectral_index_err_type_;
+
+    static const spectral_index_err_type_ spectral_index_err;
+
+    // spectral_index_from_TT
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        ::int32_t,
+        sqlite::id_integer >::query_type,
+      sqlite::id_integer >
+    spectral_index_from_TT_type_;
+
+    static const spectral_index_from_TT_type_ spectral_index_from_TT;
+
     // polarisation
     //
     typedef
@@ -635,6 +707,42 @@ namespace odb
                    A::table_name, "\"fit_is_estimate\"", 0);
 
   template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::island_id_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  island_id (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::island_id,
+             A::table_name, "\"island_id\"", 0);
+
+  template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::maj_axis_deconv_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  maj_axis_deconv_err (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::maj_axis_deconv_err,
+                       A::table_name, "\"maj_axis_deconv_err\"", 0);
+
+  template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::min_axis_deconv_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  min_axis_deconv_err (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::min_axis_deconv_err,
+                       A::table_name, "\"min_axis_deconv_err\"", 0);
+
+  template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::pos_ang_deconv_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  pos_ang_deconv_err (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::pos_ang_deconv_err,
+                      A::table_name, "\"pos_ang_deconv_err\"", 0);
+
+  template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::spectral_index_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  spectral_index_err (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::spectral_index_err,
+                      A::table_name, "\"spectral_index_err\"", 0);
+
+  template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::spectral_index_from_TT_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  spectral_index_from_TT (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::spectral_index_from_TT,
+                          A::table_name, "\"spectral_index_from_TT\"", 0);
+
+  template <typename A>
   const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::polarisation_type_
   pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
   polarisation (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::polarisation,
@@ -825,6 +933,37 @@ namespace odb
       long long fit_is_estimate_value;
       bool fit_is_estimate_null;
 
+      // island_id
+      //
+      details::buffer island_id_value;
+      std::size_t island_id_size;
+      bool island_id_null;
+
+      // maj_axis_deconv_err
+      //
+      double maj_axis_deconv_err_value;
+      bool maj_axis_deconv_err_null;
+
+      // min_axis_deconv_err
+      //
+      double min_axis_deconv_err_value;
+      bool min_axis_deconv_err_null;
+
+      // pos_ang_deconv_err
+      //
+      double pos_ang_deconv_err_value;
+      bool pos_ang_deconv_err_null;
+
+      // spectral_index_err
+      //
+      double spectral_index_err_value;
+      bool spectral_index_err_null;
+
+      // spectral_index_from_TT
+      //
+      long long spectral_index_from_TT_value;
+      bool spectral_index_from_TT_null;
+
       // polarisation
       //
       long long polarisation_value;
@@ -880,7 +1019,7 @@ namespace odb
 
     typedef sqlite::query_base query_base_type;
 
-    static const std::size_t column_count = 33UL;
+    static const std::size_t column_count = 39UL;
     static const std::size_t id_column_count = 1UL;
     static const std::size_t inverse_column_count = 0UL;
     static const std::size_t readonly_column_count = 0UL;
@@ -1375,6 +1514,78 @@ namespace odb
 
     static const fit_is_estimate_type_ fit_is_estimate;
 
+    // island_id
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        ::std::string,
+        sqlite::id_text >::query_type,
+      sqlite::id_text >
+    island_id_type_;
+
+    static const island_id_type_ island_id;
+
+    // maj_axis_deconv_err
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        float,
+        sqlite::id_real >::query_type,
+      sqlite::id_real >
+    maj_axis_deconv_err_type_;
+
+    static const maj_axis_deconv_err_type_ maj_axis_deconv_err;
+
+    // min_axis_deconv_err
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        float,
+        sqlite::id_real >::query_type,
+      sqlite::id_real >
+    min_axis_deconv_err_type_;
+
+    static const min_axis_deconv_err_type_ min_axis_deconv_err;
+
+    // pos_ang_deconv_err
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        float,
+        sqlite::id_real >::query_type,
+      sqlite::id_real >
+    pos_ang_deconv_err_type_;
+
+    static const pos_ang_deconv_err_type_ pos_ang_deconv_err;
+
+    // spectral_index_err
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        float,
+        sqlite::id_real >::query_type,
+      sqlite::id_real >
+    spectral_index_err_type_;
+
+    static const spectral_index_err_type_ spectral_index_err;
+
+    // spectral_index_from_TT
+    //
+    typedef
+    sqlite::query_column<
+      sqlite::value_traits<
+        ::int32_t,
+        sqlite::id_integer >::query_type,
+      sqlite::id_integer >
+    spectral_index_from_TT_type_;
+
+    static const spectral_index_from_TT_type_ spectral_index_from_TT;
+
     // polarisation
     //
     typedef
@@ -1621,6 +1832,42 @@ namespace odb
   query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
   fit_is_estimate (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::fit_is_estimate,
                    A::table_name, "\"fit_is_estimate\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::island_id_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  island_id (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::island_id,
+             A::table_name, "\"island_id\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::maj_axis_deconv_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  maj_axis_deconv_err (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::maj_axis_deconv_err,
+                       A::table_name, "\"maj_axis_deconv_err\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::min_axis_deconv_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  min_axis_deconv_err (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::min_axis_deconv_err,
+                       A::table_name, "\"min_axis_deconv_err\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::pos_ang_deconv_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  pos_ang_deconv_err (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::pos_ang_deconv_err,
+                      A::table_name, "\"pos_ang_deconv_err\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::spectral_index_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  spectral_index_err (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::spectral_index_err,
+                      A::table_name, "\"spectral_index_err\"", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::spectral_index_from_TT_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::
+  spectral_index_from_TT (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::spectral_index_from_TT,
+                          A::table_name, "\"spectral_index_from_TT\"", 0);
 
   template <typename A>
   const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_sqlite, A >::polarisation_type_

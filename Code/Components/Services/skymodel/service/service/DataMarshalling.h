@@ -87,8 +87,15 @@ ice_interfaces::ComponentSeq marshallComponentsToDTO(
         dst[i].majAxis = it->maj_axis;
         dst[i].minAxis = it->min_axis;
         dst[i].posAng = it->pos_ang;
+        dst[i].majAxisErr = it->maj_axis_err;
+        dst[i].minAxisErr = it->min_axis_err;
         dst[i].spectralIndex = it->spectral_index;
         dst[i].spectralCurvature = it->spectral_curvature;
+        dst[i].majAxisDeconvErr = it->maj_axis_deconv_err;
+        dst[i].minAxisDeconvErr = it->min_axis_deconv_err;
+        dst[i].posAngDeconvErr = it->pos_ang_deconv_err;
+        dst[i].spectralIndexErr = it->spectral_index_err;
+        dst[i].spectralIndexFromTt = it->spectral_index_from_TT;
 
         // polarisation may not be present
         if (it->polarisation.get()) {

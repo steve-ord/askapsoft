@@ -12,5 +12,5 @@ DELETE FROM "schema_version"
 
 INSERT OR IGNORE INTO "schema_version" (
   "name", "version", "migration")
-  VALUES ('', 1, 0);
+  VALUES ('', 2, 0);
 

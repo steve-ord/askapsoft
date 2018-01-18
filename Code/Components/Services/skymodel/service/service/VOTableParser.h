@@ -217,6 +217,43 @@ void parseComponentRowField(
         ASKAPASSERT(boost::iequals(type, "int"));
         components[row_index].fit_is_estimate = boost::lexical_cast<bool>(value);
     }
+    else 
+    if (boost::iequals(ucd, "meta.id.parent")) {
+        ASKAPASSERT(unit.empty() || unit == "--" || unit == "none");
+        ASKAPASSERT(boost::iequals(type, "char"));
+        components[row_index].island_id = boost::lexical_cast<std::string>(value);
+    }
+    else 
+    if (boost::iequals(ucd, "stat.error;phys.angSize.smajAxis;em.radio;askap:meta.deconvolved")) {
+        ASKAPASSERT(boost::iequals(unit, "arcsec"));
+        ASKAPASSERT(boost::iequals(type, "float"));
+        components[row_index].maj_axis_deconv_err = boost::lexical_cast<float>(value);
+    }
+    else 
+    if (boost::iequals(ucd, "stat.error;phys.angSize.sminAxis;em.radio;askap:meta.deconvolved")) {
+        ASKAPASSERT(boost::iequals(unit, "arcsec"));
+        ASKAPASSERT(boost::iequals(type, "float"));
+        components[row_index].min_axis_deconv_err = boost::lexical_cast<float>(value);
+    }
+    else 
+    if (boost::iequals(ucd, "stat.error;phys.angSize;pos.posAng;em.radio;askap:meta.deconvolved")) {
+        ASKAPASSERT(boost::iequals(unit, "deg"));
+        ASKAPASSERT(boost::iequals(type, "float"));
+        components[row_index].pos_ang_deconv_err = boost::lexical_cast<float>(value);
+    }
+    else 
+    if (boost::iequals(ucd, "stat.error;spect.index;em.radio")) {
+        ASKAPASSERT(unit.empty() || unit == "--" || unit == "none");
+        ASKAPASSERT(boost::iequals(type, "float"));
+        components[row_index].spectral_index_err = boost::lexical_cast<float>(value);
+    }
+    else 
+    if (boost::iequals(name, "spectral_index_from_TT")) {
+        // Some fields do not have a unique UCD. They are matched by name.
+        ASKAPASSERT(unit.empty() || unit == "--" || unit == "none");
+        ASKAPASSERT(boost::iequals(type, "int"));
+        components[row_index].spectral_index_from_TT = boost::lexical_cast<boost::int32_t>(value);
+    }
 }
 
 

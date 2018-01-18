@@ -87,6 +87,26 @@ odb::query<datamodel::ContinuumComponent> queryBuilder(const sms_interface::Sear
         q = q && query::flux_int_err >= criteria.minFluxIntErr;
     if (criteria.maxFluxIntErr >= 0)
         q = q && query::flux_int_err <= criteria.maxFluxIntErr;
+    if (criteria.minMajAxis >= 0)
+        q = q && query::maj_axis >= criteria.minMajAxis;
+    if (criteria.maxMajAxis >= 0)
+        q = q && query::maj_axis <= criteria.maxMajAxis;
+    if (criteria.minMinAxis >= 0)
+        q = q && query::min_axis >= criteria.minMinAxis;
+    if (criteria.maxMinAxis >= 0)
+        q = q && query::min_axis <= criteria.maxMinAxis;
+    if (criteria.useMinPosAng)
+        q = q && query::pos_ang >= criteria.minPosAng;
+    if (criteria.useMaxPosAng)
+        q = q && query::pos_ang <= criteria.maxPosAng;
+    if (criteria.minMajAxisErr >= 0)
+        q = q && query::maj_axis_err >= criteria.minMajAxisErr;
+    if (criteria.maxMajAxisErr >= 0)
+        q = q && query::maj_axis_err <= criteria.maxMajAxisErr;
+    if (criteria.minMinAxisErr >= 0)
+        q = q && query::min_axis_err >= criteria.minMinAxisErr;
+    if (criteria.maxMinAxisErr >= 0)
+        q = q && query::min_axis_err <= criteria.maxMinAxisErr;
     if (criteria.useMinSpectralIndex)
         q = q && query::spectral_index >= criteria.minSpectralIndex;
     if (criteria.useMaxSpectralIndex)
@@ -95,6 +115,22 @@ odb::query<datamodel::ContinuumComponent> queryBuilder(const sms_interface::Sear
         q = q && query::spectral_curvature >= criteria.minSpectralCurvature;
     if (criteria.useMaxSpectralCurvature)
         q = q && query::spectral_curvature <= criteria.maxSpectralCurvature;
+    if (criteria.minMajAxisDeconvErr >= 0)
+        q = q && query::maj_axis_deconv_err >= criteria.minMajAxisDeconvErr;
+    if (criteria.maxMajAxisDeconvErr >= 0)
+        q = q && query::maj_axis_deconv_err <= criteria.maxMajAxisDeconvErr;
+    if (criteria.minMinAxisDeconvErr >= 0)
+        q = q && query::min_axis_deconv_err >= criteria.minMinAxisDeconvErr;
+    if (criteria.maxMinAxisDeconvErr >= 0)
+        q = q && query::min_axis_deconv_err <= criteria.maxMinAxisDeconvErr;
+    if (criteria.minPosAngDeconvErr >= 0)
+        q = q && query::pos_ang_deconv_err >= criteria.minPosAngDeconvErr;
+    if (criteria.maxPosAngDeconvErr >= 0)
+        q = q && query::pos_ang_deconv_err <= criteria.maxPosAngDeconvErr;
+    if (criteria.minSpectralIndexErr >= 0)
+        q = q && query::spectral_index_err >= criteria.minSpectralIndexErr;
+    if (criteria.maxSpectralIndexErr >= 0)
+        q = q && query::spectral_index_err <= criteria.maxSpectralIndexErr;
 
     return q;
 }

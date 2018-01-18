@@ -421,6 +421,78 @@ namespace odb
 
     static const fit_is_estimate_type_ fit_is_estimate;
 
+    // island_id
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        ::std::string,
+        mysql::id_string >::query_type,
+      mysql::id_string >
+    island_id_type_;
+
+    static const island_id_type_ island_id;
+
+    // maj_axis_deconv_err
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        float,
+        mysql::id_float >::query_type,
+      mysql::id_float >
+    maj_axis_deconv_err_type_;
+
+    static const maj_axis_deconv_err_type_ maj_axis_deconv_err;
+
+    // min_axis_deconv_err
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        float,
+        mysql::id_float >::query_type,
+      mysql::id_float >
+    min_axis_deconv_err_type_;
+
+    static const min_axis_deconv_err_type_ min_axis_deconv_err;
+
+    // pos_ang_deconv_err
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        float,
+        mysql::id_float >::query_type,
+      mysql::id_float >
+    pos_ang_deconv_err_type_;
+
+    static const pos_ang_deconv_err_type_ pos_ang_deconv_err;
+
+    // spectral_index_err
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        float,
+        mysql::id_float >::query_type,
+      mysql::id_float >
+    spectral_index_err_type_;
+
+    static const spectral_index_err_type_ spectral_index_err;
+
+    // spectral_index_from_TT
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        ::int32_t,
+        mysql::id_long >::query_type,
+      mysql::id_long >
+    spectral_index_from_TT_type_;
+
+    static const spectral_index_from_TT_type_ spectral_index_from_TT;
+
     // polarisation
     //
     typedef
@@ -635,6 +707,42 @@ namespace odb
                    A::table_name, "`fit_is_estimate`", 0);
 
   template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::island_id_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  island_id (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::island_id,
+             A::table_name, "`island_id`", 0);
+
+  template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::maj_axis_deconv_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  maj_axis_deconv_err (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::maj_axis_deconv_err,
+                       A::table_name, "`maj_axis_deconv_err`", 0);
+
+  template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::min_axis_deconv_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  min_axis_deconv_err (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::min_axis_deconv_err,
+                       A::table_name, "`min_axis_deconv_err`", 0);
+
+  template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::pos_ang_deconv_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  pos_ang_deconv_err (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::pos_ang_deconv_err,
+                      A::table_name, "`pos_ang_deconv_err`", 0);
+
+  template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::spectral_index_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  spectral_index_err (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::spectral_index_err,
+                      A::table_name, "`spectral_index_err`", 0);
+
+  template <typename A>
+  const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::spectral_index_from_TT_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  spectral_index_from_TT (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::spectral_index_from_TT,
+                          A::table_name, "`spectral_index_from_TT`", 0);
+
+  template <typename A>
   const typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::polarisation_type_
   pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
   polarisation (pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::polarisation,
@@ -824,6 +932,37 @@ namespace odb
       int fit_is_estimate_value;
       my_bool fit_is_estimate_null;
 
+      // island_id
+      //
+      details::buffer island_id_value;
+      unsigned long island_id_size;
+      my_bool island_id_null;
+
+      // maj_axis_deconv_err
+      //
+      float maj_axis_deconv_err_value;
+      my_bool maj_axis_deconv_err_null;
+
+      // min_axis_deconv_err
+      //
+      float min_axis_deconv_err_value;
+      my_bool min_axis_deconv_err_null;
+
+      // pos_ang_deconv_err
+      //
+      float pos_ang_deconv_err_value;
+      my_bool pos_ang_deconv_err_null;
+
+      // spectral_index_err
+      //
+      float spectral_index_err_value;
+      my_bool spectral_index_err_null;
+
+      // spectral_index_from_TT
+      //
+      int spectral_index_from_TT_value;
+      my_bool spectral_index_from_TT_null;
+
       // polarisation
       //
       long long polarisation_value;
@@ -879,7 +1018,7 @@ namespace odb
 
     typedef mysql::query_base query_base_type;
 
-    static const std::size_t column_count = 33UL;
+    static const std::size_t column_count = 39UL;
     static const std::size_t id_column_count = 1UL;
     static const std::size_t inverse_column_count = 0UL;
     static const std::size_t readonly_column_count = 0UL;
@@ -1374,6 +1513,78 @@ namespace odb
 
     static const fit_is_estimate_type_ fit_is_estimate;
 
+    // island_id
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        ::std::string,
+        mysql::id_string >::query_type,
+      mysql::id_string >
+    island_id_type_;
+
+    static const island_id_type_ island_id;
+
+    // maj_axis_deconv_err
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        float,
+        mysql::id_float >::query_type,
+      mysql::id_float >
+    maj_axis_deconv_err_type_;
+
+    static const maj_axis_deconv_err_type_ maj_axis_deconv_err;
+
+    // min_axis_deconv_err
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        float,
+        mysql::id_float >::query_type,
+      mysql::id_float >
+    min_axis_deconv_err_type_;
+
+    static const min_axis_deconv_err_type_ min_axis_deconv_err;
+
+    // pos_ang_deconv_err
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        float,
+        mysql::id_float >::query_type,
+      mysql::id_float >
+    pos_ang_deconv_err_type_;
+
+    static const pos_ang_deconv_err_type_ pos_ang_deconv_err;
+
+    // spectral_index_err
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        float,
+        mysql::id_float >::query_type,
+      mysql::id_float >
+    spectral_index_err_type_;
+
+    static const spectral_index_err_type_ spectral_index_err;
+
+    // spectral_index_from_TT
+    //
+    typedef
+    mysql::query_column<
+      mysql::value_traits<
+        ::int32_t,
+        mysql::id_long >::query_type,
+      mysql::id_long >
+    spectral_index_from_TT_type_;
+
+    static const spectral_index_from_TT_type_ spectral_index_from_TT;
+
     // polarisation
     //
     typedef
@@ -1620,6 +1831,42 @@ namespace odb
   query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
   fit_is_estimate (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::fit_is_estimate,
                    A::table_name, "`fit_is_estimate`", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::island_id_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  island_id (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::island_id,
+             A::table_name, "`island_id`", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::maj_axis_deconv_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  maj_axis_deconv_err (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::maj_axis_deconv_err,
+                       A::table_name, "`maj_axis_deconv_err`", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::min_axis_deconv_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  min_axis_deconv_err (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::min_axis_deconv_err,
+                       A::table_name, "`min_axis_deconv_err`", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::pos_ang_deconv_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  pos_ang_deconv_err (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::pos_ang_deconv_err,
+                      A::table_name, "`pos_ang_deconv_err`", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::spectral_index_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  spectral_index_err (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::spectral_index_err,
+                      A::table_name, "`spectral_index_err`", 0);
+
+  template <typename A>
+  const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::spectral_index_from_TT_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::
+  spectral_index_from_TT (query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, typename A::common_traits >::spectral_index_from_TT,
+                          A::table_name, "`spectral_index_from_TT`", 0);
 
   template <typename A>
   const typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql, A >::polarisation_type_

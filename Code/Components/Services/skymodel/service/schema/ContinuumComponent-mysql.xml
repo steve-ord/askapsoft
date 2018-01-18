@@ -1,4 +1,6 @@
 <changelog xmlns="http://www.codesynthesis.com/xmlns/odb/changelog" database="mysql" version="1">
+  <changeset version="2"/>
+
   <model version="1">
     <table name="ContinuumComponent" options="ENGINE=InnoDB" kind="object">
       <column name="version" type="BIGINT" null="false"/>
@@ -32,6 +34,12 @@
       <column name="rms_image" type="FLOAT" null="false"/>
       <column name="has_siblings" type="INT" null="false"/>
       <column name="fit_is_estimate" type="INT" null="false"/>
+      <column name="island_id" type="TEXT" null="false"/>
+      <column name="maj_axis_deconv_err" type="FLOAT" null="false"/>
+      <column name="min_axis_deconv_err" type="FLOAT" null="false"/>
+      <column name="pos_ang_deconv_err" type="FLOAT" null="false"/>
+      <column name="spectral_index_err" type="FLOAT" null="false"/>
+      <column name="spectral_index_from_TT" type="INT" null="false"/>
       <column name="polarisation_component_id" type="BIGINT" null="true"/>
       <column name="data_source_id" type="BIGINT" null="true"/>
       <primary-key auto="true">

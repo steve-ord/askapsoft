@@ -288,6 +288,42 @@ namespace odb
 
     static fit_is_estimate_type_ fit_is_estimate;
 
+    // island_id
+    //
+    typedef odb::query_column< ::std::string > island_id_type_;
+
+    static island_id_type_ island_id;
+
+    // maj_axis_deconv_err
+    //
+    typedef odb::query_column< float > maj_axis_deconv_err_type_;
+
+    static maj_axis_deconv_err_type_ maj_axis_deconv_err;
+
+    // min_axis_deconv_err
+    //
+    typedef odb::query_column< float > min_axis_deconv_err_type_;
+
+    static min_axis_deconv_err_type_ min_axis_deconv_err;
+
+    // pos_ang_deconv_err
+    //
+    typedef odb::query_column< float > pos_ang_deconv_err_type_;
+
+    static pos_ang_deconv_err_type_ pos_ang_deconv_err;
+
+    // spectral_index_err
+    //
+    typedef odb::query_column< float > spectral_index_err_type_;
+
+    static spectral_index_err_type_ spectral_index_err;
+
+    // spectral_index_from_TT
+    //
+    typedef odb::query_column< ::int32_t > spectral_index_from_TT_type_;
+
+    static spectral_index_from_TT_type_ spectral_index_from_TT;
+
     // polarisation
     //
     typedef odb::query_column< ::askap::cp::sms::datamodel::id_type > polarisation_type_;
@@ -426,6 +462,30 @@ namespace odb
   template <typename A>
   typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::fit_is_estimate_type_
   pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::fit_is_estimate;
+
+  template <typename A>
+  typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::island_id_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::island_id;
+
+  template <typename A>
+  typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::maj_axis_deconv_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::maj_axis_deconv_err;
+
+  template <typename A>
+  typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::min_axis_deconv_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::min_axis_deconv_err;
+
+  template <typename A>
+  typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::pos_ang_deconv_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::pos_ang_deconv_err;
+
+  template <typename A>
+  typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::spectral_index_err_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::spectral_index_err;
+
+  template <typename A>
+  typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::spectral_index_from_TT_type_
+  pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::spectral_index_from_TT;
 
   template <typename A>
   typename pointer_query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::polarisation_type_
@@ -717,6 +777,42 @@ namespace odb
 
     static fit_is_estimate_type_ fit_is_estimate;
 
+    // island_id
+    //
+    typedef odb::query_column< ::std::string > island_id_type_;
+
+    static island_id_type_ island_id;
+
+    // maj_axis_deconv_err
+    //
+    typedef odb::query_column< float > maj_axis_deconv_err_type_;
+
+    static maj_axis_deconv_err_type_ maj_axis_deconv_err;
+
+    // min_axis_deconv_err
+    //
+    typedef odb::query_column< float > min_axis_deconv_err_type_;
+
+    static min_axis_deconv_err_type_ min_axis_deconv_err;
+
+    // pos_ang_deconv_err
+    //
+    typedef odb::query_column< float > pos_ang_deconv_err_type_;
+
+    static pos_ang_deconv_err_type_ pos_ang_deconv_err;
+
+    // spectral_index_err
+    //
+    typedef odb::query_column< float > spectral_index_err_type_;
+
+    static spectral_index_err_type_ spectral_index_err;
+
+    // spectral_index_from_TT
+    //
+    typedef odb::query_column< ::int32_t > spectral_index_from_TT_type_;
+
+    static spectral_index_from_TT_type_ spectral_index_from_TT;
+
     // polarisation
     //
     typedef odb::query_column< ::askap::cp::sms::datamodel::id_type > polarisation_column_type_;
@@ -879,6 +975,30 @@ namespace odb
   template <typename A>
   typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::fit_is_estimate_type_
   query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::fit_is_estimate;
+
+  template <typename A>
+  typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::island_id_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::island_id;
+
+  template <typename A>
+  typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::maj_axis_deconv_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::maj_axis_deconv_err;
+
+  template <typename A>
+  typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::min_axis_deconv_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::min_axis_deconv_err;
+
+  template <typename A>
+  typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::pos_ang_deconv_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::pos_ang_deconv_err;
+
+  template <typename A>
+  typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::spectral_index_err_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::spectral_index_err;
+
+  template <typename A>
+  typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::spectral_index_from_TT_type_
+  query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::spectral_index_from_TT;
 
   template <typename A>
   typename query_columns< ::askap::cp::sms::datamodel::ContinuumComponent, id_common, A >::polarisation_type_

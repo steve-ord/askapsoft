@@ -23,5 +23,5 @@ CREATE INDEX "DataSource_data_source_id_i"
 
 INSERT OR IGNORE INTO "schema_version" (
   "name", "version", "migration")
-  VALUES ('', 1, 0);
+  VALUES ('', 2, 0);
 

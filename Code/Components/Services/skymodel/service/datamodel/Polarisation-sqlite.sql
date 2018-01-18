@@ -61,5 +61,5 @@ CREATE INDEX "Polarisation_polarisation_component_id_i"
 
 INSERT OR IGNORE INTO "schema_version" (
   "name", "version", "migration")
-  VALUES ('', 1, 0);
+  VALUES ('', 2, 0);
 

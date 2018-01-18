@@ -267,13 +267,41 @@ namespace odb
     //
     t[30UL] = 0;
 
+    // island_id
+    //
+    if (t[31UL])
+    {
+      i.island_id_value.capacity (i.island_id_size);
+      grew = true;
+    }
+
+    // maj_axis_deconv_err
+    //
+    t[32UL] = 0;
+
+    // min_axis_deconv_err
+    //
+    t[33UL] = 0;
+
+    // pos_ang_deconv_err
+    //
+    t[34UL] = 0;
+
+    // spectral_index_err
+    //
+    t[35UL] = 0;
+
+    // spectral_index_from_TT
+    //
+    t[36UL] = 0;
+
     // polarisation
     //
-    t[31UL] = 0;
+    t[37UL] = 0;
 
     // data_source
     //
-    t[32UL] = 0;
+    t[38UL] = 0;
 
     return grew;
   }
@@ -519,6 +547,52 @@ namespace odb
     b[n].is_unsigned = 0;
     b[n].buffer = &i.fit_is_estimate_value;
     b[n].is_null = &i.fit_is_estimate_null;
+    n++;
+
+    // island_id
+    //
+    b[n].buffer_type = MYSQL_TYPE_STRING;
+    b[n].buffer = i.island_id_value.data ();
+    b[n].buffer_length = static_cast<unsigned long> (
+      i.island_id_value.capacity ());
+    b[n].length = &i.island_id_size;
+    b[n].is_null = &i.island_id_null;
+    n++;
+
+    // maj_axis_deconv_err
+    //
+    b[n].buffer_type = MYSQL_TYPE_FLOAT;
+    b[n].buffer = &i.maj_axis_deconv_err_value;
+    b[n].is_null = &i.maj_axis_deconv_err_null;
+    n++;
+
+    // min_axis_deconv_err
+    //
+    b[n].buffer_type = MYSQL_TYPE_FLOAT;
+    b[n].buffer = &i.min_axis_deconv_err_value;
+    b[n].is_null = &i.min_axis_deconv_err_null;
+    n++;
+
+    // pos_ang_deconv_err
+    //
+    b[n].buffer_type = MYSQL_TYPE_FLOAT;
+    b[n].buffer = &i.pos_ang_deconv_err_value;
+    b[n].is_null = &i.pos_ang_deconv_err_null;
+    n++;
+
+    // spectral_index_err
+    //
+    b[n].buffer_type = MYSQL_TYPE_FLOAT;
+    b[n].buffer = &i.spectral_index_err_value;
+    b[n].is_null = &i.spectral_index_err_null;
+    n++;
+
+    // spectral_index_from_TT
+    //
+    b[n].buffer_type = MYSQL_TYPE_LONG;
+    b[n].is_unsigned = 0;
+    b[n].buffer = &i.spectral_index_from_TT_value;
+    b[n].is_null = &i.spectral_index_from_TT_null;
     n++;
 
     // polarisation
@@ -996,6 +1070,97 @@ namespace odb
           mysql::id_long >::set_image (
         i.fit_is_estimate_value, is_null, v);
       i.fit_is_estimate_null = is_null;
+    }
+
+    // island_id
+    //
+    {
+      ::std::string const& v =
+        o.island_id;
+
+      bool is_null (false);
+      std::size_t size (0);
+      std::size_t cap (i.island_id_value.capacity ());
+      mysql::value_traits<
+          ::std::string,
+          mysql::id_string >::set_image (
+        i.island_id_value,
+        size,
+        is_null,
+        v);
+      i.island_id_null = is_null;
+      i.island_id_size = static_cast<unsigned long> (size);
+      grew = grew || (cap != i.island_id_value.capacity ());
+    }
+
+    // maj_axis_deconv_err
+    //
+    {
+      float const& v =
+        o.maj_axis_deconv_err;
+
+      bool is_null (false);
+      mysql::value_traits<
+          float,
+          mysql::id_float >::set_image (
+        i.maj_axis_deconv_err_value, is_null, v);
+      i.maj_axis_deconv_err_null = is_null;
+    }
+
+    // min_axis_deconv_err
+    //
+    {
+      float const& v =
+        o.min_axis_deconv_err;
+
+      bool is_null (false);
+      mysql::value_traits<
+          float,
+          mysql::id_float >::set_image (
+        i.min_axis_deconv_err_value, is_null, v);
+      i.min_axis_deconv_err_null = is_null;
+    }
+
+    // pos_ang_deconv_err
+    //
+    {
+      float const& v =
+        o.pos_ang_deconv_err;
+
+      bool is_null (false);
+      mysql::value_traits<
+          float,
+          mysql::id_float >::set_image (
+        i.pos_ang_deconv_err_value, is_null, v);
+      i.pos_ang_deconv_err_null = is_null;
+    }
+
+    // spectral_index_err
+    //
+    {
+      float const& v =
+        o.spectral_index_err;
+
+      bool is_null (false);
+      mysql::value_traits<
+          float,
+          mysql::id_float >::set_image (
+        i.spectral_index_err_value, is_null, v);
+      i.spectral_index_err_null = is_null;
+    }
+
+    // spectral_index_from_TT
+    //
+    {
+      ::int32_t const& v =
+        o.spectral_index_from_TT;
+
+      bool is_null (false);
+      mysql::value_traits<
+          ::int32_t,
+          mysql::id_long >::set_image (
+        i.spectral_index_from_TT_value, is_null, v);
+      i.spectral_index_from_TT_null = is_null;
     }
 
     // polarisation
@@ -1495,6 +1660,91 @@ namespace odb
         i.fit_is_estimate_null);
     }
 
+    // island_id
+    //
+    {
+      ::std::string& v =
+        o.island_id;
+
+      mysql::value_traits<
+          ::std::string,
+          mysql::id_string >::set_value (
+        v,
+        i.island_id_value,
+        i.island_id_size,
+        i.island_id_null);
+    }
+
+    // maj_axis_deconv_err
+    //
+    {
+      float& v =
+        o.maj_axis_deconv_err;
+
+      mysql::value_traits<
+          float,
+          mysql::id_float >::set_value (
+        v,
+        i.maj_axis_deconv_err_value,
+        i.maj_axis_deconv_err_null);
+    }
+
+    // min_axis_deconv_err
+    //
+    {
+      float& v =
+        o.min_axis_deconv_err;
+
+      mysql::value_traits<
+          float,
+          mysql::id_float >::set_value (
+        v,
+        i.min_axis_deconv_err_value,
+        i.min_axis_deconv_err_null);
+    }
+
+    // pos_ang_deconv_err
+    //
+    {
+      float& v =
+        o.pos_ang_deconv_err;
+
+      mysql::value_traits<
+          float,
+          mysql::id_float >::set_value (
+        v,
+        i.pos_ang_deconv_err_value,
+        i.pos_ang_deconv_err_null);
+    }
+
+    // spectral_index_err
+    //
+    {
+      float& v =
+        o.spectral_index_err;
+
+      mysql::value_traits<
+          float,
+          mysql::id_float >::set_value (
+        v,
+        i.spectral_index_err_value,
+        i.spectral_index_err_null);
+    }
+
+    // spectral_index_from_TT
+    //
+    {
+      ::int32_t& v =
+        o.spectral_index_from_TT;
+
+      mysql::value_traits<
+          ::int32_t,
+          mysql::id_long >::set_value (
+        v,
+        i.spectral_index_from_TT_value,
+        i.spectral_index_from_TT_null);
+    }
+
     // polarisation
     //
     {
@@ -1614,10 +1864,16 @@ namespace odb
   "`rms_image`, "
   "`has_siblings`, "
   "`fit_is_estimate`, "
+  "`island_id`, "
+  "`maj_axis_deconv_err`, "
+  "`min_axis_deconv_err`, "
+  "`pos_ang_deconv_err`, "
+  "`spectral_index_err`, "
+  "`spectral_index_from_TT`, "
   "`polarisation_component_id`, "
   "`data_source_id`) "
   "VALUES "
-  "(1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  "(1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   const char access::object_traits_impl< ::askap::cp::sms::datamodel::ContinuumComponent, id_mysql >::find_statement[] =
   "SELECT "
@@ -1652,6 +1908,12 @@ namespace odb
   "`ContinuumComponent`.`rms_image`, "
   "`ContinuumComponent`.`has_siblings`, "
   "`ContinuumComponent`.`fit_is_estimate`, "
+  "`ContinuumComponent`.`island_id`, "
+  "`ContinuumComponent`.`maj_axis_deconv_err`, "
+  "`ContinuumComponent`.`min_axis_deconv_err`, "
+  "`ContinuumComponent`.`pos_ang_deconv_err`, "
+  "`ContinuumComponent`.`spectral_index_err`, "
+  "`ContinuumComponent`.`spectral_index_from_TT`, "
   "`ContinuumComponent`.`polarisation_component_id`, "
   "`ContinuumComponent`.`data_source_id` "
   "FROM `ContinuumComponent` "
@@ -1690,6 +1952,12 @@ namespace odb
   "`rms_image`=?, "
   "`has_siblings`=?, "
   "`fit_is_estimate`=?, "
+  "`island_id`=?, "
+  "`maj_axis_deconv_err`=?, "
+  "`min_axis_deconv_err`=?, "
+  "`pos_ang_deconv_err`=?, "
+  "`spectral_index_err`=?, "
+  "`spectral_index_from_TT`=?, "
   "`polarisation_component_id`=?, "
   "`data_source_id`=? "
   "WHERE `continuum_component_id`=? AND `version`=?";
@@ -1735,6 +2003,12 @@ namespace odb
   "`ContinuumComponent`.`rms_image`,\n"
   "`ContinuumComponent`.`has_siblings`,\n"
   "`ContinuumComponent`.`fit_is_estimate`,\n"
+  "`ContinuumComponent`.`island_id`,\n"
+  "`ContinuumComponent`.`maj_axis_deconv_err`,\n"
+  "`ContinuumComponent`.`min_axis_deconv_err`,\n"
+  "`ContinuumComponent`.`pos_ang_deconv_err`,\n"
+  "`ContinuumComponent`.`spectral_index_err`,\n"
+  "`ContinuumComponent`.`spectral_index_from_TT`,\n"
   "`ContinuumComponent`.`polarisation_component_id`,\n"
   "`ContinuumComponent`.`data_source_id`\n"
   "FROM `ContinuumComponent`\n"
@@ -2290,6 +2564,12 @@ namespace odb
                       "  `rms_image` FLOAT NOT NULL,\n"
                       "  `has_siblings` INT NOT NULL,\n"
                       "  `fit_is_estimate` INT NOT NULL,\n"
+                      "  `island_id` TEXT NOT NULL,\n"
+                      "  `maj_axis_deconv_err` FLOAT NOT NULL,\n"
+                      "  `min_axis_deconv_err` FLOAT NOT NULL,\n"
+                      "  `pos_ang_deconv_err` FLOAT NOT NULL,\n"
+                      "  `spectral_index_err` FLOAT NOT NULL,\n"
+                      "  `spectral_index_from_TT` INT NOT NULL,\n"
                       "  `polarisation_component_id` BIGINT NULL,\n"
                       "  `data_source_id` BIGINT NULL)\n"
                       " ENGINE=InnoDB");
@@ -2312,7 +2592,7 @@ namespace odb
                       " ENGINE=InnoDB");
           db.execute ("INSERT IGNORE INTO `schema_version` (\n"
                       "  `name`, `version`, `migration`)\n"
-                      "  VALUES ('', 1, 0)");
+                      "  VALUES ('', 2, 0)");
           return false;
         }
       }
@@ -2333,6 +2613,58 @@ namespace odb
     "",
     1ULL,
     0);
+
+  static bool
+  migrate_schema_2 (database& db, unsigned short pass, bool pre)
+  {
+    ODB_POTENTIALLY_UNUSED (db);
+    ODB_POTENTIALLY_UNUSED (pass);
+    ODB_POTENTIALLY_UNUSED (pre);
+
+    if (pre)
+    {
+      switch (pass)
+      {
+        case 1:
+        {
+          return true;
+        }
+        case 2:
+        {
+          db.execute ("UPDATE `schema_version`\n"
+                      "  SET `version` = 2, `migration` = 1\n"
+                      "  WHERE `name` = ''");
+          return false;
+        }
+      }
+    }
+    else
+    {
+      switch (pass)
+      {
+        case 1:
+        {
+          return true;
+        }
+        case 2:
+        {
+          db.execute ("UPDATE `schema_version`\n"
+                      "  SET `migration` = 0\n"
+                      "  WHERE `name` = ''");
+          return false;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  static const schema_catalog_migrate_entry
+  migrate_schema_entry_2_ (
+    id_mysql,
+    "",
+    2ULL,
+    &migrate_schema_2);
 }
 
 #include <odb/post.hxx>

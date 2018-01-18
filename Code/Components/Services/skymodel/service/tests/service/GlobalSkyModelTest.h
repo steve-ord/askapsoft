@@ -271,6 +271,7 @@ class GlobalSkyModelTest : public CppUnit::TestFixture {
         }
 
         void testSimpleConeSearch() {
+            parset.replace("sqlite.name", "./tests/service/simple_cone_search.dbtmp");
             initSearch();
             ComponentListPtr results = gsm->coneSearch(Coordinate(70.2, -61.8), 1.0);
             CPPUNIT_ASSERT_EQUAL(size_t(1), results->size());

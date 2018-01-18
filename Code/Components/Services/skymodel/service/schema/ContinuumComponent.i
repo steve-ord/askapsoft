@@ -146,3 +146,33 @@ bool has_siblings;
 #pragma db not_null
 bool fit_is_estimate;
 
+/// @brief 
+/// UCD: meta.id.parent
+#pragma db not_null
+std::string island_id;
+
+/// @brief  (arcsec)
+/// UCD: stat.error;phys.angSize.smajAxis;em.radio;askap:meta.deconvolved
+#pragma db not_null
+float maj_axis_deconv_err;
+
+/// @brief  (arcsec)
+/// UCD: stat.error;phys.angSize.sminAxis;em.radio;askap:meta.deconvolved
+#pragma db not_null
+float min_axis_deconv_err;
+
+/// @brief  (deg)
+/// UCD: stat.error;phys.angSize;pos.posAng;em.radio;askap:meta.deconvolved
+#pragma db not_null
+float pos_ang_deconv_err;
+
+/// @brief 
+/// UCD: stat.error;spect.index;em.radio
+#pragma db not_null
+float spectral_index_err;
+
+/// @brief 
+/// UCD: meta.code
+#pragma db not_null
+boost::int32_t spectral_index_from_TT;
+

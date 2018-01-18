@@ -45,6 +45,12 @@ CREATE TABLE `ContinuumComponent` (
   `rms_image` FLOAT NOT NULL,
   `has_siblings` INT NOT NULL,
   `fit_is_estimate` INT NOT NULL,
+  `island_id` TEXT NOT NULL,
+  `maj_axis_deconv_err` FLOAT NOT NULL,
+  `min_axis_deconv_err` FLOAT NOT NULL,
+  `pos_ang_deconv_err` FLOAT NOT NULL,
+  `spectral_index_err` FLOAT NOT NULL,
+  `spectral_index_from_TT` INT NOT NULL,
   `polarisation_component_id` BIGINT NULL,
   `data_source_id` BIGINT NULL)
  ENGINE=InnoDB;
@@ -73,5 +79,5 @@ ALTER TABLE `ContinuumComponent`
 
 INSERT IGNORE INTO `schema_version` (
   `name`, `version`, `migration`)
-  VALUES ('', 1, 0);
+  VALUES ('', 2, 0);
 

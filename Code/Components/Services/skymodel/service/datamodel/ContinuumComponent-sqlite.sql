@@ -44,6 +44,12 @@ CREATE TABLE "ContinuumComponent" (
   "rms_image" REAL NOT NULL,
   "has_siblings" INT NOT NULL,
   "fit_is_estimate" INT NOT NULL,
+  "island_id" TEXT NOT NULL,
+  "maj_axis_deconv_err" REAL NOT NULL,
+  "min_axis_deconv_err" REAL NOT NULL,
+  "pos_ang_deconv_err" REAL NOT NULL,
+  "spectral_index_err" REAL NOT NULL,
+  "spectral_index_from_TT" INTEGER NOT NULL,
   "polarisation_component_id" INTEGER NULL,
   "data_source_id" INTEGER NULL,
   CONSTRAINT "polarisation_component_id_fk"
@@ -69,5 +75,5 @@ CREATE INDEX "ContinuumComponent_sb_id_i"
 
 INSERT OR IGNORE INTO "schema_version" (
   "name", "version", "migration")
-  VALUES ('', 1, 0);
+  VALUES ('', 2, 0);
 

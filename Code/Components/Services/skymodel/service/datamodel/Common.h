@@ -43,7 +43,10 @@ namespace sms {
 namespace datamodel {
 
 // Datamodel versioning
-#pragma db model version(1, 1)
+// History:
+// 18-Jan-2018: incrementing minor version due to the addition of fields to the
+// component table (island_id, maj_axis_deconv_err, min_axis_deconv_err, pos_ang_deconv_err, spectral_index_err, & spectral_index_from_TT)
+#pragma db model version(1, 2)
 
 // Map C++ bool to an INT NOT NULL database type
 #pragma db value(bool) type("INT")
