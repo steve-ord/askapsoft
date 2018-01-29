@@ -99,20 +99,8 @@ CasdaHiEmissionObject::CasdaHiEmissionObject(sourcefitting::RadioSource &obj,
 //    itsImageID = parset.getString("image");
 
     std::stringstream id;
-    id << itsIDbase << obj.getID();
+    id << itsIDbase << "emission_" << obj.getID();
     itsObjectID = id.str();
-
-    LOFAR::ParameterSet hiParset = parset.makeSubset("HiEmissionCatalogue.");
-    if (! hiParset.isDefined("imagetype")) {
-        hiParset.add("imagetype", "fits");
-    }
-
-    HIdata hidata(parset);
-    hidata.setSource(&obj);
-    hidata.extract();
-    if (hiParset.getBool("writeSpectra", "true")) {
-        hidata.write();
-    }
 
     double peakFluxscale = getPeakFluxConversionScale(obj.header(), casda::fluxUnit);
 
@@ -194,6 +182,16 @@ CasdaHiEmissionObject::CasdaHiEmissionObject(sourcefitting::RadioSource &obj,
             ASKAPLOG_WARN_STR(logger, "pix to world conversion failed for velocity units"
                               << ", weighted location, with code " << flag);
         }
+    }
+
+    // Get the spectra/momentmaps/cubelets & write to disk
+    itsParset.add(LOFAR::KVpair("HiEmissionCatalogue.objid", itsObjectID));
+    itsParset.add(LOFAR::KVpair("HiEmissionCatalogue.objectname", itsName));
+    HIdata hidata(itsParset);
+    hidata.setSource(&obj);
+    hidata.extract();
+    if (itsParset.getBool("HiEmissionCatalogue.writeSpectra", "true")) {
+        hidata.write();
     }
 
     if (doFreq) {

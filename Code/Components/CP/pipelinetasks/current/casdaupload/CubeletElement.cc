@@ -1,8 +1,6 @@
-/// @file
+/// @file CubeletElement.cc
 ///
-/// Implementation of base class CatalogueEntry
-///
-/// @copyright (c) 2014 CSIRO
+/// @copyright (c) 2018 CSIRO
 /// Australia Telescope National Facility (ATNF)
 /// Commonwealth Scientific and Industrial Research Organisation (CSIRO)
 /// PO Box 76, Epping NSW 1710, Australia
@@ -25,41 +23,31 @@
 /// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 ///
 /// @author Matthew Whiting <Matthew.Whiting@csiro.au>
-///
-#include <catalogues/CatalogueEntry.h>
-#include <askap_analysis.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+// Include own header file first
+#include "casdaupload/CubeletElement.h"
 
-#include <Common/ParameterSet.h>
+// Include package level header file
+#include "askap_pipelinetasks.h"
 
-ASKAP_LOGGER(logger, ".catalogueentry");
+// System includes
+#include <string>
 
-namespace askap {
+// ASKAPsoft includes
+#include "casdaupload/DerivedElementBase.h"
+#include "askap/AskapLogging.h"
+#include "askap/AskapError.h"
 
-namespace analysis {
+// Using
+using namespace askap::cp::pipelinetasks;
 
-CatalogueEntry::CatalogueEntry()
+ASKAP_LOGGER(logger, ".CubeletElement");
+
+
+CubeletElement::CubeletElement(const LOFAR::ParameterSet &parset)
+    : DerivedElementBase(parset)
 {
-}
+    itsName = "cubelet";
 
-CatalogueEntry::CatalogueEntry(const LOFAR::ParameterSet &parset):
-    itsParset(parset),
-    itsSBid(parset.getString("sbid", "null")),
-    itsIDbase(parset.getString("sourceIdBase",""))
-{
-    std::stringstream id;
-    if (itsIDbase != "" ) {
-        id << itsIDbase << "_";
-    } else if (itsSBid != "null") {
-        id << "SB" << itsSBid << "_";
-    }
-    itsIDbase = id.str();
-
-}
-
-
-}
-
+    checkWildcards();
 }

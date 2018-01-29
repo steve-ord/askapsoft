@@ -45,6 +45,15 @@ else
     DEP=$(addDep "$DEP" "$ID_SPECIMG_SCI")
 fi
 
+# Define base string for source IDs
+if [ "${FIELD}" == "." ]; then
+    sourceIDbase="SB${SB_SCIENCE}"
+elif [ "${BEAM}" == "all" ]; then
+    sourceIDbase="SB${SB_SCIENCE}_${FIELD}"
+else
+    sourceIDbase="SB${SB_SCIENCE}_${FIELD}_Beam${BEAM}"
+fi
+
 if [ ! -e "${OUTPUT}/${imageName}" ] && [ "${DEP}" == "" ] &&
        [ "${SUBMIT_JOBS}" == "true" ]; then
     DO_IT=false
@@ -125,7 +134,7 @@ thisfile=$sbatchfile
 cp \$thisfile "\$(echo \$thisfile | sed -e "\$sedstr")"
 
 # Working directory for the selavy output
-seldir=selavy-spectral-${imageName##*/}
+seldir=${selavyDir}
     
 HAVE_IMAGES=true
 BEAM=$BEAM
@@ -135,13 +144,13 @@ imlist=""
 
 # Image to be searched
 image="${imageName}"
-fitsimage=${imageName%%.fits}.fits"
+fitsimage="${imageName%%.fits}.fits"
 imlist="\${imlist} ${OUTPUT}/\${image}"
 if [ "\${BEAM}" == "all" ]; then
     # Weights image - really only useful if primary-beam corrected
     weights=${weightsImage}
     imlist="\${imlist} ${OUTPUT}/\${weights}"
-    weightpars="Selavy.Weights.weightsImage = \${weights##*/}.fits
+    weightpars="Selavy.Weights.weightsImage = \${weights##*/}
 Selavy.Weights.weightsCutoff = ${SELAVY_SPEC_WEIGHTS_CUTOFF}"
 else
     weightpars="#"
@@ -185,11 +194,13 @@ if [ "\${HAVE_IMAGES}" == "true" ]; then
     
     cat > "\$parset" <<EOFINNER
 Selavy.image = \${fitsimage}
+Selavy.sbid  = ${SB_SCIENCE}
+Selavy.sourceIdBase = ${sourceIDbase}
 Selavy.nsubx = ${SELAVY_SPEC_NSUBX}
 Selavy.nsuby = ${SELAVY_SPEC_NSUBY}
 Selavy.nsubz = ${SELAVY_SPEC_NSUBZ}
 #
-Selavy.resultsFile = selavy-${imageName}.txt
+Selavy.resultsFile = selavy-\${fitsimage%%.fits}.txt
 #
 \${weightpars}
 #
@@ -233,27 +244,6 @@ EOFINNER
     if [ \$err != 0 ]; then
         exit \$err
     fi
-
-    # Now convert the extracted spectral & moment-map artefacts to FITS
-     parset=temp.in
-     log=$logs/convertToFITS_spectralArtefacts_\${SLURM_JOB_ID}.log
-     for dir in $OUTPUT/$selavySpectraDir $OUTPUT/$selavyMomentsDir $OUTPUT/$selavyCubeletsDir; do
-         cd "\${dir}"
-         neterr=0
-         for im in ./*; do 
-             casaim=\${im%%.fits}
-             fitsim="\${im%%.fits}.fits"
-             echo "Converting \$casaim to \$fitsim" >> "\$log"
-             ${fitsConvertText}
-             err=\$?
-             if [ \$err -ne 0 ]; then
-                 neterr=\$err
-             fi
-         done
-         cd -
-     done
-     extractStats "\${log}" \${NCORES} "\${SLURM_JOB_ID}" \${neterr} convertFITSspec "txt,csv"
-     rm -f \$parset
 
 else
 

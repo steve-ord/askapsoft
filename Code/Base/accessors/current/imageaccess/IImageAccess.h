@@ -84,8 +84,8 @@ struct IImageAccess {
     /// @brief obtain coordinate system info for part of an image
     /// @param[in] name image name
     /// @return coordinate system object
-    virtual casa::CoordinateSystem coordSysSlice(const std::string &name,const casa::IPosition &blc,
-                                    const casa::IPosition &trc ) const = 0 ;
+    virtual casa::CoordinateSystem coordSysSlice(const std::string &name, const casa::IPosition &blc,
+            const casa::IPosition &trc) const = 0 ;
     /// @brief obtain beam info
     /// @param[in] name image name
     /// @return beam info vector
@@ -96,6 +96,11 @@ struct IImageAccess {
     /// @return units string
     virtual std::string getUnits(const std::string &name) const = 0;
 
+    /// @brief Get a particular keyword from the image metadata (A.K.A header)
+    /// @details This reads a given keyword to the image metadata.
+    /// @param[in] name Image name
+    /// @param[in] keyword The name of the metadata keyword
+    virtual std::string getMetadataKeyword(const std::string &name, const std::string &keyword) const = 0;
 
     //////////////////
     // Writing methods
@@ -128,7 +133,7 @@ struct IImageAccess {
     /// @param[in] arr array with pixels
     /// @param[in] where bottom left corner where to put the slice to (trc is deduced from the array shape)
     virtual void writeMask(const std::string &name, const casa::Array<bool> &mask,
-                                                   const casa::IPosition &where) = 0;
+                           const casa::IPosition &where) = 0;
 
     /// @brief write a slice of an image mask
     /// @param[in] name image name
@@ -158,6 +163,14 @@ struct IImageAccess {
     virtual void makeDefaultMask(const std::string &name) = 0;
 
 
+    /// @brief Set a particular keyword for the metadata (A.K.A header)
+    /// @details This adds a given keyword to the image metadata.
+    /// @param[in] name Image name
+    /// @param[in] keyword The name of the metadata keyword
+    /// @param[in] value The value for the keyword, in string format
+    /// @param[in] desc A description of the keyword
+    virtual void setMetadataKeyword(const std::string &name, const std::string &keyword,
+                                    const std::string value, const std::string &desc = "") = 0;
 
 
 };

@@ -65,6 +65,15 @@ if [ "${DO_RM_SYNTHESIS}" == "true" ]; then
     fi
 fi
 
+# Define base string for source IDs
+if [ "${FIELD}" == "." ]; then
+    sourceIDbase="SB${SB_SCIENCE}"
+elif [ "${BEAM}" == "all" ]; then
+    sourceIDbase="SB${SB_SCIENCE}_${FIELD}"
+else
+    sourceIDbase="SB${SB_SCIENCE}_${FIELD}_Beam${BEAM}"
+fi
+
 if [ ! -e "${OUTPUT}/${contImage}" ] && [ "${DEP}" == "" ] &&
        [ "${SUBMIT_JOBS}" == "true" ]; then
     DO_IT=false
@@ -212,15 +221,13 @@ if [ "\${imlist}" != "" ]; then
     for im in \${imlist}; do 
         casaim="\${im%%.fits}"
         fitsim="\${im%%.fits}.fits"
-        if [ "\${im%%.fits}" == "\${im}" ]; then
-            echo "Converting to FITS the image \${im}"
-            parset=$parsets/convertToFITS_\${casaim##*/}_\${SLURM_JOB_ID}.in
-            log=$logs/convertToFITS_\${casaim##*/}_\${SLURM_JOB_ID}.log
-            ${fitsConvertText}
-            if [ ! -e "\$fitsim" ]; then
-                HAVE_IMAGES=false
-                echo "ERROR - Could not create \${fitsim##*/}"
-            fi
+        echo "Converting to FITS the image \${im}"
+        parset=$parsets/convertToFITS_\${casaim##*/}_\${SLURM_JOB_ID}.in
+        log=$logs/convertToFITS_\${casaim##*/}_\${SLURM_JOB_ID}.log
+        ${fitsConvertText}
+        if [ ! -e "\$fitsim" ]; then
+            HAVE_IMAGES=false
+            echo "ERROR - Could not create \${fitsim##*/}"
         fi
         # Make a link so we point to a file in the current directory for
         # Selavy. This gets the referencing correct in the catalogue
@@ -271,6 +278,8 @@ Selavy.RMSynthesis = \${doRM}"
 
     cat > "\$parset" <<EOFINNER
 Selavy.image = \${fitsimage}
+Selavy.sbid  = ${SB_SCIENCE}
+Selavy.sourceIdBase = ${sourceIDbase}
 \${TaylorTermUse}
 Selavy.SBid = ${SB_SCIENCE}
 Selavy.nsubx = ${SELAVY_NSUBX}
@@ -368,26 +377,6 @@ EOFINNER
                 fi
             fi
         fi
-    fi
-
-    # Now convert the extracted polarisation artefacts to FITS
-    if [ "\${doRM}" == "true" ]; then
-        cd "$OUTPUT/${selavyPolDir}"
-        parset=temp.in
-        log=$logs/convertToFITS_polSpectra_\${SLURM_JOB_ID}.log
-        neterr=0
-        for im in ./*; do 
-            casaim=\${im%%.fits}
-            fitsim="\${im%%.fits}.fits"
-            echo "Converting \$casaim to \$fitsim" >> "\$log"
-            ${fitsConvertText}
-            err=\$?
-            if [ \$err -ne 0 ]; then
-                neterr=\$err
-            fi
-        done
-        extractStats "\${log}" \${NCORES} "\${SLURM_JOB_ID}" \${neterr} convertFITSpolspec "txt,csv"
-        rm -f \$parset
     fi
 
 else
