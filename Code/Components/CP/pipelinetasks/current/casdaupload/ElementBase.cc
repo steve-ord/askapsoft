@@ -53,7 +53,7 @@ ASKAP_LOGGER(logger, ".elementbase");
 
 ElementBase::ElementBase(const LOFAR::ParameterSet &parset)
     : itsFilepath(parset.getString("filename")),
-      itsUseAbsolutePaths(parset.getBool("useAbsolutePaths","true")),
+      itsUseAbsolutePaths(parset.getBool("useAbsolutePaths", "true")),
       itsFormat(""),
       itsName("")
 {
@@ -63,9 +63,9 @@ xercesc::DOMElement* ElementBase::toXmlElement(xercesc::DOMDocument& doc) const
 {
     DOMElement* e = doc.createElement(XercescString(itsName));
 
-    if (itsUseAbsolutePaths){
-        std::string path=itsFilepath.string();
-        if(path[0]!='/'){
+    if (itsUseAbsolutePaths) {
+        std::string path = itsFilepath.string();
+        if (path[0] != '/') {
             path = boost::filesystem::current_path().string() + "/" + path;
         }
         XercescUtils::addTextElement(*e, "filename", path);
@@ -86,12 +86,5 @@ void ElementBase::copyAndChecksum(const boost::filesystem::path& outdir) const
 {
 
     const boost::filesystem::path in(itsFilepath);
-    if (itsUseAbsolutePaths){
-        ASKAPLOG_INFO_STR(logger, "Calculating checksum for " << in);
-        CasdaFileUtils::checksumFile(in);
-    } else {
-        const boost::filesystem::path out(outdir / in.filename());
-        ASKAPLOG_INFO_STR(logger, "Copying and calculating checksum for " << in);
-        CasdaFileUtils::copyAndChecksum(in, out);
-    }
+    CasdaFileUtils::handleFile(in, itsUseAbsolutePaths, outdir);
 }
