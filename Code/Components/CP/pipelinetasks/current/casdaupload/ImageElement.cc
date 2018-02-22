@@ -109,10 +109,26 @@ xercesc::DOMElement* ImageElement::toXmlElement(xercesc::DOMDocument& doc) const
     DOMElement* e = TypeElementBase::toXmlElement(doc);
 
     if (itsThumbnailLarge != "") {
-        XercescUtils::addTextElement(*e, "thumbnail_large", itsThumbnailLarge.filename().string());
+        if (itsUseAbsolutePaths){
+            std::string path=itsThumbnailLarge.string();
+            if(path[0]!='/'){
+                path = boost::filesystem::current_path().string() + "/" + path;
+            }
+            XercescUtils::addTextElement(*e, "thumbnail_large", path);
+        } else {
+            XercescUtils::addTextElement(*e, "thumbnail_large", itsThumbnailLarge.filename().string());
+        }
     }
     if (itsThumbnailSmall != "") {
-        XercescUtils::addTextElement(*e, "thumbnail_small", itsThumbnailSmall.filename().string());
+        if (itsUseAbsolutePaths){
+            std::string path=itsThumbnailSmall.string();
+            if(path[0]!='/'){
+                path = boost::filesystem::current_path().string() + "/" + path;
+            }
+            XercescUtils::addTextElement(*e, "thumbnail_small", path);
+        } else {
+            XercescUtils::addTextElement(*e, "thumbnail_small", itsThumbnailSmall.filename().string());
+        }
     }
 
     // Create Spectra elements

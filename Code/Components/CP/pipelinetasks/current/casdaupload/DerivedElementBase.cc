@@ -127,7 +127,15 @@ xercesc::DOMElement* DerivedElementBase::toXmlElement(xercesc::DOMDocument& doc)
     XercescUtils::addTextElement(*e, "type", itsType);
 
     if (itsThumbnail != "") {
-        XercescUtils::addTextElement(*e, "thumbnail", itsThumbnail.filename().string());
+        if (itsUseAbsolutePaths){
+            std::string path=itsThumbnail.string();
+            if(path[0]!='/'){
+                path = boost::filesystem::current_path().string() + "/" + path;
+            }
+            XercescUtils::addTextElement(*e, "thumbnail", path);
+        } else {
+            XercescUtils::addTextElement(*e, "thumbnail", itsThumbnail.filename().string());
+        }
     }
 
     std::stringstream ss;
