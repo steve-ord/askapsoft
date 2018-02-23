@@ -83,6 +83,10 @@ class CasdaFileUtils {
                                const bool checksumOnly,
                                const boost::filesystem::path& outdir);
 
+        /// Make the requested file and its checksum (if the latter
+        /// exists) readable by all users.
+        static void globalReadPermissions(const boost::filesystem::path& infile);
+
         /// Write a file - This is just used to signal to CASDA the datasets
         /// in the directory are ready for ingest. This indicates no further
         /// addition or mutation of the data products in the output directory

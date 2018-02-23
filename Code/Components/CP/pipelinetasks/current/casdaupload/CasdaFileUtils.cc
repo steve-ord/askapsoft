@@ -88,10 +88,21 @@ void CasdaFileUtils::handleFile(const fs::path& infile,
     if (checksumOnly) {
         ASKAPLOG_INFO_STR(logger, "Calculating checksum for " << infile);
         checksumFile(infile);
+        globalReadPermissions(infile);
     } else {
         const fs::path outfile(outdir / infile.filename());
         ASKAPLOG_INFO_STR(logger, "Copying and calculating checksum for " << infile);
         copyAndChecksum(infile, outfile);
+    }
+}
+
+void CasdaFileUtils::globalReadPermissions(const fs::path& infile)
+{
+    ASKAPLOG_INFO_STR(logger, "Making file " << infile << " and its checksum world-readable");
+    permissions(infile, boost::filesystem::add_perms | boost::filesystem::others_read);
+    const fs::path csum(infile.string() + CHECKSUM_EXT);
+    if (exists(csum)) {
+        permissions(csum, boost::filesystem::add_perms | boost::filesystem::others_read);
     }
 }
 
