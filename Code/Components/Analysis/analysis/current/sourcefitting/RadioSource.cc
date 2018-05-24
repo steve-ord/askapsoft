@@ -1031,7 +1031,13 @@ bool RadioSource::fitGauss(casa::Matrix<casa::Double> &pos,
 
             bool fitPossible = true;
             bool stopNow = false;
-            for (unsigned int g = minGauss; g <= maxGauss && fitPossible && !stopNow; g++) {
+            std::vector<unsigned int> numGaussList;
+            for (unsigned int g = minGauss; g <= maxGauss; g++) {
+                numGaussList.push_back(g);
+            }
+//            for (unsigned int g = minGauss; g <= maxGauss && fitPossible && !stopNow; g++) {
+            for(size_t ig=0; ig<numGaussList.size() && !stopNow; ig++){
+                unsigned int g = numGaussList[ig];
                 ASKAPLOG_DEBUG_STR(logger, "Number of Gaussian components = " << g);
 
                 fit.push_back(fitGauss(g, cmpntListCopy, pos, f, sigma));
@@ -1039,6 +1045,11 @@ bool RadioSource::fitGauss(casa::Matrix<casa::Double> &pos,
                 bool acceptable = fit[ctr].acceptable();
                 bool okExceptChisq = fit[ctr].acceptableExceptChisq();
 
+                if (!fit[ctr].passConverged()){
+                    if(g>1){
+                        numGaussList.push_back(g-1);
+                    }
+                }
                 
                 if (fitPossible && okExceptChisq){
                     if ((ctr == 0) || (fit[ctr].redChisq() < bestRChisq)) {
@@ -1060,18 +1071,33 @@ bool RadioSource::fitGauss(casa::Matrix<casa::Double> &pos,
                             // re-doing. But only if that brightest
                             // component is brighter than the noise.
 
-                            ASKAPLOG_DEBUG_STR(logger, "Removing fitted Gaussian from array");
-                            casa::Vector<casa::Double> newf = fit[ctr].subtractFit(pos, f);
-                            ASKAPLOG_DEBUG_STR(logger, "Finding new subcomponents");
-                            std::vector<SubComponent> newGuessList =
-                                this->getSubComponentList(pos, newf);
+                            bool alreadyDone=false;
+                            for(size_t i=0;i<numGaussList.size() && !alreadyDone;i++){
+                                alreadyDone = numGaussList[i]==(g+1);
+                            }
+                            if (!alreadyDone) {
+                            
+                                ASKAPLOG_DEBUG_STR(logger, "Removing fitted Gaussian from array");
+                                casa::Vector<casa::Double> newf = fit[ctr].subtractFit(pos, f);
+                                ASKAPLOG_DEBUG_STR(logger, "Finding new subcomponents");
+                                std::vector<SubComponent> newList;
+                                for(unsigned int i=0;i<g;i++){
+                                    newList.push_back(fit[ctr].gaussian(i));
+                                }
+                                std::vector<SubComponent> newGuessList =
+                                    this->getSubComponentList(pos, newf);
 
-                            if (newGuessList[0].peak() > itsDetectionThreshold) {
-                                newGuessList[0].fixSize(*type, itsHeader);
-                                cmpntListCopy.push_back(newGuessList[0]);
-                                ASKAPLOG_DEBUG_STR(logger, "Adding new subcomponent " <<
-                                                   newGuessList[0]);
-                                maxGauss++;
+                                if (newGuessList[0].peak() > itsDetectionThreshold) {
+                                    newGuessList[0].fixSize(*type, itsHeader);
+//                                cmpntListCopy.push_back(newGuessList[0]);
+                                    ASKAPLOG_DEBUG_STR(logger, "Adding new subcomponent " <<
+                                                       newGuessList[0]);
+//                                maxGauss++;
+                                    newList.push_back(newGuessList[0]);
+                                    cmpntListCopy = newList;
+                                    numGaussList.push_back(g+1);
+                                }
+                                
                             }
                         }
                     }
