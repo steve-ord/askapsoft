@@ -458,6 +458,12 @@ srun --export=ALL --ntasks=\${NCORES} --ntasks-per-node=\${NPPN} \"${PIPELINEDIR
             BEAM_MAX=$(echo $NUM_BEAMS_FOOTPRINT | awk '{print $1-1}')
             echo "WARNING - SB ${SB_SCIENCE} only has ${NUM_BEAMS_FOOTPRINT} beams - setting BEAM_MAX=${BEAM_MAX}"
         fi
+        if [ "${NUM_BEAMS_FOOTPRINT_CAL}" != "" ] &&
+               [ ${BEAM_MAX} -ge ${NUM_BEAMS_FOOTPRINT_CAL} ] &&
+               [ "${DO_1934_CAL}" == "true" ]; then
+            BEAM_MAX=$(echo $NUM_BEAMS_FOOTPRINT_CAL | awk '{print $1-1}')
+            echo "WARNING - Bandpass SB ${SB_1934} only has ${NUM_BEAMS_FOOTPRINT_CAL} beams - setting BEAM_MAX=${BEAM_MAX}"
+        fi
         for((b=BEAM_MIN;b<=BEAM_MAX;b++)); do
             thisbeam=$(echo "$b" | awk '{printf "%02d",$1}')
             BEAMS_TO_USE="${BEAMS_TO_USE} $thisbeam"
@@ -468,16 +474,13 @@ srun --export=ALL --ntasks=\${NCORES} --ntasks-per-node=\${NPPN} \"${PIPELINEDIR
         cat > "$beamAwkFile" <<EOF
 BEGIN{
   str=""
-  maxbeam=${NUM_BEAMS_FOOTPRINT}
 }
 {
   n=split(\$1,a,",");
   for(i=1;i<=n;i++){
     n2=split(a[i],a2,"-");
     for(b=a2[1];b<=a2[n2];b++){
-      if (b < maxbeam){
-        str=sprintf("%s %02d",str,b);
-      }
+      str=sprintf("%s %02d",str,b);
     }
   }
 }
@@ -485,7 +488,27 @@ END{
   print str
 }
 EOF
-        BEAMS_TO_USE=$(echo "$BEAMLIST" | awk -f "$beamAwkFile")
+        haveWarnedSci=false
+        haveWarnedCal=false
+        BEAMS_TO_USE=""
+        for b in $(echo "$BEAMLIST" | awk -f "$beamAwkFile"); do
+            if [ "${NUM_BEAMS_FOOTPRINT}" != "" ] &&
+                   [ ${b} -ge $NUM_BEAMS_FOOTPRINT ]; then
+                if [ "${haveWarnedSci}" != "true" ]; then
+                    echo "WARNING - SB ${SB_SCIENCE} only has ${NUM_BEAMS_FOOTPRINT} beams"
+                    haveWarnedSci=true
+                fi
+            elif [ "${NUM_BEAMS_FOOTPRINT_CAL}" != "" ] &&
+                     [ ${b} -ge ${NUM_BEAMS_FOOTPRINT_CAL} ] &&
+                     [ "${DO_1934_CAL}" == "true" ]; then
+                if [ "${haveWarnedCal}" != "true" ]; then
+                    echo "WARNING - Bandpass SB ${SB_1934} only has ${NUM_BEAMS_FOOTPRINT_CAL} beams"
+                    haveWarnedCal=true
+                fi
+            else
+                BEAMS_TO_USE="${BEAMS_TO_USE} $b"
+            fi
+        done
     fi
 
     echo "Using the following beams for the science data: $BEAMS_TO_USE"
@@ -539,6 +562,68 @@ EOF
     echo " "
 
     ####################
+    # Parameters required for the aoflagger option
+
+    if [ "${FLAG_WITH_AOFLAGGER}" != "" ]; then
+        # have set the global switch, so apply to the individual
+        # task-level switches
+        FLAG_1934_WITH_AOFLAGGER=${FLAG_WITH_AOFLAGGER}
+        FLAG_SCIENCE_WITH_AOFLAGGER=${FLAG_WITH_AOFLAGGER}
+        FLAG_SCIENCE_AV_WITH_AOFLAGGER=${FLAG_WITH_AOFLAGGER}
+    fi
+
+    if [ "${AOFLAGGER_STRATEGY}" != "" ]; then
+
+        if [ ! -e "${AOFLAGGER_STRATEGY}" ]; then
+            echo "ERROR - the AOflagger strategy file ${AOFLAGGER_STRATEGY} does not exist."
+            echo "        Running AOflagger but without a strategy file"
+        else
+            AOFLAGGER_STRATEGY_1934="${AOFLAGGER_STRATEGY}"
+            AOFLAGGER_STRATEGY_SCIENCE="${AOFLAGGER_STRATEGY}"
+            AOFLAGGER_STRATEGY_SCIENCE_AV="${AOFLAGGER_STRATEGY}"
+        fi
+
+    fi        
+
+    if [ "${AOFLAGGER_STRATEGY_1934}" != "" ] && [ ! -e "${AOFLAGGER_STRATEGY_1934}" ]; then
+        echo "ERROR - the AOflagger strategy file \"${AOFLAGGER_STRATEGY_1934}\" does not exist."
+        echo "        Running AOflagger on bandpass data but without a strategy file"
+        AOFLAGGER_STRATEGY_1934=""
+    fi
+    if [ "${AOFLAGGER_STRATEGY_SCIENCE}" != "" ] && [ ! -e "${AOFLAGGER_STRATEGY_SCIENCE}" ]; then
+        echo "ERROR - the AOflagger strategy file \"${AOFLAGGER_STRATEGY_SCIENCE}\" does not exist."
+        echo "        Running AOflagger on science data but without a strategy file"
+        AOFLAGGER_STRATEGY_SCIENCE=""
+    fi
+    if [ "${AOFLAGGER_STRATEGY_SCIENCE_AV}" != "" ] && [ ! -e "${AOFLAGGER_STRATEGY_SCIENCE_AV}" ]; then
+        echo "ERROR - the AOflagger strategy file \"${AOFLAGGER_STRATEGY_SCIENCE_AV}\" does not exist."
+        echo "        Running AOflagger on averaged science data but without a strategy file"
+        AOFLAGGER_STRATEGY_SCIENCE_AV=""
+    fi
+
+    # Set the generic aoflagger command line options
+    AOFLAGGER_OPTIONS=""
+    if [ "${AOFLAGGER_VERBOSE}" == "true" ]; then
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -v"
+    fi
+    if [ "${AOFLAGGER_UVW}" == "true" ]; then
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -uvw"
+    fi
+    if [ "${AOFLAGGER_READ_MODE}" == "direct" ]; then
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -direct-read"
+    elif [ "${AOFLAGGER_READ_MODE}" == "indirect" ]; then
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -indirect-read"
+    elif [ "${AOFLAGGER_READ_MODE}" == "memory" ]; then
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -memory-read"
+    else
+        if [ "${AOFLAGGER_READ_MODE}" != "auto" ]; then
+            echo "WARNING - unknown AOFLAGGER_READ_MODE option \"${AOFLAGGER_READ_MODE}\". Setting to \"auto\""
+        fi
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -auto-read-mode"
+    fi
+    
+
+    ####################
     # Parameters required for bandpass calibration
     ####
     if [ "${DO_FIND_BANDPASS}" == "true" ]; then
@@ -552,6 +637,12 @@ EOF
         
     fi
 
+    if [ "${BANDPASS_SMOOTH_TOOL}" != "plot_caltable" ] &&
+           [ "${BANDPASS_SMOOTH_TOOL}" != "smooth_bandpass" ]; then
+        echo "WARNING - Invalid value for BANDPASS_SMOOTH_TOOL (${BANDPASS_SMOOTH_TOOL}). Setting to \"plot_caltable\"."
+        BANDPASS_SMOOTH_TOOL="plot_caltable"
+    fi
+    
     ####################
     # Parameters required for science field imaging
     ####
@@ -622,9 +713,10 @@ EOF
             CPUS_PER_CORE_CONT_IMAGING=${NUM_CPUS_CONTIMG_SCI}
         fi
 
-        # Method used for self-calibration - needs to be either Cmodel or Components
+        # Method used for self-calibration - needs to be one of Cmodel, Components, CleanModel
         if [ "${SELFCAL_METHOD}" != "Cmodel" ] &&
-               [ "${SELFCAL_METHOD}" != "Components" ]; then
+               [ "${SELFCAL_METHOD}" != "Components" ] &&
+               [ "${SELFCAL_METHOD}" != "CleanModel" ]; then
             SELFCAL_METHOD="Cmodel"
         fi
 
@@ -929,6 +1021,13 @@ EOF
             DO_SOURCE_FINDING_BEAMWISE=true
         fi
 
+        # Check that contcube imaging is turned on if we want to use them to find the spectral indices
+        if [ "${USE_CONTCUBE_FOR_SPECTRAL_INDEX}" == "true" ] &&
+               [ "${DO_CONTCUBE_IMAGING}" != "true" ]; then
+            DO_CONTCUBE_IMAGING=true
+            echo "WARNING - Turning on continuum-cube imaging, since USE_CONTCUBE_FOR_SPECTRAL_INDEX=true";
+        fi
+        
         # We can only do RM Synthesis if we are making I,Q,U continuum
         # cubes. Need to check that the list of polarisations
         # contains these.

@@ -55,6 +55,9 @@ EMAIL=""
 # BEGIN, END, FAIL, REQUEUE, ALL, TIME_LIMIT, TIME_LIMIT_90, TIME_LIMIT_80, and TIME_LIMIT_50
 EMAIL_TYPE="ALL"
 
+# Location to copy pipeline errors to, for when jobs fail
+FAILURE_DIRECTORY="/group/askaprt/processing/pipeline-errors"
+
 ####################
 # Times for individual slurm jobs
 JOB_TIME_DEFAULT="12:00:00"
@@ -222,6 +225,7 @@ USE_CLI=true
 ####################
 # Which beams to use.
 NUM_BEAMS_FOOTPRINT=36
+NUM_BEAMS_FOOTPRINT_CAL=36
 BEAM_MIN=0
 BEAM_MAX=35
 BEAMLIST=""
@@ -255,11 +259,17 @@ BANDPASS_MINUV=200
 # Reference antenna to be used in the cbpcalibrator task
 BANDPASS_REFANTENNA=1
 
-# Smoothing of the bandpass table - this is achieved by the ACES tool
-# plot_caltable.py. This tool also plots the cal solutions
+# Smoothing of the bandpass table.
+# This is achieved by either the ACES tool plot_caltable.py (which
+# also plots the cal solutions), or with Wasim Raja's
+# smooth_bandpass.py tool. 
 
 # Whether to smooth the bandpass
 DO_BANDPASS_SMOOTH=true
+# Which method to use - either "plot_caltable" or "smooth_bandpass"
+BANDPASS_SMOOTH_TOOL="plot_caltable"
+
+# The following are parameters for plot_caltable
 # Whether to run plot_caltable.py to produce plots
 DO_BANDPASS_PLOT=true
 # If true, smooth the amplitudes. If false, smooth real & imaginary
@@ -270,6 +280,20 @@ BANDPASS_SMOOTH_OUTLIER=true
 BANDPASS_SMOOTH_FIT=0
 # The threshold level for fitting bandpass
 BANDPASS_SMOOTH_THRESHOLD=3.0
+
+# The following are parameters for smooth_bandpass
+# The polynomial order for the fit
+BANDPASS_SMOOTH_POLY_ORDER=""
+# The harmonic order for the fit
+BANDPASS_SMOOTH_HARM_ORDER=""
+# The number of windows to divide the spectrum into for the moving fit
+BANDPASS_SMOOTH_N_WIN=""
+# The width (in channels) of the Gaussian Taper function to remove
+# high-frequency components
+BANDPASS_SMOOTH_N_TAPER=""
+# The number of iterations for Fourier-interpolation across flagged
+# points
+BANDPASS_SMOOTH_N_ITER=""
 
 # Whether to apply the bandpass solution to the 1934 dataset itself
 DO_APPLY_BANDPASS_1934=false
@@ -446,6 +470,37 @@ CHANNEL_FLAG_SCIENCE_AV=""
 # Time range(s) to flag in the averaged science data
 TIME_FLAG_SCIENCE_AV=""
 
+######################
+# AOflagger options
+
+# Global switch, plus switches for individual flagging tasks. Setting
+# the global switch will override the individual values
+FLAG_WITH_AOFLAGGER=""
+FLAG_1934_WITH_AOFLAGGER=false
+FLAG_SCIENCE_WITH_AOFLAGGER=false
+FLAG_SCIENCE_AV_WITH_AOFLAGGER=false
+
+# Strategy files. Setting the global one overrides the individual
+# values.
+AOFLAGGER_STRATEGY=""
+AOFLAGGER_STRATEGY_1934=""
+AOFLAGGER_STRATEGY_SCIENCE=""
+AOFLAGGER_STRATEGY_SCIENCE_AV=""
+
+# Verbose output (-v option for aoflagger) - global parameter
+AOFLAGGER_VERBOSE=true
+
+# Read mode for AOflagger - either "auto", "direct", "indirect",
+# "memory". These trigger the following respective command-line
+# options: -auto-read-mode, -direct-read, -indirect-read, -memory-read
+AOFLAGGER_READ_MODE="auto"
+
+# Allow use of uvw values
+AOFLAGGER_UVW=false
+
+######################
+# Imaging
+
 # Data column in MS to use in cimager
 DATACOLUMN=DATA
 # Number of Taylor terms to create in MFS imaging
@@ -554,8 +609,9 @@ RESTORE_PRECONDITIONER_WIENER_TAPER=""
 ####################
 # Self-calibration parameters
 #
-# Method to present self-cal model: via a model image ("Cmodel") or
-# via a components parset ("Components")
+# Method to present self-cal model: via a model image ("Cmodel")
+# via a components parset ("Components"), or using the
+# continuum-imaging clean model ("CleanModel")
 SELFCAL_METHOD="Cmodel"
 # Number of loops of self-calibration
 SELFCAL_NUM_LOOPS=2
@@ -853,6 +909,13 @@ SELAVY_BOX_SIZE=50
 # How the processors subdivide the image
 SELAVY_NSUBX=6
 SELAVY_NSUBY=3
+#
+# Whether to use the continuum cube to find the spectral index &
+# curvature
+USE_CONTCUBE_FOR_SPECTRAL_INDEX=false
+# If using contcube, this is the number of terms to solve for (1=just
+# I_0, 2 = I_0 & alpha, 3 = I_0, alpha, beta)
+SELAVY_NUM_SPECTRAL_TERMS=3
 
 ##############################
 # Run the continuum validation script following source finding

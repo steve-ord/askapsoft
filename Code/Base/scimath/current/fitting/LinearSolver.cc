@@ -224,8 +224,16 @@ std::pair<double,double>  LinearSolver::solveSubsetOfNormalEquations(Params &par
          gsl_vector * work = gsl_vector_alloc (nParameters);
          ASKAPDEBUGASSERT(work!=NULL);
         
+         // as per my (MV) comment on ASKAPSDP-2968, we should not really use the raw pointer here,
+         // although it is unlikely that an exception can be thrown between set_error_handler_off and set_error_handler
+         // It would be better to write a custom deleter and use the shared pointer instead of the C-style syntax
+         gsl_error_handler_t *oldhandler=gsl_set_error_handler_off();
          const int status = gsl_linalg_SV_decomp (A, V, S, work);
-         ASKAPCHECK(status == 0, "gsl_linalg_SV_decomp failed, status = "<<status);
+         if (status != 0 ) {
+             ASKAPLOG_WARN_STR(logger, "gsl_linalg_SV_decomp failed, status = "
+                               <<status << " = " << gsl_strerror(status));
+         }
+         gsl_set_error_handler(oldhandler);
         
          // a hack for now. For some reason, for some matrices gsl_linalg_SV_decomp may return NaN as singular value, perhaps some
          // numerical precision issue inside SVD. Although it needs to be investigated further  (see ASKAPSDP-2270), for now trying
@@ -295,12 +303,19 @@ std::pair<double,double>  LinearSolver::solveSubsetOfNormalEquations(Params &par
          result.second = smax;
          
          quality.setDOF(nParameters);
-         quality.setRank(rank);
-         quality.setCond(smax/smin);
-         if(rank==nParameters) {
-            quality.setInfo("SVD decomposition rank complete");
+         if (status != 0) {
+             ASKAPLOG_WARN_STR(logger, "Solution is considered invalid due to gsl_linalg_SV_decomp failure, main matrix is effectively rank zero");
+             quality.setRank(0);
+             quality.setCond(0.);
+             quality.setInfo("SVD decomposition failed");
          } else {
-            quality.setInfo("SVD decomposition rank deficient");
+             quality.setRank(rank);
+             quality.setCond(smax/smin);
+             if (rank==nParameters) {
+                 quality.setInfo("SVD decomposition rank complete");
+             } else {
+                 quality.setInfo("SVD decomposition rank deficient");
+             }
          }
       
 // Update the parameters for the calculated changes. Exploit reference

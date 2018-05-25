@@ -87,7 +87,7 @@ ContinuumWorker::ContinuumWorker(LOFAR::ParameterSet& parset,
 {
     itsAdvisor = boost::shared_ptr<synthesis::AdviseDI> (new synthesis::AdviseDI(itsComms,itsParset));
     itsAdvisor->prepare();
-    itsGridder_p = VisGridderFactory::make(itsParset);
+
     // lets properly size the storage
     const int nchanpercore = itsParset.getInt32("nchanpercore", 1);
     workUnits.resize(0);
@@ -124,7 +124,7 @@ ContinuumWorker::ContinuumWorker(LOFAR::ParameterSet& parset,
 
 ContinuumWorker::~ContinuumWorker()
 {
-    itsGridder_p.reset();
+
 
 
 }
@@ -503,6 +503,10 @@ void ContinuumWorker::buildSpectralCube() {
             }
         }
     }
+    ASKAPLOG_DEBUG_STR(logger,"You shall not pass. Waiting at a barrier for all ranks to have created the cubes ");
+    itsComms.barrier(itsComms.theWorkers());
+    ASKAPLOG_DEBUG_STR(logger,"Passed the barrier");
+
     /// What are the plans for the deconvolution?
     ASKAPLOG_DEBUG_STR(logger,"Ascertaining Cleaning Plan");
     const bool writeAtMajorCycle = itsParsets[0].getBool("Images.writeAtMajorCycle",false);
@@ -594,7 +598,7 @@ void ContinuumWorker::buildSpectralCube() {
                     ds.configureUVWMachineCache(uvwMachineCacheSize, uvwMachineCacheTolerance);
                     try {
 
-                        CalcCore workingImager(itsParsets[tempWorkUnitCount],itsComms,ds,workUnits[tempWorkUnitCount].get_localChannel());
+                        CalcCore workingImager(itsParsets[tempWorkUnitCount],itsComms,ds,rootImager.gridder(),workUnits[tempWorkUnitCount].get_localChannel());
 
                     /// this loop does the calcNE and the merge of the residual images
 
