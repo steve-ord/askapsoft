@@ -29,18 +29,16 @@
 # @author Matthew Whiting <Matthew.Whiting@csiro.au>
 #
 
+setContsubFilenames
+
 # If we're here, then CONTSUB_METHOD=CleanModel
 # In this bit, we use the clean model from the continuum imaging
 # as the input to ccontsubtract
 
-imageCode=image
-setImageProperties cont
-modelImage=${imageName}
-
 ContsubModelDefinition="# The model definition
 CContsubtract.sources.names                       = [lsm]
 CContsubtract.sources.lsm.direction               = \${modelDirection}
-CContsubtract.sources.lsm.model                   = ${modelImage}
+CContsubtract.sources.lsm.model                   = ${contsubCleanModel}
 CContsubtract.sources.lsm.nterms                  = ${NUM_TAYLOR_TERMS}"
 if [ "${NUM_TAYLOR_TERMS}" -gt 1 ]; then
     if [ "$MFS_REF_FREQ" == "" ]; then

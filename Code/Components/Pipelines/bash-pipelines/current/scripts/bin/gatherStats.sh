@@ -36,6 +36,13 @@ if [ "${SUBMIT_JOBS}" == "true" ] && [ "${ALL_JOB_IDS}" != "" ]; then
     # Gather stats on all running jobs
 
     joblist=$(echo "$ALL_JOB_IDS" | sed -e 's/,/ /g')
+
+    # This is needed for the plotting
+    if [ "${BEAMLIST}" == "" ]; then
+        BEAM_ARG="${BEAM_MIN}-${BEAM_MAX}"
+    else
+        BEAM_ARG="${BEAMLIST}"
+    fi
     
     sbatchfile=$slurms/gatherAll.sbatch
     cat > "$sbatchfile" <<EOF
@@ -75,6 +82,31 @@ for i in ${joblist}; do
         fi
     done
 done
+
+# Catch any failed jobs and make copies of parsets, logs & slurmfiles
+failList=\$(grep FAIL \$statsTXT | awk '{print \$1}' | sort | uniq)
+if [ "\${failList}" != "" ]; then
+    for job in \$failList; do
+        dir="${FAILURE_DIRECTORY}/\${job}"
+        mkdir -p \$dir
+        find ${BASEDIR} -name "*\${job}*" -exec cp {} \$dir \;
+        jobname=\$(grep \$job \$statsTXT | head -1 | awk '{print \$3}' | sed -e 's/_master//g')
+        echo "\$(whoami) ${NOW} \${jobname} ${BASEDIR}" > \${dir}/README
+        touch \${dir}/NEW
+        chmod -R g+w \${dir}
+    done
+fi
+
+doScience=${DO_SCIENCE_FIELD}
+if [ "\${doScience}" == "true" ]; then
+    # Make a diagnostic plot of the timings and place a copy in the
+    # diagnostics directory - only do this for the science processing
+
+    ${PIPELINEDIR}/statsPlotter.py -s \$statsTXT -b "${BEAM_ARG}" -f ${NUM_FIELDS} -S ${SB_SCIENCE}
+
+    cp statsPlot-${NOW}.png ${diagnostics}
+fi
+
 EOF
 
     if [ "${SUBMIT_JOBS}" == "true" ]; then    

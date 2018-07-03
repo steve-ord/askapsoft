@@ -229,6 +229,45 @@ function setSelavyDirs()
     
 }
 
+# Function to define the filenames of the model images and the
+# component parset that are used by the various continuum subtraction
+# tasks.
+# Requires: see imageCode description
+# Returns:
+#  - contsubDir
+#  - contsubCleanModel
+#  - contsubCleanModelFullname
+#  - contsubCmodelImage
+#  - contsubComponents
+function setContsubFilenames()
+{
+    ####
+    # First the contsub directory
+    contsubDir=ContSubBeam${BEAM}
+    ####
+    # Next the clean model image
+    imageCode=image
+    setImageProperties cont
+    contsubCleanModelFullname=${imageName}
+    contsubCleanModel=$contsubCleanModelFullname
+    if [ ${NUM_TAYLOR_TERMS} -gt 1 ]; then
+        # need to strip the .taylor.0 suffix
+        contsubCleanModel=$(echo $contsubCleanModelFullname | sed -e 's/\.taylor\.0$//g')
+    fi
+    contsubCleanModelType=${imageType}
+    contsubCleanModelLabel="Continuum model image from clean model"
+    ####
+    # Next the model image created by cmodel
+    imageCode=restored
+    setImageProperties cont
+    contsubCmodelImage=model.contsub.${imageName%%.fits}
+    contsubCmodelType="${contsubCleanModelType}"
+    contsubCmodelLabel="Continuum model image from catalogue"
+    ####
+    # Finally the components parset
+    contsubComponents=modelComponents.contsub.${imageName%%.fits}.in
+}
+
 # Function to define a set of variables describing an image - its
 # name, image type (for CASDA), and label (for preview images), based
 # on a type and BEAM/POL/FIELD information
@@ -399,27 +438,27 @@ function setImageProperties()
     # Definitions use by Selavy jobs
     setSelavyDirs $type
     if [ "${type}" == "cont" ]; then
-        noiseMap=noiseMap.${imageName}
+        noiseMap=noiseMap.${imageName%%.fits}
         noiseType="cont_noise_T0"
         noiseLabel="Continuum image noise map"
-        thresholdMap=detThresh.${imageName}
-        meanMap=meanMap.${imageName}
-        snrMap=snrMap.${imageName}
-        compMap=componentMap_${imageName}
+        thresholdMap=detThresh.${imageName%%.fits}
+        meanMap=meanMap.${imageName%%.fits}
+        snrMap=snrMap.${imageName%%.fits}
+        compMap=componentMap_${imageName%%.fits}
         compMapType="cont_components_T0"
         compMapLabel="Continuum component map"
-        compResidual=componentResidual_${imageName}
+        compResidual=componentResidual_${imageName%%.fits}
         compResidualType="cont_fitresidual_T0"
         compResidualLabel="Continuum component residual map"
         validationDir=${imageName%%.fits}_continuum_validation_selavy_snr5.0_int
         validationFile=${PROJECT_ID}_CASDA_continuum_validation.xml
     elif [ "${type}" == "spectral" ]; then
-        noiseMap=noiseMap.${imageName}
+        noiseMap=noiseMap.${imageName%%.fits}
         noiseType="spectral_noise_3d"
         noiseLabel="Spectral cube noise map"
-        thresholdMap=detThresh.${imageName}
-        meanMap=meanMap.${imageName}
-        snrMap=snrMap.${imageName}
+        thresholdMap=detThresh.${imageName%%.fits}
+        meanMap=meanMap.${imageName%%.fits}
+        snrMap=snrMap.${imageName%%.fits}
     fi
     
     if [ "$needToUnsetTTerm" == "true" ]; then
@@ -828,6 +867,59 @@ function writeStatsHeader()
     writeStats "JobID" "nCores" "Description" "Result" "Real" "User" "System" "PeakVM" "PeakRSS" "StartTime" $format
 }
 
+function extractStatsNonStandard()
+{
+    # usage: extractStatsNonStandard logfile nCores ID ResultCode Description [format]
+    # format is optional. If not provided, output is written to stdout
+    #   if provided, it is assumed to be a list of suffixes - these can be either txt or csv.
+    #      If txt - output is written to $stats/stats-ID-DESCRIPTION.txt as space-separated ascii
+    #      If csv - output is written to $stats/stats-ID-DESCRIPTION.csv as comma-separated values
+    #
+
+    STATS_LOGFILE=$1
+    NUM_CORES=$2
+    STATS_ID=$3
+    RESULT=$4
+    STATS_DESC=$5
+
+    if [ "$RESULT" -eq 0 ]; then
+        RESULT_TXT="OK"
+    else
+        RESULT_TXT="FAIL"
+    fi
+
+    START_TIME_JOB=$(grep "STARTTIME=" ${log}.timing | head -n 1 | awk -F '=' '{print $2}')
+    
+    TIME_JOB_REAL=$(grep real ${log}.timing | tail -n 1 | awk '{print $2}')
+    TIME_JOB_USER=$(grep user ${log}.timing | tail -n 1 | awk '{print $2}')
+    TIME_JOB_SYS=$(grep sys ${log}.timing | tail -n 1 | awk '{print $2}')
+
+    PEAK_VM_MASTER="---"
+    PEAK_RSS_MASTER="---"
+
+    if [ $# -lt 6 ]; then
+	formatlist="stdout"
+    else
+	formatlist=$6
+    fi
+
+    for format in $(echo "$formatlist" | sed -e 's/,/ /g'); do
+
+	if [ "$format" == "txt" ]; then
+	    output="${stats}/stats-${STATS_ID}-${STATS_DESC}.txt"
+	elif [ "$format" == "csv" ]; then
+	    output="${stats}/stats-${STATS_ID}-${STATS_DESC}.csv"
+	else
+	    output=/dev/stdout
+	fi
+
+	writeStatsHeader "$format" > "$output"
+        writeStats "$STATS_ID" "$NUM_CORES" "$STATS_DESC"              "$RESULT_TXT" "$TIME_JOB_REAL" "$TIME_JOB_USER" "$TIME_JOB_SYS" "$PEAK_VM_MASTER"  "$PEAK_RSS_MASTER"  "$START_TIME_JOB" "$format" >> "$output"
+
+    done
+}
+
+
 function extractStats()
 {
     # usage: extractStats logfile nCores ID ResultCode Description [format]
@@ -835,9 +927,6 @@ function extractStats()
     #   if provided, it is assumed to be a list of suffixes - these can be either txt or csv.
     #      If txt - output is written to $stats/stats-ID-DESCRIPTION.txt as space-separated ascii
     #      If csv - output is written to $stats/stats-ID-DESCRIPTION.csv as comma-separated values
-    #
-    # Must also have defined the variable NUM_CPUS. If not defined, it will be set to 1
-    # (this is used for the findWorkerStats() function)
 
     STATS_LOGFILE=$1
     NUM_CORES=$2
@@ -898,10 +987,10 @@ function parseLog()
         # if here, job was a distributed job
         # Get the master node's first log message, and extract the time stamp
         START_TIME_JOB=$(grep "(0, " "$logfile" | head -1 | awk '{printf "%sT%s",$5,$6}' | sed -e 's/^\[//g' | sed -e 's/\]$//g')
-        if [ "$(grep "(0, " "$logfile" | grep -c "Total times")" -gt 0 ]; then
-            TIME_JOB_REAL=$(grep "(0, " "$logfile" | grep "Total times" | tail -1 | awk '{print $16}')
-            TIME_JOB_SYS=$(grep "(0, " "$logfile"  | grep "Total times" | tail -1 | awk '{print $14}')
-            TIME_JOB_USER=$(grep "(0, " "$1" | grep "Total times" | tail -1 | awk '{print $12}')
+        if [ "$(grep -c "Total times" "$logfile")" -gt 0 ]; then
+            TIME_JOB_REAL=$(grep "Total times" "$logfile" | tail -1 | awk '{print $16}')
+            TIME_JOB_SYS=$(grep "Total times" "$logfile" | tail -1 | awk '{print $14}')
+            TIME_JOB_USER=$(grep "Total times" "$logfile" | tail -1 | awk '{print $12}')
         fi
         if [ "$(grep "(0, " "$logfile" | grep -c "PeakVM")" -gt 0 ]; then
             PEAK_VM_MASTER=$(grep "(0, " "$logfile" | grep "PeakVM" | tail -1 | awk '{print $12}')

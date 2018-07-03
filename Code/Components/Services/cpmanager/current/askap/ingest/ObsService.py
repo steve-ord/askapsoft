@@ -22,11 +22,15 @@ class CPObsServiceImp(ICPObsService):
         self.params = None
 
     def startObs(self, sbid, current=None):
-        # everytime an obs is started, load latest from fcm
-        self.params = self.fcm.get()
+        logger.debug("start observation for " + str(sbid))
+
         if self.current_sbid >= 0:
             logger.error("Ingest Pipeline already running")
             raise RuntimeError("Ingest Pipeline already running")
+
+        # everytime an obs is started, load latest from fcm
+        self.params = self.fcm.get()
+        logger.debug("finished loading fcm for " + str(sbid))
 
         if self.params.get("cp.ingest.workdir"):
             workdir = self.params.get("cp.ingest.workdir") + "/" + str(sbid)
@@ -62,6 +66,7 @@ class CPObsServiceImp(ICPObsService):
         if self.proc:
             if self.proc.poll() is None:
                 self.proc.terminate()
+                self.proc.wait()
 
         logger.debug("Aborted " + str(self.current_sbid))
         self.current_sbid = -1
@@ -82,12 +87,30 @@ class CPObsServiceImp(ICPObsService):
         if self.proc.poll() is not None:
             return True     # process finished
 
-        time.sleep(timeout/1000)
+        if timeout == 0:
+            return False    # process not finished, but non blocking
 
-        if self.proc.poll() is None:
-            return False    # proess still not finished
-        else:
-            return True     # process finished
+        if timeout < 0:     # wait until ingest process has finished
+            self.proc.wait()
+            self.current_sbid = -1
+            return True
+
+        time_left = timeout/1000
+        sleep_time = 0.1
+
+        while time_left > 0:
+            if time_left < sleep_time:
+                time.sleep(time_left)
+            else:
+                time.sleep(sleep_time)
+
+            time_left -= sleep_time
+            if self.proc.poll() is not None:
+                self.current_sbid = -1
+                return True     # process finished
+
+        return False
+
 
     def write_config(self, file, sbid):
         file.write("sbid=" + str(sbid) + "\n")

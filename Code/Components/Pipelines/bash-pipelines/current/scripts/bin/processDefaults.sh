@@ -561,9 +561,71 @@ EOF
     echo " "
 
     ####################
+    # Parameters required for the aoflagger option
+
+    if [ "${FLAG_WITH_AOFLAGGER}" != "" ]; then
+        # have set the global switch, so apply to the individual
+        # task-level switches
+        FLAG_1934_WITH_AOFLAGGER=${FLAG_WITH_AOFLAGGER}
+        FLAG_SCIENCE_WITH_AOFLAGGER=${FLAG_WITH_AOFLAGGER}
+        FLAG_SCIENCE_AV_WITH_AOFLAGGER=${FLAG_WITH_AOFLAGGER}
+    fi
+
+    if [ "${AOFLAGGER_STRATEGY}" != "" ]; then
+
+        if [ ! -e "${AOFLAGGER_STRATEGY}" ]; then
+            echo "ERROR - the AOflagger strategy file ${AOFLAGGER_STRATEGY} does not exist."
+            echo "        Running AOflagger but without a strategy file"
+        else
+            AOFLAGGER_STRATEGY_1934="${AOFLAGGER_STRATEGY}"
+            AOFLAGGER_STRATEGY_SCIENCE="${AOFLAGGER_STRATEGY}"
+            AOFLAGGER_STRATEGY_SCIENCE_AV="${AOFLAGGER_STRATEGY}"
+        fi
+
+    fi        
+
+    if [ "${AOFLAGGER_STRATEGY_1934}" != "" ] && [ ! -e "${AOFLAGGER_STRATEGY_1934}" ]; then
+        echo "ERROR - the AOflagger strategy file \"${AOFLAGGER_STRATEGY_1934}\" does not exist."
+        echo "        Running AOflagger on bandpass data but without a strategy file"
+        AOFLAGGER_STRATEGY_1934=""
+    fi
+    if [ "${AOFLAGGER_STRATEGY_SCIENCE}" != "" ] && [ ! -e "${AOFLAGGER_STRATEGY_SCIENCE}" ]; then
+        echo "ERROR - the AOflagger strategy file \"${AOFLAGGER_STRATEGY_SCIENCE}\" does not exist."
+        echo "        Running AOflagger on science data but without a strategy file"
+        AOFLAGGER_STRATEGY_SCIENCE=""
+    fi
+    if [ "${AOFLAGGER_STRATEGY_SCIENCE_AV}" != "" ] && [ ! -e "${AOFLAGGER_STRATEGY_SCIENCE_AV}" ]; then
+        echo "ERROR - the AOflagger strategy file \"${AOFLAGGER_STRATEGY_SCIENCE_AV}\" does not exist."
+        echo "        Running AOflagger on averaged science data but without a strategy file"
+        AOFLAGGER_STRATEGY_SCIENCE_AV=""
+    fi
+
+    # Set the generic aoflagger command line options
+    AOFLAGGER_OPTIONS=""
+    if [ "${AOFLAGGER_VERBOSE}" == "true" ]; then
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -v"
+    fi
+    if [ "${AOFLAGGER_UVW}" == "true" ]; then
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -uvw"
+    fi
+    if [ "${AOFLAGGER_READ_MODE}" == "direct" ]; then
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -direct-read"
+    elif [ "${AOFLAGGER_READ_MODE}" == "indirect" ]; then
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -indirect-read"
+    elif [ "${AOFLAGGER_READ_MODE}" == "memory" ]; then
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -memory-read"
+    else
+        if [ "${AOFLAGGER_READ_MODE}" != "auto" ]; then
+            echo "WARNING - unknown AOFLAGGER_READ_MODE option \"${AOFLAGGER_READ_MODE}\". Setting to \"auto\""
+        fi
+        AOFLAGGER_OPTIONS="${AOFLAGGER_OPTIONS} -auto-read-mode"
+    fi
+    
+
+    ####################
     # Parameters required for bandpass calibration
     ####
-    if [ "${DO_FIND_BANDPASS}" == "true" ]; then
+    if [ "${DO_FIND_BANDPASS}" == "true" ] || [ "${DO_APPLY_BANDPASS}" == "true" ]; then
         
         ####################
         # Filling out wildcards for calibration table
@@ -574,6 +636,12 @@ EOF
         
     fi
 
+    if [ "${BANDPASS_SMOOTH_TOOL}" != "plot_caltable" ] &&
+           [ "${BANDPASS_SMOOTH_TOOL}" != "smooth_bandpass" ]; then
+        echo "WARNING - Invalid value for BANDPASS_SMOOTH_TOOL (${BANDPASS_SMOOTH_TOOL}). Setting to \"plot_caltable\"."
+        BANDPASS_SMOOTH_TOOL="plot_caltable"
+    fi
+    
     ####################
     # Parameters required for science field imaging
     ####
@@ -609,7 +677,6 @@ EOF
         # defined in the config file, then set to the value of
         # DO_ALT_IMAGER. 
         if [ "${DO_ALT_IMAGER}" == "true" ] && [ "${DO_ALT_IMAGER_CONT}" == "" ]; then
-            echo "WARNING - You have not defined DO_ALT_IMAGER_CONT - setting to $DO_ALT_IMAGER, the value of DO_ALT_IMAGER"
             DO_ALT_IMAGER_CONT=${DO_ALT_IMAGER}
         fi
 
@@ -644,13 +711,28 @@ EOF
             CPUS_PER_CORE_CONT_IMAGING=${NUM_CPUS_CONTIMG_SCI}
         fi
 
-        # Method used for self-calibration - needs to be either Cmodel or Components
+        # Method used for self-calibration - needs to be one of Cmodel, Components, CleanModel
         if [ "${SELFCAL_METHOD}" != "Cmodel" ] &&
-               [ "${SELFCAL_METHOD}" != "Components" ]; then
+               [ "${SELFCAL_METHOD}" != "Components" ] &&
+               [ "${SELFCAL_METHOD}" != "CleanModel" ]; then
             SELFCAL_METHOD="Cmodel"
         fi
 
-
+        # Select correct gridding parameters, depending on snapshot status
+        if [ "${GRIDDER_WMAX}" == "" ]; then
+            if [ "${GRIDDER_SNAPSHOT_IMAGING}" == "true" ]; then
+                GRIDDER_WMAX=${GRIDDER_WMAX_SNAPSHOT}
+            else
+                GRIDDER_WMAX=${GRIDDER_WMAX_NO_SNAPSHOT}
+            fi
+        fi
+        if [ "${GRIDDER_MAXSUPPORT}" == "" ]; then
+            if [ "${GRIDDER_SNAPSHOT_IMAGING}" == "true" ]; then
+                GRIDDER_MAXSUPPORT=${GRIDDER_MAXSUPPORT_SNAPSHOT}
+            else
+                GRIDDER_MAXSUPPORT=${GRIDDER_MAXSUPPORT_NO_SNAPSHOT}
+            fi
+        fi
 
         ####################
         # Parameters required for continuum-cube imaging
@@ -667,7 +749,6 @@ EOF
         # defined in the config file, then set to the value of
         # DO_ALT_IMAGER. 
         if [ "${DO_ALT_IMAGER}" == "true" ] && [ "${DO_ALT_IMAGER_CONTCUBE}" == "" ]; then
-            echo "WARNING - You have not defined DO_ALT_IMAGER_CONTCUBE - setting to $DO_ALT_IMAGER, the value of DO_ALT_IMAGER"
             DO_ALT_IMAGER_CONTCUBE=${DO_ALT_IMAGER}
         fi
 
@@ -768,7 +849,6 @@ EOF
         # defined in the config file, then set to the value of
         # DO_ALT_IMAGER.  
         if [ "${DO_ALT_IMAGER}" == "true" ] && [ "${DO_ALT_IMAGER_SPECTRAL}" == "" ]; then
-            echo "WARNING - You have not defined DO_ALT_IMAGER_SPECTRAL - setting to $DO_ALT_IMAGER, the value of DO_ALT_IMAGER"
             DO_ALT_IMAGER_SPECTRAL=${DO_ALT_IMAGER}
         fi
 
@@ -779,6 +859,22 @@ EOF
             echo "ERROR - IMAGETYPE_SPECTRAL=fits can only work with DO_ALT_IMAGER_SPECTRAL=true"
             echo "   Exiting"
             exit 1
+        fi
+
+        # Select correct gridding parameters, depending on snapshot status
+        if [ "${GRIDDER_SPECTRAL_WMAX}" == "" ]; then
+            if [ "${GRIDDER_SPECTRAL_SNAPSHOT_IMAGING}" == "true" ]; then
+                GRIDDER_SPECTRAL_WMAX=${GRIDDER_SPECTRAL_WMAX_SNAPSHOT}
+            else
+                GRIDDER_SPECTRAL_WMAX=${GRIDDER_SPECTRAL_WMAX_NO_SNAPSHOT}
+            fi
+        fi
+        if [ "${GRIDDER_SPECTRAL_MAXSUPPORT}" == "" ]; then
+            if [ "${GRIDDER_SPECTRAL_SNAPSHOT_IMAGING}" == "true" ]; then
+                GRIDDER_SPECTRAL_MAXSUPPORT=${GRIDDER_SPECTRAL_MAXSUPPORT_SNAPSHOT}
+            else
+                GRIDDER_SPECTRAL_MAXSUPPORT=${GRIDDER_SPECTRAL_MAXSUPPORT_NO_SNAPSHOT}
+            fi
         fi
 
         # Channel range to be used for spectral-line imaging
@@ -951,6 +1047,13 @@ EOF
             DO_SOURCE_FINDING_BEAMWISE=true
         fi
 
+        # Check that contcube imaging is turned on if we want to use them to find the spectral indices
+        if [ "${USE_CONTCUBE_FOR_SPECTRAL_INDEX}" == "true" ] &&
+               [ "${DO_CONTCUBE_IMAGING}" != "true" ]; then
+            DO_CONTCUBE_IMAGING=true
+            echo "WARNING - Turning on continuum-cube imaging, since USE_CONTCUBE_FOR_SPECTRAL_INDEX=true";
+        fi
+        
         # We can only do RM Synthesis if we are making I,Q,U continuum
         # cubes. Need to check that the list of polarisations
         # contains these.
@@ -1023,7 +1126,7 @@ EOF
 
         # Check smooth type
         if [ "${SELAVY_SPEC_FLAG_SMOOTH}" == "true" ]; then
-            if [ "${SELAVY_SPEC_SMOOTH_TYPE}" != "spectral" ] ||
+            if [ "${SELAVY_SPEC_SMOOTH_TYPE}" != "spectral" ] &&
                    [ "${SELAVY_SPEC_SMOOTH_TYPE}" != "spatial" ]; then
                 SELAVY_SPEC_SMOOTH_TYPE="spectral"
                 echo "WARNING - SELAVY_SPEC_SMOOTH_TYPE needs to be 'spectral' or 'spatial' - Setting to 'spectral'"

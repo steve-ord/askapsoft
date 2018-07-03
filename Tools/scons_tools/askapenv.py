@@ -39,7 +39,10 @@ def has_explicit_mpi(env):
 # That is the mpicc/mpicxx compiler wrappers need to be used explicitly
 # Others, such as the Cray environment have MPI support already wrapped
 # in the CC & CXX commands
-def has_implicit_mpi():
+# - Ord 2018 - But if the user has mpicc etc in the env return False.
+def has_implicit_mpi(env):
+    if (has_explicit_mpi(env)):
+        return False
     if (os.environ.has_key("CRAYOS_VERSION")):
         return True
     return False
@@ -118,13 +121,13 @@ if env['squash']:
     env.AppendUnique(CCFLAGS=['-Wno-unused-local-typedef'])
 
 # Setup MPI support
-if has_implicit_mpi():
+if has_implicit_mpi(env):
     if env['nompi']:
         print "error: Cannot disable MPI on this platform"
         env.Exit(1)
     env.AppendUnique(CPPFLAGS=['-DHAVE_MPI'])
 
-if not env['nompi'] and not has_implicit_mpi():
+if not env['nompi'] and not has_implicit_mpi(env):
     if has_explicit_mpi(env):
             env["CC"] = "mpicc"
             env["CXX"] = "mpicxx"
@@ -133,25 +136,25 @@ if not env['nompi'] and not has_implicit_mpi():
             env.AppendUnique(CPPFLAGS=['-DHAVE_MPI'])
     else:
         print "warn: No MPI support detected, compiling without"
-
-# Setu OpenMP support
-if env['openmp']:
-    env.AppendUnique(CCFLAGS=['-fopenmp'])
-    env.AppendUnique(LINKFLAGS=['-fopenmp'])
-
 # Overwrite for Cray, need to use the standard compiler wrappers
 # By default gcc/g++ are used
-if os.environ.has_key("CRAYOS_VERSION"):
+if has_implicit_mpi(env):
     env["ENV"] = os.environ
     env["CC"] = "cc"
     env["CXX"] = "CC"
     env["LINK"] = "CC"
     env["SHLINK"] = "CC"
     env.AppendUnique(LINKFLAGS=['-dynamic'])
+
+# Setu OpenMP support
+if env['openmp']:
+    env.AppendUnique(CCFLAGS=['-fopenmp'])
+    env.AppendUnique(LINKFLAGS=['-fopenmp'])
+
 if env['usepgi']:
 
     # The PGroup compilers support some MPI out of the box
-    # athena uses 
+    # athena uses
     env["ENV"] = os.environ
     env["CC"] = "pgcc "
     env["CXX"] = "pgc++ "
@@ -159,7 +162,7 @@ if env['usepgi']:
     env["SHLINK"] = "pgc++ "
     env.AppendUnique(CPPFLAGS=['-noswitcherror'])
 else:
-    env.AppendUnique(CPPFLAGS=['-Wall'])    
+    env.AppendUnique(CPPFLAGS=['-Wall'])
 # use global environment definitions
 ASKAP_ROOT = os.getenv('ASKAP_ROOT')
 envfiles =  ['%s/env.default' % ASKAP_ROOT,]

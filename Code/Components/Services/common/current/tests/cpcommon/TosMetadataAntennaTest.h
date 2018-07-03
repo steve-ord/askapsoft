@@ -54,9 +54,12 @@ class TosMetadataAntennaTest : public CppUnit::TestFixture {
         CPPUNIT_TEST(testActualRaDec);
         CPPUNIT_TEST(testActualAzEl);
         CPPUNIT_TEST(testPolAngle);
+        CPPUNIT_TEST(testUVW);
+        CPPUNIT_TEST_EXCEPTION(testMissingSpacing, AskapError);
         CPPUNIT_TEST(testOnSource);
         CPPUNIT_TEST(testHwError);
         CPPUNIT_TEST(testSerialise);
+        CPPUNIT_TEST(testCopy);
         CPPUNIT_TEST_SUITE_END();
 
     public:
@@ -80,6 +83,28 @@ class TosMetadataAntennaTest : public CppUnit::TestFixture {
 
             instance->actualRaDec(testDir); // Set
             directionsEqual(testDir, instance->actualRaDec());
+        }
+    
+        void testUVW() {
+            casa::Vector<casa::Double> uvw(36*3,0.);
+            for (casa::uInt i=0; i<uvw.nelements(); ++i) {
+                 uvw[i] = double(i)/10;
+            }
+            instance->uvw(uvw); // Set
+            const casa::Vector<casa::Double> result = instance->uvw();
+            // check
+            CPPUNIT_ASSERT_EQUAL(uvw.nelements(), result.nelements());
+            for (casa::uInt i=0; i<result.nelements(); ++i) {
+                 CPPUNIT_ASSERT_DOUBLES_EQUAL(double(i)/10, result[i], 1e-6);
+            }
+            // it should be possible to set a different array
+            instance->uvw(casa::Vector<casa::Double>(3,1.));
+            CPPUNIT_ASSERT_EQUAL(size_t(3u), instance->uvw().nelements());
+        }
+
+        void testMissingSpacing() {
+            casa::Vector<casa::Double> uvw(35*3+1,0.);
+            instance->uvw(uvw); // Set
         }
 
         void testActualAzEl() {
@@ -111,6 +136,49 @@ class TosMetadataAntennaTest : public CppUnit::TestFixture {
             CPPUNIT_ASSERT_EQUAL(false, instance->flagged());
         }
 
+        void testCopy() {
+            // call test cases above as they fill 'instance' with some numbers
+            CPPUNIT_ASSERT(instance);
+            testActualRaDec();
+            testActualAzEl();
+            testPolAngle();
+            instance->onSource(true);
+            instance->flagged(false);
+            instance->uvw(casa::Vector<casa::Double>(36*3,100.));
+            
+            TosMetadataAntenna empty("none");
+            TosMetadataAntenna copy(*instance);
+            empty = copy;
+
+            // check the result
+            CPPUNIT_ASSERT_EQUAL(false, empty.flagged());
+            CPPUNIT_ASSERT_EQUAL(true, empty.onSource());
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(empty.actualPolAngle().getValue("rad"), 
+                    instance->actualPolAngle().getValue("rad"),1e-6);
+            directionsEqual(empty.actualAzEl(), instance->actualAzEl());
+            directionsEqual(empty.actualRaDec(), instance->actualRaDec());
+            CPPUNIT_ASSERT_EQUAL(instance->name(),empty.name());
+            CPPUNIT_ASSERT_EQUAL(instance->uvw().nelements(),empty.uvw().nelements());
+            for (casa::uInt i=0; i<instance->uvw().nelements(); ++i) {
+                 CPPUNIT_ASSERT_DOUBLES_EQUAL(instance->uvw()[i],empty.uvw()[i],1e-6);
+            }
+
+            CPPUNIT_ASSERT_EQUAL(false, copy.flagged());
+            CPPUNIT_ASSERT_EQUAL(true, copy.onSource());
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(copy.actualPolAngle().getValue("rad"), 
+                    instance->actualPolAngle().getValue("rad"),1e-6);
+            directionsEqual(copy.actualAzEl(), instance->actualAzEl());
+            directionsEqual(copy.actualRaDec(), instance->actualRaDec());
+            CPPUNIT_ASSERT_EQUAL(instance->name(),copy.name());
+            CPPUNIT_ASSERT_EQUAL(instance->uvw().nelements(),copy.uvw().nelements());
+            for (casa::uInt i=0; i<instance->uvw().nelements(); ++i) {
+                 CPPUNIT_ASSERT_DOUBLES_EQUAL(instance->uvw()[i],copy.uvw()[i],1e-6);
+            }
+            // this should overwrite the instance back to emtpy
+            empty = TosMetadataAntenna("none");
+        }
+ 
+
         void testSerialise() {
             // call test cases above as they fill 'instance' with some numbers
             CPPUNIT_ASSERT(instance);
@@ -119,6 +187,7 @@ class TosMetadataAntennaTest : public CppUnit::TestFixture {
             testPolAngle();
             instance->onSource(true);
             instance->flagged(false);
+            instance->uvw(casa::Vector<casa::Double>(36*3,100.));
             
             TosMetadataAntenna received("none");
 
@@ -147,6 +216,10 @@ class TosMetadataAntennaTest : public CppUnit::TestFixture {
             directionsEqual(received.actualAzEl(), instance->actualAzEl());
             directionsEqual(received.actualRaDec(), instance->actualRaDec());
             CPPUNIT_ASSERT_EQUAL(instance->name(),received.name());
+            CPPUNIT_ASSERT_EQUAL(instance->uvw().nelements(),received.uvw().nelements());
+            for (casa::uInt i=0; i<instance->uvw().nelements(); ++i) {
+                 CPPUNIT_ASSERT_DOUBLES_EQUAL(instance->uvw()[i],received.uvw()[i],1e-6);
+            }
         }
 
     private:

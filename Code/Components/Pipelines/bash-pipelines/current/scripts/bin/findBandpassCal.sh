@@ -75,15 +75,20 @@ Cbpcalibrator.refantenna                      = ${BANDPASS_REFANTENNA}"
     
 
     # Check for bandpass smoothing options
-    DO_RUN_PLOT_CALTABLE=false
-    if [ "${DO_BANDPASS_PLOT}" == "true" ] || [ "${DO_BANDPASS_SMOOTH}" == "true" ]; then
-        DO_RUN_PLOT_CALTABLE=true
-    fi
-    if [ "${DO_RUN_PLOT_CALTABLE}" == "true" ]; then
-        script_location="${ACES_LOCATION}/tools"
-        script_name="plot_caltable"
-        if [ ! -e "${script_location}/${script_name}.py" ]; then
-            echo "WARNING - ${script_name}.py not found in $script_location - not running bandpass smoothing/plotting."
+    DO_RUN_VALIDATION=false
+    if [ "${DO_BANDPASS_SMOOTH}" != "true" ]; then
+        BANDPASS_SMOOTH_TOOL=""
+    fi    
+
+    script_location="${ACES_LOCATION}/tools"
+
+    if [ "${BANDPASS_SMOOTH_TOOL}" == "plot_caltable" ]; then
+
+        DO_RUN_VALIDATION=true
+
+        script_name="plot_caltable.py"
+        if [ ! -e "${script_location}/${script_name}" ]; then
+            echo "WARNING - ${script_name} not found in $script_location - not running bandpass smoothing/plotting."
             DO_RUN_PLOT_CALTABLE=false
         fi
         script_args="-t ${TABLE_BANDPASS} -s B "
@@ -101,8 +106,41 @@ Cbpcalibrator.refantenna                      = ${BANDPASS_REFANTENNA}"
         fi
         script_args="${script_args} -fit ${BANDPASS_SMOOTH_FIT} -th ${BANDPASS_SMOOTH_THRESHOLD}"
 
-    fi
+    elif [ "${BANDPASS_SMOOTH_TOOL}" == "smooth_bandpass" ]; then
 
+        DO_RUN_VALIDATION=true
+        script_module_commands="module use /group/askap/raj030/modulefiles
+loadModule bptool"
+        unload_script="unloadModule bptool"
+        script_name="smooth_bandpass.py"
+        script_args="-t ${TABLE_BANDPASS} -wp -r ${BANDPASS_REFANTENNA}"
+        
+        if [ "${BANDPASS_SMOOTH_POLY_ORDER}" != "" ]; then
+            script_args="${script_args} -np ${BANDPASS_SMOOTH_POLY_ORDER}"
+        fi
+        if [ "${BANDPASS_SMOOTH_HARM_ORDER}" != "" ]; then
+            script_args="${script_args} -nh ${BANDPASS_SMOOTH_HARM_ORDER}"
+        fi
+        if [ "${BANDPASS_SMOOTH_N_WIN}" != "" ]; then
+            script_args="${script_args} -nwin ${BANDPASS_SMOOTH_N_WIN}"
+        fi
+        if [ "${BANDPASS_SMOOTH_N_TAPER}" != "" ]; then
+            script_args="${script_args} -nT ${BANDPASS_SMOOTH_N_TAPER}"
+        fi
+        if [ "${BANDPASS_SMOOTH_N_ITER}" != "" ]; then
+            script_args="${script_args} -nI ${BANDPASS_SMOOTH_N_ITER}"
+        fi
+
+
+    fi
+        
+    validation_script="bandpassValidation.py"
+    if [ ! -e "${script_location}/${validation_script}" ]; then
+        echo "WARNING - ${validation_script} not found in $script_location - not running bandpass validation."
+        DO_RUN_VALIDATION=false
+    fi
+    validation_args="-d ${BASEDIR} -s ${SB_1934}"
+        
     sbatchfile="$slurms/cbpcalibrator_1934.sbatch"
     cat > "$sbatchfile" <<EOF
 #!/bin/bash -l
@@ -166,28 +204,69 @@ if [ \$err != 0 ]; then
     exit \$err
 fi
 
-PLOT_CALTABLE=${DO_RUN_PLOT_CALTABLE}
-if [ \${PLOT_CALTABLE} == true ]; then
+BANDPASS_SMOOTH_TOOL=${BANDPASS_SMOOTH_TOOL}
+if [ "\${BANDPASS_SMOOTH_TOOL}" == "plot_caltable" ]; then
 
     log=${logs}/plot_caltable_\${SLURM_JOB_ID}.log
-    script="${script_location}/${script_name}.py"
+    script="${script_location}/${script_name}"
 
     loadModule casa
+    STARTTIME=\$(date +%FT%T)
     NCORES=1
     NPPN=1
-    srun --export=ALL --ntasks=\${NCORES} --ntasks-per-node=\${NPPN} casa --nogui --nologger --log2term --agg -c "\${script}" ${script_args} > "\${log}"
+    srun --export=ALL --ntasks=\${NCORES} --ntasks-per-node=\${NPPN} /usr/bin/time -p -o "\${log}.timing" casa --nogui --nologger --log2term --agg -c "\${script}" ${script_args} > "\${log}"
     err=\$?
     unloadModule casa
     for tab in ${TABLE_BANDPASS}*; do
         rejuvenate "\${tab}"
     done
-    extractStats "\${log}" \${NCORES} "\${SLURM_JOB_ID}" \${err} smoothBandpass "txt,csv"
+    echo "STARTTIME=\${STARTTIME}" >> "\${log}.timing"
+    extractStatsNonStandard "\${log}" \${NCORES} "\${SLURM_JOB_ID}" \${err} "smoothBandpass" "txt,csv"
+
+    if [ \$err != 0 ]; then
+        exit \$err
+    fi
+
+elif [ "\${BANDPASS_SMOOTH_TOOL}" == "smooth_bandpass" ]; then
+
+    log=${logs}/smooth_bandpass_\${SLURM_JOB_ID}.log
+    ${script_module_commands}
+
+    STARTTIME=\$(date +%FT%T)
+    NCORES=1
+    NPPN=1
+    srun --export=ALL --ntasks=\${NCORES} --ntasks-per-node=\${NPPN} /usr/bin/time -p -o "\${log}.timing" "${script_name}" ${script_args} > "\${log}"
+    err=\$?
+    ${unload_script}
+    for tab in ${TABLE_BANDPASS}*; do
+        rejuvenate "\${tab}"
+    done
+    echo "STARTTIME=\${STARTTIME}" >> "\${log}.timing"
+    extractStatsNonStandard "\${log}" \${NCORES} "\${SLURM_JOB_ID}" \${err} "smoothBandpass" "txt,csv"
+
     if [ \$err != 0 ]; then
         exit \$err
     fi
 
 fi
 
+runValidation=${DO_RUN_VALIDATION}
+if [ "\${runValidation}" == "true" ]; then
+
+    log=${logs}/bandpass_validation_\${SLURM_JOB_ID}.log
+    script="${script_location}/${validation_script}"
+    STARTTIME=\$(date +%FT%T)
+    NCORES=1
+    NPPN=1
+    srun --export=ALL --ntasks=\${NCORES} --ntasks-per-node=\${NPPN} /usr/bin/time -p -o "\${log}.timing" "\${script}" ${validation_args} > "\${log}"
+    err=\$?
+    echo "STARTTIME=\${STARTTIME}" >> "\${log}.timing"
+    extractStatsNonStandard "\${log}" \${NCORES} "\${SLURM_JOB_ID}" \${err} "bandpassValidation" "txt,csv"
+    if [ \$err != 0 ]; then
+        exit \$err
+    fi
+
+fi
 
 EOF
 

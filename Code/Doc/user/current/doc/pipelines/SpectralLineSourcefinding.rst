@@ -31,16 +31,25 @@ reconstruction (to enhance the signal-to-noise of real sources).
 | ``SELAVY_SPEC_NSUBX``               | 6                               | nsubx (:doc:`../analysis/selavy`)            | Number of divisions in the x-direction that divide the image|
 |                                     |                                 |                                              | up, allowing parallel processing in the source-detection.   |
 +-------------------------------------+---------------------------------+----------------------------------------------+-------------------------------------------------------------+
-| ``SELAVY_SPEC_NSUBY``               | 3                               | nsuby (:doc:`../analysis/selavy`)            | Number of divisions in the y-direction that divide the image|
+| ``SELAVY_SPEC_NSUBY``               | 9                               | nsuby (:doc:`../analysis/selavy`)            | Number of divisions in the y-direction that divide the image|
 |                                     |                                 |                                              | up, allowing parallel processing in the source-detection.   |
 +-------------------------------------+---------------------------------+----------------------------------------------+-------------------------------------------------------------+
-| ``SELAVY_SPEC_NSUBZ``               | 11                              | nsubz (:doc:`../analysis/selavy`)            | Number of divisions in the z-direction that divide the image|
+| ``SELAVY_SPEC_NSUBZ``               | 18                              | nsubz (:doc:`../analysis/selavy`)            | Number of divisions in the z-direction that divide the image|
 |                                     |                                 |                                              | up, allowing parallel processing in the source-detection.   |
 +-------------------------------------+---------------------------------+----------------------------------------------+-------------------------------------------------------------+
+| ``SELAVY_OVERLAPX``                 | 0                               | overlapx                                     | The overlap (in pixels) between neighbouring divisions in   |
+|                                     |                                 | (:doc:`../analysis/selavy`)                  | the x-direction.                                            |
++-------------------------------------+---------------------------------+----------------------------------------------+-------------------------------------------------------------+
+| ``SELAVY_OVERLAPY``                 | 0                               | overlapy                                     | The overlap (in pixels) between neighbouring divisions in   |
+|                                     |                                 | (:doc:`../analysis/selavy`)                  | the y-direction.                                            |
++-------------------------------------+---------------------------------+----------------------------------------------+-------------------------------------------------------------+ 
+| ``SELAVY_OVERLAPZ``                 | 20                              | overlapz                                     | The overlap (in pixels) between neighbouring divisions in   |
+|                                     |                                 | (:doc:`../analysis/selavy`)                  | the z-direction.                                            |
++-------------------------------------+---------------------------------+----------------------------------------------+-------------------------------------------------------------+ 
 | **Searching**                       |                                 |                                              |                                                             |
 |                                     |                                 |                                              |                                                             |
 +-------------------------------------+---------------------------------+----------------------------------------------+-------------------------------------------------------------+
-| ``SELAVY_SPEC_SNR_CUT``             | 5.0                             | snrcut (:doc:`../analysis/selavy`)           | The signal-to-noise ratio threshold to use in the           |
+| ``SELAVY_SPEC_SNR_CUT``             | 8.0                             | snrcut (:doc:`../analysis/selavy`)           | The signal-to-noise ratio threshold to use in the           |
 |                                     |                                 |                                              | source-detection.                                           |
 +-------------------------------------+---------------------------------+----------------------------------------------+-------------------------------------------------------------+
 | ``SELAVY_SPEC_FLAG_GROWTH``         | true                            | flagGrowth (:doc:`../analysis/selavy`)       | A flag indicating whether to grow detections down to a      |
@@ -125,6 +134,6 @@ reconstruction (to enhance the signal-to-noise of real sources).
 | **Pre-processing**                  |                                 |                                              |                                                             |
 |                                     |                                 |                                              |                                                             |
 +-------------------------------------+---------------------------------+----------------------------------------------+-------------------------------------------------------------+
-| ``SELAVY_SPEC_OPTIMISE_MASK``       | true                            | optimiseMask                                 | Whether to improve the mask of detected sources prior to    |
+| ``SELAVY_SPEC_OPTIMISE_MASK``       | false                           | optimiseMask                                 | Whether to improve the mask of detected sources prior to    |
 |                                     |                                 | (:doc:`../analysis/postprocessing`)          | parameterisation via the mask optimisation technique.       |
 +-------------------------------------+---------------------------------+----------------------------------------------+-------------------------------------------------------------+

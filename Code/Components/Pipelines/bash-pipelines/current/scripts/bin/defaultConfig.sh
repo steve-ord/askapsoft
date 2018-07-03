@@ -55,6 +55,9 @@ EMAIL=""
 # BEGIN, END, FAIL, REQUEUE, ALL, TIME_LIMIT, TIME_LIMIT_90, TIME_LIMIT_80, and TIME_LIMIT_50
 EMAIL_TYPE="ALL"
 
+# Location to copy pipeline errors to, for when jobs fail
+FAILURE_DIRECTORY="/group/askaprt/processing/pipeline-errors"
+
 ####################
 # Times for individual slurm jobs
 JOB_TIME_DEFAULT="12:00:00"
@@ -233,9 +236,9 @@ BEAMLIST=""
 
 ####################
 # Image output type
-IMAGETYPE_CONT=casa
-IMAGETYPE_CONTCUBE=casa
-IMAGETYPE_SPECTRAL=casa
+IMAGETYPE_CONT=fits
+IMAGETYPE_CONTCUBE=fits
+IMAGETYPE_SPECTRAL=fits
 
 ####################
 ##  BANDPASS CAL
@@ -260,11 +263,17 @@ BANDPASS_MINUV=200
 # Reference antenna to be used in the cbpcalibrator task
 BANDPASS_REFANTENNA=1
 
-# Smoothing of the bandpass table - this is achieved by the ACES tool
-# plot_caltable.py. This tool also plots the cal solutions
+# Smoothing of the bandpass table.
+# This is achieved by either the ACES tool plot_caltable.py (which
+# also plots the cal solutions), or with Wasim Raja's
+# smooth_bandpass.py tool. 
 
 # Whether to smooth the bandpass
 DO_BANDPASS_SMOOTH=true
+# Which method to use - either "plot_caltable" or "smooth_bandpass"
+BANDPASS_SMOOTH_TOOL="plot_caltable"
+
+# The following are parameters for plot_caltable
 # Whether to run plot_caltable.py to produce plots
 DO_BANDPASS_PLOT=true
 # If true, smooth the amplitudes. If false, smooth real & imaginary
@@ -276,8 +285,22 @@ BANDPASS_SMOOTH_FIT=0
 # The threshold level for fitting bandpass
 BANDPASS_SMOOTH_THRESHOLD=3.0
 
+# The following are parameters for smooth_bandpass
+# The polynomial order for the fit
+BANDPASS_SMOOTH_POLY_ORDER=""
+# The harmonic order for the fit
+BANDPASS_SMOOTH_HARM_ORDER=""
+# The number of windows to divide the spectrum into for the moving fit
+BANDPASS_SMOOTH_N_WIN=""
+# The width (in channels) of the Gaussian Taper function to remove
+# high-frequency components
+BANDPASS_SMOOTH_N_TAPER=""
+# The number of iterations for Fourier-interpolation across flagged
+# points
+BANDPASS_SMOOTH_N_ITER=""
+
 # Whether to apply the bandpass solution to the 1934 dataset itself
-DO_APPLY_BANDPASS_1934=false
+DO_APPLY_BANDPASS_1934=true
 # If true, keep the raw bandpass datasets separate to the calibrated
 # versions
 KEEP_RAW_1934_DATA=true
@@ -451,10 +474,41 @@ CHANNEL_FLAG_SCIENCE_AV=""
 # Time range(s) to flag in the averaged science data
 TIME_FLAG_SCIENCE_AV=""
 
+######################
+# AOflagger options
+
+# Global switch, plus switches for individual flagging tasks. Setting
+# the global switch will override the individual values
+FLAG_WITH_AOFLAGGER=""
+FLAG_1934_WITH_AOFLAGGER=false
+FLAG_SCIENCE_WITH_AOFLAGGER=false
+FLAG_SCIENCE_AV_WITH_AOFLAGGER=false
+
+# Strategy files. Setting the global one overrides the individual
+# values.
+AOFLAGGER_STRATEGY=""
+AOFLAGGER_STRATEGY_1934=""
+AOFLAGGER_STRATEGY_SCIENCE=""
+AOFLAGGER_STRATEGY_SCIENCE_AV=""
+
+# Verbose output (-v option for aoflagger) - global parameter
+AOFLAGGER_VERBOSE=true
+
+# Read mode for AOflagger - either "auto", "direct", "indirect",
+# "memory". These trigger the following respective command-line
+# options: -auto-read-mode, -direct-read, -indirect-read, -memory-read
+AOFLAGGER_READ_MODE="auto"
+
+# Allow use of uvw values
+AOFLAGGER_UVW=false
+
+######################
+# Imaging
+
 # Data column in MS to use in cimager
 DATACOLUMN=DATA
 # Number of Taylor terms to create in MFS imaging
-NUM_TAYLOR_TERMS=1
+NUM_TAYLOR_TERMS=2
 # Number of CPUs to use on each core in the continuum imaging
 CPUS_PER_CORE_CONT_IMAGING=20
 # Total number of cores to use for the continuum imaging. Leave blank
@@ -482,7 +536,7 @@ RESTORING_BEAM_CUTOFF_CONT=0.5
 # number of channels each core will process
 NCHAN_PER_CORE=1
 # the spectral line imager needs its own otherwise we lose some flexibility
-NCHAN_PER_CORE_SL=54
+NCHAN_PER_CORE_SL=9
 # store the visibilities in shared memory.
 # this will give a performance boost at the expense of memory usage
 USE_TMPFS=false
@@ -497,9 +551,9 @@ DO_LOCAL_SOLVER=false
 # How many sub-cubes to write out.
 # This improves performance of the imaging - and also permits parallelisation
 # of the LINMOS step
-NUM_SPECTRAL_WRITERS=1
+NUM_SPECTRAL_WRITERS=16
 # Whether to write out a single file in the case of writing to FITS
-ALT_IMAGER_SINGLE_FILE=false
+ALT_IMAGER_SINGLE_FILE=true
 
 # Same for continuum cubes
 NUM_SPECTRAL_WRITERS_CONTCUBE=1
@@ -508,14 +562,21 @@ ALT_IMAGER_SINGLE_FILE_CONTCUBE=true
 
 ####################
 # Gridding parameters for continuum imaging
-GRIDDER_SNAPSHOT_IMAGING=true
+GRIDDER_SNAPSHOT_IMAGING=false
+# Actual parameters used, which depend on whether snapshot imaging is used
+GRIDDER_WMAX=""
+GRIDDER_MAXSUPPORT=""
+# Defaults, with and without snapshot imaging
+GRIDDER_WMAX_SNAPSHOT=2600
+GRIDDER_MAXSUPPORT_SNAPSHOT=512
+GRIDDER_WMAX_NO_SNAPSHOT=26000
+GRIDDER_MAXSUPPORT_NO_SNAPSHOT=1024
+# Other gridding parameters that don't change with snapshot status
 GRIDDER_SNAPSHOT_WTOL=2600
 GRIDDER_SNAPSHOT_LONGTRACK=true
 GRIDDER_SNAPSHOT_CLIPPING=0.01
-GRIDDER_WMAX=2600
 GRIDDER_NWPLANES=99
 GRIDDER_OVERSAMPLE=5
-GRIDDER_MAXSUPPORT=512
 
 ####################
 # Cleaning parameters for continuum imaging
@@ -559,8 +620,9 @@ RESTORE_PRECONDITIONER_WIENER_TAPER=""
 ####################
 # Self-calibration parameters
 #
-# Method to present self-cal model: via a model image ("Cmodel") or
-# via a components parset ("Components")
+# Method to present self-cal model: via a model image ("Cmodel")
+# via a components parset ("Components"), or using the
+# continuum-imaging clean model ("CleanModel")
 SELFCAL_METHOD="Cmodel"
 # Number of loops of self-calibration
 SELFCAL_NUM_LOOPS=2
@@ -665,9 +727,7 @@ NUM_CPUS_CONTCUBE_LINMOS=""
 # Cleaning parameters for spectral-line imaging
 # Which solver to use
 SOLVER_CONTCUBE=Clean
-# default clean algorithm is Basisfunction, as we don't need the
-# multi-frequency part that is used by BasisfunctionMFS
-CLEAN_CONTCUBE_ALGORITHM=Basisfunction
+CLEAN_CONTCUBE_ALGORITHM=BasisfunctionMFS
 CLEAN_CONTCUBE_MINORCYCLE_NITER=4000
 CLEAN_CONTCUBE_GAIN=0.1
 CLEAN_CONTCUBE_PSFWIDTH=512
@@ -737,31 +797,36 @@ REST_FREQUENCY_SPECTRAL=HI
 
 # Parameters for preconditioning (A.K.A. weighting) - allow these to
 # be different to the continuum case
-PRECONDITIONER_LIST_SPECTRAL="[Wiener]"
-PRECONDITIONER_SPECTRAL_GAUSS_TAPER="[10arcsec, 10arcsec, 0deg]"
-PRECONDITIONER_SPECTRAL_WIENER_ROBUSTNESS=2.
+PRECONDITIONER_LIST_SPECTRAL="[Wiener,GaussianTaper]"
+PRECONDITIONER_SPECTRAL_GAUSS_TAPER="[30arcsec, 30arcsec, 0deg]"
+PRECONDITIONER_SPECTRAL_WIENER_ROBUSTNESS=0.5
 PRECONDITIONER_SPECTRAL_WIENER_TAPER=""
 
 # Gridding parameters for spectral-line imaging
-GRIDDER_SPECTRAL_SNAPSHOT_IMAGING=true
+GRIDDER_SPECTRAL_SNAPSHOT_IMAGING=false
+# Actual parameters used, which depend on whether snapshot imaging is used
+GRIDDER_SPECTRAL_WMAX=""
+GRIDDER_SPECTRAL_MAXSUPPORT=""
+# Defaults, with and without snapshot imaging
+GRIDDER_SPECTRAL_WMAX_SNAPSHOT=2600
+GRIDDER_SPECTRAL_MAXSUPPORT_SNAPSHOT=512
+GRIDDER_SPECTRAL_WMAX_NO_SNAPSHOT=26000
+GRIDDER_SPECTRAL_MAXSUPPORT_NO_SNAPSHOT=1024
+# Other gridding parameters that don't change with snapshot status
 GRIDDER_SPECTRAL_SNAPSHOT_WTOL=2600
 GRIDDER_SPECTRAL_SNAPSHOT_LONGTRACK=true
 GRIDDER_SPECTRAL_SNAPSHOT_CLIPPING=0.01
-GRIDDER_SPECTRAL_WMAX=2600
 GRIDDER_SPECTRAL_NWPLANES=99
 GRIDDER_SPECTRAL_OVERSAMPLE=4
-GRIDDER_SPECTRAL_MAXSUPPORT=512
 
 # Cleaning parameters for spectral-line imaging
 SOLVER_SPECTRAL=Clean
-# default clean algorithm is Basisfunction, as we don't need the
-# multi-frequency part that is used by BasisfunctionMFS
-CLEAN_SPECTRAL_ALGORITHM=Basisfunction
+CLEAN_SPECTRAL_ALGORITHM=BasisfunctionMFS
 CLEAN_SPECTRAL_MINORCYCLE_NITER=5000
 CLEAN_SPECTRAL_GAIN=0.1
 CLEAN_SPECTRAL_PSFWIDTH=512
-CLEAN_SPECTRAL_SCALES="[0,3,10]"
-CLEAN_SPECTRAL_THRESHOLD_MINORCYCLE="[50%, 30mJy]"
+CLEAN_SPECTRAL_SCALES="[0,3,10,30]"
+CLEAN_SPECTRAL_THRESHOLD_MINORCYCLE="[50%, 30mJy, 3.5mJy]"
 CLEAN_SPECTRAL_THRESHOLD_MAJORCYCLE=20mJy
 CLEAN_SPECTRAL_NUM_MAJORCYCLES=5
 # If true, this will write out intermediate images at the end of each
@@ -858,6 +923,15 @@ SELAVY_BOX_SIZE=50
 # How the processors subdivide the image
 SELAVY_NSUBX=6
 SELAVY_NSUBY=3
+SELAVY_OVERLAPX=0
+SELAVY_OVERLAPY=0
+#
+# Whether to use the continuum cube to find the spectral index &
+# curvature
+USE_CONTCUBE_FOR_SPECTRAL_INDEX=false
+# If using contcube, this is the number of terms to solve for (1=just
+# I_0, 2 = I_0 & alpha, 3 = I_0, alpha, beta)
+SELAVY_NUM_SPECTRAL_TERMS=3
 
 ##############################
 # Run the continuum validation script following source finding
@@ -916,7 +990,7 @@ SELAVY_POL_PHI_ZERO=0
 # out based on number of requested cores
 CPUS_PER_CORE_SELAVY_SPEC=""
 # Signal-to-noise ratio threshold
-SELAVY_SPEC_SNR_CUT=5
+SELAVY_SPEC_SNR_CUT=8
 # Flux threshold - leave blank to use SNR
 SELAVY_SPEC_FLUX_THRESHOLD=""
 # Whether to grow to a lower threshold
@@ -952,13 +1026,16 @@ SELAVY_SPEC_RECON_SCALE_MAX=0
 # Type of searching to be done - 'spectral' or 'spatial'
 SELAVY_SPEC_SEARCH_TYPE=spatial
 # Whether to use a variable threshold
-SELAVY_SPEC_VARIABLE_THRESHOLD=false
+SELAVY_SPEC_VARIABLE_THRESHOLD=true
 # Half-size of the box used to calculate the local threshold
 SELAVY_SPEC_BOX_SIZE=35
 # How the processors subdivide the image
 SELAVY_SPEC_NSUBX=6
-SELAVY_SPEC_NSUBY=3
-SELAVY_SPEC_NSUBZ=11
+SELAVY_SPEC_NSUBY=9
+SELAVY_SPEC_NSUBZ=18
+SELAVY_SPEC_OVERLAPX=0
+SELAVY_SPEC_OVERLAPY=0
+SELAVY_SPEC_OVERLAPZ=20
 #
 # Limits on sizes of reported sources
 SELAVY_SPEC_MIN_PIX=5
@@ -966,7 +1043,7 @@ SELAVY_SPEC_MIN_CHAN=5
 SELAVY_SPEC_MAX_CHAN=2592
 #
 # Whether to use the optimiseMask option
-SELAVY_SPEC_OPTIMISE_MASK=true
+SELAVY_SPEC_OPTIMISE_MASK=false
 #
 
 ###############################
@@ -974,6 +1051,10 @@ SELAVY_SPEC_OPTIMISE_MASK=true
 
 # The image prefixes to be archived
 IMAGE_LIST="image psf psf.image residual sensitivity"
+
+# Whether we should archive the full-resolution (spectral) measurement
+# sets
+ARCHIVE_SPECTRAL_MS=true
 
 # Whether to archive individual beam images
 ARCHIVE_BEAM_IMAGES=false
@@ -983,7 +1064,7 @@ ARCHIVE_SELFCAL_LOOP_MOSAICS=false
 ARCHIVE_FIELD_MOSAICS=false
 
 # OPAL project ID, for CASDA use
-PROJECT_ID="AS031"
+PROJECT_ID="AS033"
 
 # Observation program description
 OBS_PROGRAM="Commissioning"
@@ -1013,7 +1094,7 @@ WRITE_CASDA_READY=false
 TRANSITION_SB=false
 
 # Base directory for casdaupload output
-CASDA_UPLOAD_DIR=/scratch2/casda/prd
+CASDA_UPLOAD_DIR=/group/casda/prd
 
 # Delay between slurm jobs that poll CASDA output directory for the DONE file
 POLLING_DELAY_SEC=1800

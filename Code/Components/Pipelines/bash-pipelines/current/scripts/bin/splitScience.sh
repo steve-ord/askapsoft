@@ -131,8 +131,8 @@ sedstr="s/sbatch/\${SLURM_JOB_ID}\.sbatch/g"
 thisfile=$sbatchfile
 cp \$thisfile "\$(echo \$thisfile | sed -e "\$sedstr")"
 
-STARTTIME=$(date +%FT%T)
 log=${logs}/copyMS_science_${FIELDBEAM}_\${SLURM_JOB_ID}.log
+STARTTIME=\$(date +%FT%T)
 cat > \$log <<EOFINNER
 Log file for copying input measurement set :
 inputMS=${inputMS}
@@ -144,40 +144,18 @@ useDCP=${USE_DCP_TO_COPY_MS}
 
 if [ "\${useDCP}" == "true" ]; then
 
-    /usr/bin/time -p -o \$log ssh hpc-data "module load mpifileutils; mpirun -np 4 dcp $inputMS ${OUTPUT}/$msSci"
-
+    /usr/bin/time -p -o "\${log}.timing" ssh hpc-data "module load mpifileutils; mpirun -np 4 dcp $inputMS ${OUTPUT}/$msSci"
     err=\$?
-    if [ "\$?" -eq 0 ]; then
-        RESULT_TXT="OK"
-    else
-        RESULT_TXT="FAIL"
-    fi
     
 else
 
-    /usr/bin/time -p -o \$log cp -r $inputMS ${OUTPUT}/$msSci
-
+    /usr/bin/time -p -o "\${log}.timing" cp -r $inputMS ${OUTPUT}/$msSci
     err=\$?
-    if [ "\$?" -eq 0 ]; then
-        RESULT_TXT="OK"
-    else
-        RESULT_TXT="FAIL"
-    fi
 
 fi
 
-REALTIME=\$(grep real \$log | awk '{print \$2}')
-USERTIME=\$(grep user \$log | awk '{print \$2}')
-SYSTIME=\$(grep sys \$log | awk '{print \$2}')
-
-for format in csv txt; do
-    if [ "\$format" == "txt" ]; then
-        output="${stats}/stats-\${SLURM_JOB_ID}-${jobname}.txt"
-    elif [ "\$format" == "csv" ]; then
-        output="${stats}/stats-\${SLURM_JOB_ID}-${jobname}.csv"
-    fi
-    writeStats "\$SLURM_JOB_ID" 1 "${jobname}"  "\$RESULT_TXT" "\$REALTIME" "\$USERTIME" "\$SYSTIME" 0. 0.  "\$STARTTIME" "\$format" >> "\$output"
-done
+echo "STARTTIME=\${STARTTIME}" >> "\${log}.timing"
+extractStatsNonStandard "\${log}" 1 "\${SLURM_JOB_ID}" \${err} "${jobname}" "txt,csv"
 
 
 EOFOUTER

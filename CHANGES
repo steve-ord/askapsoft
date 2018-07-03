@@ -1,3 +1,110 @@
+Next Release
+------------
+
+A summary of items that are in trunk and will be in the next release:
+
+Pipeline updates:
+
+ * Ability to use AOflagger instead of cflag.
+ * Ability to use the continuum cubes to measure spectral indices of
+   continuum components (using Selavy).
+ * Fixing a bug where the CleanModel option of continuum-subtraction
+   was using the wrong image name.
+ * Allow self-calibration to use the clean model image as the model
+   for calibration (in the manner of continuum-subtraction).
+ * Improvement of the continuum subtraction Selavy parameterisations,
+   to better model the continuum components. The Selavy parsets are
+   now consistent with those used for the continuum cataloguing.
+ * Collation of pipeline jobs that failed, for analysis by ASKAP
+   Operations, to help identify pipeline or platform issues.
+ * Use of an alternative bandpass smoothing task -
+   smooth_bandpass.py (instead of plot_caltable.py).
+ * Use of an additional bandpass validation script to produce summary
+   diagnostic plots for the bandpass solutions.
+ * Fixed a bug where the bandpass table name was not set correctly
+   when the the DO_FIND_BANDPASS switch was turned off.
+ * Addition of the spectral measurement sets, the
+   continuum-subtraction models/catalogues, and the spectral cube beam
+   logs to the list of artefacts to be sent to CASDA upon pipeline
+   completion. 
+ * Changes to some default parameters. Here are the parameters that
+   have changed, with their new values (note that the WMAX and
+   MAXSUPPORT gridding parameters now also adapt their default values
+   according to whether snapshot imaging is turned on or off):
+
+  IMAGETYPE_CONT=fits
+  IMAGETYPE_CONTCUBE=fits
+  IMAGETYPE_SPECTRAL=fits
+  NUM_TAYLOR_TERMS=2
+  NCHAN_PER_CORE_SL=9
+  NUM_SPECTRAL_WRITERS=16
+  ALT_IMAGER_SINGLE_FILE=true
+  PRECONDITIONER_LIST_SPECTRAL="[Wiener,GaussianTaper]"
+  PRECONDITIONER_SPECTRAL_GAUSS_TAPER="[30arcsec, 30arcsec, 0deg]"
+  PRECONDITIONER_SPECTRAL_WIENER_ROBUSTNESS=0.5
+  CLEAN_SPECTRAL_ALGORITHM=BasisfunctionMFS
+  CLEAN_SPECTRAL_SCALES="[0,3,10,30]"
+  CLEAN_SPECTRAL_THRESHOLD_MINORCYCLE="[50%, 30mJy, 3.5mJy]"
+  CLEAN_CONTCUBE_ALGORITHM=BasisfunctionMFS
+  DO_APPLY_BANDPASS_1934=true
+  GRIDDER_SNAPSHOT_IMAGING=false
+  GRIDDER_SPECTRAL_SNAPSHOT_IMAGING=false
+  GRIDDER_SPECTRAL_WMAX_SNAPSHOT=2600
+  GRIDDER_SPECTRAL_MAXSUPPORT_SNAPSHOT=512
+  GRIDDER_SPECTRAL_WMAX_NO_SNAPSHOT=26000
+  GRIDDER_SPECTRAL_MAXSUPPORT_NO_SNAPSHOT=1024
+  GRIDDER_WMAX_SNAPSHOT=2600
+  GRIDDER_MAXSUPPORT_SNAPSHOT=512
+  GRIDDER_WMAX_NO_SNAPSHOT=26000
+  GRIDDER_MAXSUPPORT_NO_SNAPSHOT=1024
+  SELAVY_SPEC_OPTIMISE_MASK=false
+  SELAVY_SPEC_VARIABLE_THRESHOLD=true
+  SELAVY_SPEC_SNR_CUT=8
+
+Processing tasks:
+
+ * An MPI barrier has been added to the spectral imager to prevent
+   race conditions in the writing.
+ * Better handling of cases in the bandpass calibration that were
+   previously (prior to 0.20.3) causing it to fail with SVD conversion
+   errors.
+ * Selavy will now report the best component fit (assuming it
+   converges in the fitting), regardless of the chi-squared. If poor,
+   a new flag will be set.
+ * If the fit fails to converge, Selavy can reduce the number of
+   Gaussians being fit to try to get a good fit.
+ * A bug in Selavy was fixed to allow the curvature-map method of
+   identifying components to better take into account the weights
+   image associated with the image being searched.
+ * A further bug in Selavy (the extraction code) was fixed to allow
+   its use on images without spectral or Stokes axes.
+ * The SNR image produced by Selavy now has a blank string for the
+   pixel units.
+ * The implementation of the variable threshold calculations in Selavy
+   have been streamlined, to improve the memory usage particularly for
+   large spectral cubes. There is also control over the imagetype for
+   the images written as part of this algorithm.
+
+Manager & ingest:
+
+ * Improvements to the CP manager.
+ * UVW calculations fixed in the course of testing new fringe rotator modes.
+
+ASKAPsoft environment:
+
+ * Incorporation of python-casacore in the cpapps build (used to
+   create the askapsoft module at Pawsey). 
+
+Documentation:
+
+ * Added a chapter to the user documentation on how to combine multiple
+   epochs for spectral line data. 
+ * Added a chapter to the user documentation explaining the best way
+   to do MS/MFS deconvolution in askapsoft
+ * Added a page to the user documentation listing the release notes
+   for each release.
+   
+
 0.20.3 (2 April 2018)
 ---------------------
 

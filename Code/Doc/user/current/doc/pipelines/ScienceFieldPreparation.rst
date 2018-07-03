@@ -16,7 +16,12 @@ channels is done, and there is only a single beam in the MS, then the
 beam MSs are copied instead of using *mssplit*. This will run much
 faster.
 
-As for the bandpass calibrator, the MS is then flagged in two
+Once copied or split, the raw measurement set is first calibrated with
+the bandpass calibration table derived previously (see
+:doc:`BandpassCalibrator`). Once calibrated, the dataset will be
+flagged to remove interference.
+
+As is the case for the bandpass calibrator dataset, the MS is flagged in two
 passes. First, a combination of selection rules (allowing flagging of
 channels, time ranges, antennas & baselines, and autocorrelations) and (optionally)
 a simple flat amplitude threshold are applied. Then a sequence of
@@ -24,7 +29,19 @@ Stokes-V flagging and dynamic flagging of amplitudes is done,
 optionally integrating over or across individual spectra. Each of
 these steps is selectable via input parameters.
 
-The averaging scale defaults to 54 channels, resulting in a
+Again, there is an option to use the
+AOFlagger tool (written by Andre Offringa) to do the flagging. This
+can be turned on by ``FLAG_WITH_AOFLAGGER``, or
+``FLAG_SCIENCE_WITH_AOFLAGGER`` & ``FLAG_SCIENCE_AV_WITH_AOFLAGGER``
+(to just do it for the full-spectral-resolution or averaged science
+data respectively). You can provide a strategy file via
+``AOFLAGGER_STRATEGY`` or ``AOFLAGGER_STRATEGY_SCIENCE`` &
+``AOFLAGGER_STRATEGY_SCIENCE_AV``, with access to some of the
+aoflagger parameters provided - see the table below. These strategy
+files need to be created prior to running the pipeline.
+
+The dataset used for continuum imaging is created by averaging the
+frequency channels. The averaging scale defaults to 54 channels, resulting in a
 1MHz-resolution MS that can be imaged with cimager, although this
 averaging scale can be changed by the user.
 
@@ -140,16 +157,13 @@ is possible, however, to select a single field to process via the
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
 | ``FLAG_DO_FLAT_AMPLITUDE_SCIENCE``            | false                           | none                                            | Whether to apply a flag amplitude flux threshold to the data.         |
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
-| ``FLAG_THRESHOLD_AMPLITUDE_SCIENCE``          | 0.2                             | amplitude_flagger.high (:doc:`../calim/cflag`)  | Simple amplitude threshold applied when flagging science field data.  |
+| ``FLAG_THRESHOLD_AMPLITUDE_SCIENCE``          | 10.                             | amplitude_flagger.high (:doc:`../calim/cflag`)  | Simple amplitude threshold applied when flagging science field data.  |
 |                                               |                                 |                                                 | If set to blank (``FLAG_THRESHOLD_AMPLITUDE_SCIENCE_LOW=""``),        |
 |                                               |                                 |                                                 | then no minimum value is applied.                                     |
-|                                               |                                 |                                                 | [hardware units - before calibration]                                 |
-|                                               |                                 |                                                 |                                                                       |
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
 | ```FLAG_THRESHOLD_AMPLITUDE_SCIENCE_LOW``     | ""                              | amplitude_flagger.low (:doc:`../calim/cflag`)   | Lower threshold for the simple amplitude flagging. If set             |
 |                                               |                                 |                                                 | to blank (``FLAG_THRESHOLD_AMPLITUDE_SCIENCE_LOW=""``),               |
 |                                               |                                 |                                                 | then no minimum value is applied.                                     |
-|                                               |                                 |                                                 | [value in hardware units - before calibration]                        |
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
 | ``ANTENNA_FLAG_SCIENCE``                      | ""                              | selection_flagger.<rule>.antenna                | Allows flagging of antennas or baselines. For example, to             |
 |                                               |                                 | (:doc:`../calim/cflag`)                         | flag out the 1-3 baseline, set this to "ak01&&ak03" (with             |
@@ -158,7 +172,7 @@ is possible, however, to select a single field to process via the
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
 | ``CHANNEL_FLAG_SCIENCE``                      | ""                              | selection_flagger.<rule>.spw                    | Allows flagging of a specified range of channels. For example, to flag|
 |                                               |                                 | (:doc:`../calim/cflag`)                         | out the first 100 channnels, use "0:0~16" (with the quote marks). See |
-|                                               |                                 |                                                 | the docuemntation for further details on the format.                  |
+|                                               |                                 |                                                 | the documentation for further details on the format.                  |
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
 | ``TIME_FLAG_SCIENCE``                         | ""                              | selection_flagger.<rule>.timerange              | Allows flagging of a specified time range(s). The string given is     |
 |                                               |                                 | (:doc:`../calim/cflag`)                         | passed directly to the ``timerange`` option of cflag's selection      |
@@ -187,7 +201,7 @@ is possible, however, to select a single field to process via the
 | ``FLAG_DYNAMIC_INTEGRATE_TIMES_AV``           | false                           | amplitude_flagger.integrateTimes                | Whether to integrate across spectra and flag time samples during the  |
 |                                               |                                 | (:doc:`../calim/cflag`)                         | dynamic flagging task.                                                |
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
-|  ``FLAG_THRESHOLD_DYNAMIC_SCIENCE_TIMES_AV``  | 4.0                             | amplitude_flagger.integrateTimes.threshold      | Dynamic threshold applied to amplitudes when flagging the averaged    |
+| ``FLAG_THRESHOLD_DYNAMIC_SCIENCE_TIMES_AV``   | 4.0                             | amplitude_flagger.integrateTimes.threshold      | Dynamic threshold applied to amplitudes when flagging the averaged    |
 |                                               |                                 | (:doc:`../calim/cflag`)                         | science field data in integrateTimes mode [sigma]                     |
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
 | ``FLAG_DO_STOKESV_SCIENCE_AV``                | true                            | none                                            | Whether to do the Stokes-V flagging on the averaged science data,     |
@@ -214,12 +228,12 @@ is possible, however, to select a single field to process via the
 | ``FLAG_DO_FLAT_AMPLITUDE_SCIENCE_AV``         | false                           | none                                            | Whether to apply a flag amplitude flux threshold to the averaged      |
 |                                               |                                 |                                                 | science data.                                                         |
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
-|    ``FLAG_THRESHOLD_AMPLITUDE_SCIENCE_AV``    | 0.2                             | amplitude_flagger.high (:doc:`../calim/cflag`)  | Simple amplitude threshold applied when flagging the averaged science |
+| ``FLAG_THRESHOLD_AMPLITUDE_SCIENCE_AV``       | 10.                             | amplitude_flagger.high (:doc:`../calim/cflag`)  | Simple amplitude threshold applied when flagging the averaged science |
 |                                               |                                 |                                                 | field data. If set to blank                                           |
 |                                               |                                 |                                                 | (``FLAG_THRESHOLD_AMPLITUDE_SCIENCE_LOW=""``),                        |
 |                                               |                                 |                                                 | then no minimum value is applied. [value in flux-calibrated units]    |
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
-|  ``FLAG_THRESHOLD_AMPLITUDE_SCIENCE_LOW_AV``  | ""                              | amplitude_flagger.low (:doc:`../calim/cflag`)   | Lower threshold for the simple amplitude flagging on the averaged     |
+| ``FLAG_THRESHOLD_AMPLITUDE_SCIENCE_LOW_AV``   | ""                              | amplitude_flagger.low (:doc:`../calim/cflag`)   | Lower threshold for the simple amplitude flagging on the averaged     |
 |                                               |                                 |                                                 | data. If set to blank (``FLAG_THRESHOLD_AMPLITUDE_SCIENCE_LOW=""``),  |
 |                                               |                                 |                                                 | then no minimum value is applied. [value in flux-calibrated units]    |
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
@@ -231,6 +245,38 @@ is possible, however, to select a single field to process via the
 |                                               |                                 | (:doc:`../calim/cflag`)                         | passed directly to the ``timerange`` option of cflag's selection      |
 |                                               |                                 |                                                 | flagger. For details on the possible syntax, consult the `MS          |
 |                                               |                                 |                                                 | selection`_ documentation.                                            |
++-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
+| **Using AOFlagger for flagging**              |                                 |                                                 |                                                                       |
+|                                               |                                 |                                                 |                                                                       |
++-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
+| ``FLAG_WITH_AOFLAGGER``                       | false                           | none                                            | Use AOFlagger for all flagging tasks in the pipeline. This overrides  |
+|                                               |                                 |                                                 | the individual task level switches.                                   |
++-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
+| ``FLAG_SCIENCE_WITH_AOFLAGGER``               | false                           | none                                            | Use AOFlagger for the flagging of the full-spectral-resolution science|
+|                                               |                                 |                                                 | dataset. This and the next parameter allows differentiation between   |
+|                                               |                                 |                                                 | the different flagging tasks in the pipeline.                         |
++-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
+| ``FLAG_SCIENCE_AV_WITH_AOFLAGGER``            | false                           | none                                            | Use AOFlagger for the flagging of the averaged science dataset.       |
++-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
+| ``AOFLAGGER_STRATEGY``                        | ""                              | none                                            | The strategy file to use for all AOFlagger tasks in the               |
+|                                               |                                 |                                                 | pipeline. Giving this a value will apply this one strategy file to all|
+|                                               |                                 |                                                 | flagging jobs. The strategy file needs to be provided by the user.    |
++-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
+| ``AOFLAGGER_STRATEGY_SCIENCE``                | ""                              | none                                            | The strategy file to be used for the full-spectral-resolution science |
+|                                               |                                 |                                                 | dataset. This will be overridden by ``AOFLAGGER_STRATEGY``.           |
++-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
+| ``AOFLAGGER_STRATEGY_SCIENCE_AV``             | ""                              | none                                            | The strategy file to be used for the averaged science dataset. This   |
+|                                               |                                 |                                                 | will be overridden by ``AOFLAGGER_STRATEGY``.                         |
++-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
+| ``AOFLAGGER_VERBOSE``                         | true                            | none                                            | Verbose output for AOFlagger                                          |
++-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
+| ``AOFLAGGER_READ_MODE``                       | auto                            | none                                            | Read mode for AOflagger. This can take the value of one of "auto",    |
+|                                               |                                 |                                                 | "direct", "indirect", or "memory". These trigger the following        |
+|                                               |                                 |                                                 | respective command-line options for AOflagger: "-auto-read-mode",     |
+|                                               |                                 |                                                 | "-direct-read", "-indirect-read", "-memory-read".                     |
++-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
+| ``AOFLAGGER_UVW``                             | false                           | none                                            | When true, the command-line argument "-uvw" is added to the AOFlagger |
+|                                               |                                 |                                                 | command. This reads uvw values (some exotic strategies require these).|
 +-----------------------------------------------+---------------------------------+-------------------------------------------------+-----------------------------------------------------------------------+
 
 

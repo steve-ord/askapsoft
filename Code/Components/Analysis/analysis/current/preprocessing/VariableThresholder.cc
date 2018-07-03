@@ -57,16 +57,23 @@ namespace askap {
 namespace analysis {
 
 VariableThresholder::VariableThresholder(askap::askapparallel::AskapParallel& comms,
-                                         const LOFAR::ParameterSet &parset):
+        const LOFAR::ParameterSet &parset):
     itsComms(&comms),
-    itsParset(parset)
+    itsParset(parset),
+    itsImageSuffix("")
 {
-    itsBoxSize = parset.getInt16("boxSize", 50);
-    itsSNRimageName = parset.getString("SNRimageName", "");
-    itsThresholdImageName = parset.getString("ThresholdImageName", "");
-    itsNoiseImageName = parset.getString("NoiseImageName", "");
-    itsAverageImageName = parset.getString("AverageImageName", "");
-    itsBoxSumImageName = parset.getString("BoxSumImageName", "");
+    itsBoxSize = itsParset.getInt16("boxSize", 50);
+    itsImagetype = itsParset.getString("imagetype", "fits");
+    if (! itsParset.isDefined("imagetype")){
+        itsParset.add("imagetype",itsImagetype);
+    }
+    itsImageSuffix = (itsImagetype == "fits") ? ".fits" : "";
+    itsSNRimageName = itsParset.getString("SNRimageName", "");
+    itsThresholdImageName = itsParset.getString("ThresholdImageName", "");
+    itsNoiseImageName = itsParset.getString("NoiseImageName", "");
+    itsAverageImageName = itsParset.getString("AverageImageName", "");
+    itsBoxSumImageName = itsParset.getString("BoxSumImageName", "");
+
     itsFlagWriteImages = (itsSNRimageName != "" ||
                           itsThresholdImageName != "" ||
                           itsNoiseImageName != "" ||
@@ -76,44 +83,41 @@ VariableThresholder::VariableThresholder(askap::askapparallel::AskapParallel& co
     itsSearchType = "spatial";
     itsCube = 0;
     itsFlagRobustStats = true;
-    itsFlagReuse = parset.getBool("reuse", false);
+    itsFlagReuse = itsParset.getBool("reuse", false);
     // User wants to reuse, but have they provided an SNR image?
     if (itsSNRimageName == "") {
         ASKAPLOG_WARN_STR(logger,
                           "Variable Thresholder: reuse=true, but no SNR image name given. " <<
                           "Turning reuse off.");
         itsFlagReuse = false;
-    }
-    else if (! analysisutilities::imageExists(itsSNRimageName)) {
+    } else if (! analysisutilities::imageExists(snrImage())) {
         // If so, does that image exist?
         ASKAPLOG_WARN_STR(logger,
-                          "Variable Thresholder: reuse=true, but SNR image " << itsSNRimageName <<
+                          "Variable Thresholder: reuse=true, but SNR image " << snrImage() <<
                           " can not be opened. Turning reuse off.");
         itsFlagReuse = false;
     }
 }
 
-void VariableThresholder::setFilenames(askap::askapparallel::AskapParallel& comms)
+std::string VariableThresholder::snrImage()
 {
-    if (comms.isParallel()) {
-        std::stringstream suffix;
-        suffix << "_" << comms.rank() << "_" << comms.nProcs();
-        if (itsSNRimageName != "") {
-            itsSNRimageName += suffix.str();
-        }
-        if (itsNoiseImageName != "") {
-            itsNoiseImageName += suffix.str();
-        }
-        if (itsBoxSumImageName != "") {
-            itsBoxSumImageName += suffix.str();
-        }
-        if (itsAverageImageName != "") {
-            itsAverageImageName += suffix.str();
-        }
-        if (itsThresholdImageName != "") {
-            itsThresholdImageName += suffix.str();
-        }
-    }
+    return (itsSNRimageName == "" ) ? itsSNRimageName : itsSNRimageName + itsImageSuffix;
+}
+std::string VariableThresholder::thresholdImage()
+{
+    return (itsThresholdImageName == "" ) ? itsThresholdImageName : itsThresholdImageName + itsImageSuffix;
+}
+std::string VariableThresholder::noiseImage()
+{
+    return (itsNoiseImageName == "" ) ? itsNoiseImageName : itsNoiseImageName + itsImageSuffix;
+}
+std::string VariableThresholder::averageImage()
+{
+    return (itsAverageImageName == "" ) ? itsAverageImageName : itsAverageImageName + itsImageSuffix;
+}
+std::string VariableThresholder::boxSumImage()
+{
+    return (itsBoxSumImageName == "" ) ? itsBoxSumImageName : itsBoxSumImageName + itsImageSuffix;
 }
 
 
@@ -133,18 +137,21 @@ void VariableThresholder::initialise(duchamp::Cube &cube,
     itsSlicer = analysisutilities::subsectionToSlicer(cube.pars().section());
     analysisutilities::fixSlicer(itsSlicer, cube.header().getWCS());
 
+    if (!itsFlagReuse) {
+        createImages();
+    }
+
     const boost::shared_ptr<SubImage<Float> > sub =
         analysisutilities::getSubImage(cube.pars().getImageFile(), itsSlicer);
     itsInputCoordSys = sub->coordinates();
     itsInputShape = sub->shape();
-    itsMask = sub->getMask();
-    if (itsComms->isParallel() && itsComms->isMaster()){
-        itsInputShape=casa::IPosition(itsInputShape.size(),1);
+    if (itsComms->isParallel() && itsComms->isMaster()) {
+        // itsInputShape=casa::IPosition(itsInputShape.size(),1);
+    } else {
+        itsMask = sub->getMask();
     }
 
-    ASKAPLOG_DEBUG_STR(logger , "About to get the section for rank " << itsComms->rank());
     duchamp::Section sec = itsSubimageDef->section(itsComms->rank() - 1);
-    ASKAPLOG_DEBUG_STR(logger, "It is " << sec.getSection());
     sec.parse(itsInputShape.asStdVector());
     itsLocation = casa::IPosition(sec.getStartList());
     ASKAPLOG_DEBUG_STR(logger,
@@ -152,7 +159,6 @@ void VariableThresholder::initialise(duchamp::Cube &cube,
                        " is " << itsLocation <<
                        " since local subsection = " << sec.getSection() <<
                        " and input shape = " << itsInputShape);
-
 
 }
 
@@ -162,12 +168,10 @@ void VariableThresholder::calculate()
 
     if (itsFlagReuse) {
 
-        ASKAPLOG_INFO_STR(logger, "Reusing SNR map from file " << itsSNRimageName);
+        ASKAPLOG_INFO_STR(logger, "Reusing SNR map from file " << snrImage());
 
-        // casa::Array<Float> snr = analysisutilities::getPixelsInBox(itsSNRimageName,
-        //                                                            itsSlicer);
-        casa::MaskedArray<Float> snr = analysisutilities::getPixelsInBox(itsSNRimageName,
-                                                                         itsSlicer);
+        casa::MaskedArray<Float> snr = analysisutilities::getPixelsInBox(snrImage(),
+                                       itsSlicer);
 
         if (itsCube->getRecon() == 0) {
             ASKAPLOG_ERROR_STR(logger,
@@ -182,25 +186,20 @@ void VariableThresholder::calculate()
     } else {
 
         ASKAPLOG_INFO_STR(logger, "Will calculate the pixel-by-pixel signal-to-noise map");
-        if (itsSNRimageName != "") {
-            ASKAPLOG_INFO_STR(logger, "Will write the SNR map to " <<
-                              itsSNRimageName);
+        if (snrImage() != "") {
+            ASKAPLOG_INFO_STR(logger, "Will write the SNR map to " << snrImage());
         }
-        if (itsBoxSumImageName != "") {
-            ASKAPLOG_INFO_STR(logger, "Will write the box sum map to " <<
-                              itsBoxSumImageName);
+        if (boxSumImage() != "") {
+            ASKAPLOG_INFO_STR(logger, "Will write the box sum map to " << boxSumImage());
         }
-        if (itsNoiseImageName != "") {
-            ASKAPLOG_INFO_STR(logger, "Will write the noise map to " <<
-                              itsNoiseImageName);
+        if (noiseImage() != "") {
+            ASKAPLOG_INFO_STR(logger, "Will write the noise map to " << noiseImage());
         }
-        if (itsAverageImageName != "") {
-            ASKAPLOG_INFO_STR(logger, "Will write the average background map to " <<
-                              itsAverageImageName);
+        if (averageImage() != "") {
+            ASKAPLOG_INFO_STR(logger, "Will write the average background map to " << averageImage());
         }
-        if (itsThresholdImageName != "") {
-            ASKAPLOG_INFO_STR(logger, "Will write the flux threshold map to " <<
-                              itsThresholdImageName);
+        if (thresholdImage() != "") {
+            ASKAPLOG_INFO_STR(logger, "Will write the flux threshold map to " << thresholdImage());
         }
 
         int specAxis = itsInputCoordSys.spectralAxisNumber();
@@ -230,73 +229,67 @@ void VariableThresholder::calculate()
                           "' mode with chunks of shape " << chunkshape <<
                           " and a box of shape " << box);
 
-        casa::Array<Float> full_middle(itsInputShape, 0.);
-        casa::Array<Float> full_spread(itsInputShape, 0.);
-        casa::Array<Float> full_snr(itsInputShape, 0.);
-        casa::Array<Float> full_boxsum(itsInputShape, 0.);
+        for (size_t ctr = 0; ctr < maxCtr; ctr++) {
+            if (maxCtr > 1) {
+                ASKAPLOG_DEBUG_STR(logger, "Variable Thresholder calculation: Iteration " <<
+                                   ctr << " of " << maxCtr);
+            }
+            casa::Array<Float> inputChunk(chunkshape, 0.);
+            casa::MaskedArray<Float>
+            inputMaskedChunk(inputChunk, casa::LogicalArray(chunkshape, true));
+            casa::Array<Float> middle(chunkshape, 0.);
+            casa::Array<Float> spread(chunkshape, 0.);
+            casa::Array<Float> snr(chunkshape, 0.);
+            casa::Array<Float> boxsum(chunkshape, 0.);
 
-        if (itsComms->isWorker()) {
-
-            for (size_t ctr = 0; ctr < maxCtr; ctr++) {
-                if (maxCtr > 1) {
-                    ASKAPLOG_DEBUG_STR(logger, "Variable Thresholder calculation: Iteration " <<
-                                       ctr << " of " << maxCtr);
+            casa::IPosition loc(itsLocation.size(), 0);
+            if (itsSearchType == "spatial") {
+                if (specAxis >= 0) {
+                    loc(specAxis) = ctr;
                 }
-                casa::Array<Float> inputChunk(chunkshape, 0.);
-                casa::MaskedArray<Float>
-                    inputMaskedChunk(inputChunk, casa::LogicalArray(chunkshape, true));
-                casa::Array<Float> middle(chunkshape, 0.);
-                casa::Array<Float> spread(chunkshape, 0.);
-                casa::Array<Float> snr(chunkshape, 0.);
-                casa::Array<Float> boxsum(chunkshape, 0.);
-
-                casa::IPosition loc(itsLocation.size(), 0);
-                if (itsSearchType == "spatial") {
-                    if (specAxis >= 0) {
-                        loc(specAxis) = ctr;
-                    }
-                } else {
-                    if (lngAxis >= 0) {
-                        loc(lngAxis) = ctr % itsCube->getDimX();
-                    }
-                    if (latAxis >= 0) {
-                        loc(latAxis) = ctr / itsCube->getDimX();
-                    }
+            } else {
+                if (lngAxis >= 0) {
+                    loc(lngAxis) = ctr % itsCube->getDimX();
                 }
-                // loc = loc + itsSlicer.start();
-                loc = loc + itsLocation;
+                if (latAxis >= 0) {
+                    loc(latAxis) = ctr / itsCube->getDimX();
+                }
+            }
+            loc = loc + itsLocation;
+
+            if (itsComms->isWorker()) {
 
                 this->defineChunk(inputChunk, inputMaskedChunk, ctr);
-                //slidingBoxStats(inputChunk, middle, spread, box, itsFlagRobustStats);
                 slidingBoxMaskedStats(inputMaskedChunk, middle, spread, box,
                                       itsFlagRobustStats);
-                // snr = calcSNR(inputChunk,middle,spread);
                 snr = calcMaskedSNR(inputMaskedChunk, middle, spread);
-                ASKAPLOG_DEBUG_STR(logger, "Adding data for location " << loc-itsLocation
-                                   << " to " << loc-itsLocation+chunkshape-1);
-                full_middle(loc-itsLocation,loc-itsLocation+chunkshape-1) = middle;
-                full_spread(loc-itsLocation,loc-itsLocation+chunkshape-1) = spread;
-                full_snr(loc-itsLocation,loc-itsLocation+chunkshape-1) = snr;
-                if (itsBoxSumImageName != "") {
-                    // boxsum = slidingArrayMath(inputChunk, box, SumFunc<Float>());
+                if (boxSumImage() != "") {
                     boxsum = slidingArrayMath(inputMaskedChunk, box, MaskedSumFunc<Float>());
-                    full_boxsum(loc,loc+chunkshape-1) = boxsum;
                 }
-                
-             ASKAPLOG_DEBUG_STR(logger,
-                                "About to store the SNR map to the cube for iteration " <<
-                                ctr << " of " << maxCtr);
-            this->saveSNRtoCube(snr, ctr);
-               
+
+                ASKAPLOG_DEBUG_STR(logger,
+                                   "About to store the SNR map to the cube for iteration " <<
+                                   ctr << " of " << maxCtr);
+                this->saveSNRtoCube(snr, ctr);
+
             }
 
-            
+            if (itsFlagWriteImages) {
+                casa::Array<bool> mask(inputMaskedChunk.getMask());
+                writeImage(spread, mask, itsNoiseImageName, itsLocation);
+                writeImage(middle, mask, itsAverageImageName, itsLocation);
+                writeImage(snr, mask, itsSNRimageName, itsLocation);
+                if (itsThresholdImageName != "") {
+                    casa::Array<Float> thresh = middle + itsSNRthreshold * spread;
+                    writeImage(thresh, mask, itsThresholdImageName, itsLocation);
+                }
+                writeImage(boxsum, mask, itsBoxSumImageName, itsLocation);
+            }
+
+
         }
-        
-        if (itsFlagWriteImages) {
-            this->writeImages(full_middle, full_spread, full_snr, full_boxsum, itsLocation, true);
-        }
-        
+
+
     }
 
     itsCube->setReconFlag(true);
@@ -350,48 +343,51 @@ void VariableThresholder::saveSNRtoCube(casa::Array<Float> &snr, size_t ctr)
 
 }
 
-void VariableThresholder::writeImages(casa::Array<Float> &middle,
-                                      casa::Array<Float> &spread,
-                                      casa::Array<Float> &snr,
-                                      casa::Array<Float> &boxsum,
-                                      casa::IPosition &loc,
-                                      bool doCreate)
+void VariableThresholder::createImages()
 {
 
-    bool addToImage = true;
-
-    if (itsNoiseImageName != "") {
+    if (noiseImage() != "") {
         DistributedImageWriter noiseWriter(*itsComms, itsParset, itsCube, itsNoiseImageName);
         noiseWriter.create();
-        noiseWriter.write(spread, itsMask, loc, addToImage);
     }
 
-    if (itsAverageImageName != "") {
+    if (averageImage() != "") {
         DistributedImageWriter averageWriter(*itsComms, itsParset, itsCube, itsAverageImageName);
         averageWriter.create();
-        averageWriter.write(middle, itsMask, loc, addToImage);
     }
 
-    if (itsThresholdImageName != "") {
+    if (snrImage() != "") {
+        DistributedImageWriter snrWriter(*itsComms, itsParset, itsCube, itsSNRimageName);
+        snrWriter.bunit() = "";
+        snrWriter.create();
+    }
+
+    if (thresholdImage() != "") {
         DistributedImageWriter threshWriter(*itsComms, itsParset, itsCube, itsThresholdImageName);
         threshWriter.create();
-        casa::Array<Float> thresh = middle + itsSNRthreshold * spread;
-        threshWriter.write(thresh, itsMask, loc, addToImage);
     }
 
-    if (itsSNRimageName != "") {
-        DistributedImageWriter snrWriter(*itsComms, itsParset, itsCube, itsSNRimageName);
-        snrWriter.create();
-        snrWriter.write(snr, itsMask, loc, addToImage);
-    }
-
-    if (itsBoxSumImageName != "") {
+    if (boxSumImage() != "") {
         DistributedImageWriter boxWriter(*itsComms, itsParset, itsCube, itsBoxSumImageName);
         boxWriter.create();
-        boxWriter.write(boxsum, itsMask, loc, addToImage);
     }
 
 
+
+}
+
+void VariableThresholder::writeImage(casa::Array<Float> &arr,
+                                     casa::Array<bool> &mask,
+                                     std::string imageName,
+                                     casa::IPosition &loc)
+{
+
+    if (imageName != "") {
+        bool addToImage = true;
+        ASKAPLOG_DEBUG_STR(logger, "Writing variable-threshold image to " << imageName);
+        DistributedImageWriter theWriter(*itsComms, itsParset, itsCube, imageName);
+        theWriter.write(arr, mask, loc, addToImage);
+    }
 }
 
 
