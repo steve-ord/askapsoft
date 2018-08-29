@@ -66,9 +66,11 @@ void BeamLogger::extractBeams(const std::vector<std::string>& imageList)
     itsBeamList.clear();
     std::vector<std::string>::const_iterator image = imageList.begin();
 
+    unsigned int chan=0;
     for (; image != imageList.end(); image++) {
         CasaImageAccess ia;
-        itsBeamList.push_back(ia.beamInfo(*image));
+        itsBeamList[chan] = ia.beamInfo(*image);
+        chan++;
     }
 }
 
@@ -79,11 +81,12 @@ void BeamLogger::write()
         std::ofstream fout(itsFilename.c_str());
         fout << "#Channel BMAJ[arcsec] BMIN[arcsec] BPA[deg]\n";
 
-        for (size_t i = 0; i < itsBeamList.size(); i++) {
-            fout << i << " "
-                 << itsBeamList[i][0].getValue("arcsec") << " "
-                 << itsBeamList[i][1].getValue("arcsec") << " "
-                 << itsBeamList[i][2].getValue("deg") << "\n";
+        std::map<unsigned int, casa::Vector<casa::Quantum<double> > >::iterator beam=itsBeamList.begin();
+        for(; beam!=itsBeamList.end();beam++){
+            fout << beam->first << " "
+                 << beam->second[0].getValue("arcsec") << " "
+                 << beam->second[1].getValue("arcsec") << " "
+                 << beam->second[2].getValue("deg") << "\n";
         }
 
     } else {
@@ -102,7 +105,7 @@ void BeamLogger::read()
 
         if (fin.is_open()) {
 
-            int chan;
+            unsigned int chan;
             double bmaj, bmin, bpa;
             std::string line, name;
 
@@ -115,7 +118,7 @@ void BeamLogger::read()
                     currentbeam[0] = casa::Quantum<double>(bmaj, "arcsec");
                     currentbeam[1] = casa::Quantum<double>(bmin, "arcsec");
                     currentbeam[2] = casa::Quantum<double>(bpa, "deg");
-                    itsBeamList.push_back(currentbeam);
+                    itsBeamList[chan] = currentbeam;
                 }
             }
 
