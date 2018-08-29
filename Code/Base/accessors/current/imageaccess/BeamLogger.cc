@@ -72,7 +72,7 @@ void BeamLogger::extractBeams(const std::vector<std::string>& imageList)
     itsBeamList.clear();
     std::vector<std::string>::const_iterator image = imageList.begin();
 
-    unsigned int chan=0;
+    unsigned int chan = 0;
     for (; image != imageList.end(); image++) {
         CasaImageAccess ia;
         itsBeamList[chan] = ia.beamInfo(*image);
@@ -87,8 +87,8 @@ void BeamLogger::write()
         std::ofstream fout(itsFilename.c_str());
         fout << "#Channel BMAJ[arcsec] BMIN[arcsec] BPA[deg]\n";
 
-        std::map<unsigned int, casa::Vector<casa::Quantum<double> > >::iterator beam=itsBeamList.begin();
-        for(; beam!=itsBeamList.end();beam++){
+        std::map<unsigned int, casa::Vector<casa::Quantum<double> > >::iterator beam = itsBeamList.begin();
+        for (; beam != itsBeamList.end(); beam++) {
             fout << beam->first << " "
                  << beam->second[0].getValue("arcsec") << " "
                  << beam->second[1].getValue("arcsec") << " "
@@ -117,7 +117,7 @@ void BeamLogger::read()
 
             while (getline(fin, line),
                     !fin.eof()) {
-                if ( line[0] != '#') {
+                if (line[0] != '#') {
                     std::stringstream ss(line);
                     ss >> chan >> bmaj >> bmin >> bpa;
                     casa::Vector<casa::Quantum<double> > currentbeam(3);
@@ -139,23 +139,23 @@ void BeamLogger::read()
 
 void BeamLogger::gather(askapparallel::AskapParallel &comms, int rankToGather)
 {
-    if(comms.isParallel()){
+    if (comms.isParallel()) {
 
-        for(int rank=0; rank<comms.nProcs();rank++){
+        for (int rank = 0; rank < comms.nProcs(); rank++) {
 
-            if( rank != rankToGather) {
-                if(rank == comms.rank()) {
+            if (rank != rankToGather) {
+                if (rank == comms.rank()) {
                     // send to desired rank
                     LOFAR::BlobString bs;
                     bs.resize(0);
                     LOFAR::BlobOBufString bob(bs);
                     LOFAR::BlobOStream out(bob);
                     out.putStart("gatherBeam", 1);
-                    unsigned int size=itsBeamList.size();
+                    unsigned int size = itsBeamList.size();
                     out << size;
-                    if (itsBeamList.size()>0){
-                        std::map<unsigned int, casa::Vector<casa::Quantum<double> > >::iterator beam=itsBeamList.begin();
-                        for(;beam!=itsBeamList.end();beam++){
+                    if (itsBeamList.size() > 0) {
+                        std::map<unsigned int, casa::Vector<casa::Quantum<double> > >::iterator beam = itsBeamList.begin();
+                        for (; beam != itsBeamList.end(); beam++) {
                             out << beam->first
                                 << beam->second[0].getValue("arcsec")
                                 << beam->second[1].getValue("arcsec")
@@ -164,8 +164,7 @@ void BeamLogger::gather(askapparallel::AskapParallel &comms, int rankToGather)
                     }
                     out.putEnd();
                     comms.sendBlob(bs, rankToGather);
-                }
-                else {
+                } else {
                     LOFAR::BlobString bs;
                     bs.resize(0);
                     comms.receiveBlob(bs, rank);
@@ -174,9 +173,9 @@ void BeamLogger::gather(askapparallel::AskapParallel &comms, int rankToGather)
                     int version = in.getStart("gatherBeam");
                     ASKAPASSERT(version == 1);
                     unsigned int size, chan;
-                    double bmaj,bmin,bpa;
+                    double bmaj, bmin, bpa;
                     in >> size;
-                    if (size > 0){
+                    if (size > 0) {
                         in >> chan >> bmaj >> bmin >> bpa;
                         casa::Vector<casa::Quantum<double> > currentbeam(3);
                         currentbeam[0] = casa::Quantum<double>(bmaj, "arcsec");
@@ -187,7 +186,7 @@ void BeamLogger::gather(askapparallel::AskapParallel &comms, int rankToGather)
                     in.getEnd();
                 }
             }
- 
+
         }
 
     }
