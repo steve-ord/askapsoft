@@ -156,7 +156,6 @@ DO_ALT_IMAGER_SPECTRAL="${DO_ALT_IMAGER_SPECTRAL}"
 ALT_IMAGER_SINGLE_FILE_CONTCUBE="${ALT_IMAGER_SINGLE_FILE_CONTCUBE}"
 ALT_IMAGER_SINGLE_FILE="${ALT_IMAGER_SINGLE_FILE}"
 
-ADD_FITS_SUFFIX=\${ADD_FITS_SUFFIX}
 IMAGETYPE_CONT=${IMAGETYPE_CONT}
 IMAGETYPE_CONTCUBE=${IMAGETYPE_CONTCUBE}
 IMAGETYPE_SPECTRAL=${IMAGETYPE_SPECTRAL}
@@ -208,10 +207,6 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                         if [ \$LOOP -gt 0 ] || [ "\$BEAM" == "all" ]; then
 
                             setImageProperties cont
-                            fitsSuffix=""
-                            if [ "\${ADD_FITS_SUFFIX}" == "true" ] && [ "\${IMAGETYPE_CONT}" != "fits" ]; then
-                                fitsSuffix=".fits"
-                            fi
 
                             if [ \$LOOP -gt 0 ]; then
                                 if [ "\${IMAGETYPE_CONT}" == "fits" ]; then
@@ -223,36 +218,36 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                                 fi
                             fi
 
-                            if [ -e "\${FIELD}/\${imageName}\${fitsSuffix}" ]; then
-                                casdaTwoDimImageNames+=(\${FIELD}/\${imageName}\${fitsSuffix})
+                            if [ -e "\${FIELD}/\${imageName}" ]; then
+                                casdaTwoDimImageNames+=(\${FIELD}/\${imageName})
                                 casdaTwoDimImageTypes+=("\${imageType}")
                                 casdaTwoDimThumbTitles+=("\${label}")
                                 if [ "\${BEAM}" == "all" ] && [ "\${imageCode}" == "restored" ]; then
-                                    casdaTwoDimImageNames+=(\${FIELD}/\${weightsImage}\${fitsSuffix})
+                                    casdaTwoDimImageNames+=(\${FIELD}/\${weightsImage})
                                     casdaTwoDimImageTypes+=("\${weightsType}")
                                     casdaTwoDimThumbTitles+=("\${weightsLabel}")
                                 fi
                             fi
 
-                            fitsSuffix=""
-                            if [ "\${ADD_FITS_SUFFIX}" == "true" ]; then
-                                fitsSuffix=".fits"
-                            fi
-                            ### Also, don't need the test for IMAGETYPE here either
                             if [ \$LOOP -gt 0 ]; then
-                                noiseMap="\${noiseMap}.SelfCalLoop\${LOOP}"
-                                compMap="\${compMap}.SelfCalLoop\${LOOP}"
-                                compResidual="\${compResidual}.SelfCalLoop\${LOOP}"
+                                if [ "\${IMAGETYPE_CONT}" == "fits" ]; then
+                                    noiseMap="\${noiseMap%%.fits}.SelfCalLoop\${LOOP}.fits"
+                                    compMap="\${compMap%%.fits}.SelfCalLoop\${LOOP}.fits"
+                                    compResidual="\${compResidual%%.fits}.SelfCalLoop\${LOOP}.fits"
+                                else
+                                    noiseMap="\${noiseMap%%.fits}.SelfCalLoop\${LOOP}"
+                                    compMap="\${compMap%%.fits}.SelfCalLoop\${LOOP}"
+                                    compResidual="\${compResidual%%.fits}.SelfCalLoop\${LOOP}"
+                                fi
                             fi
-                            setSelavyDirs cont
-                            if [ -e "\${FIELD}/\${selavyDir}/\${noiseMap}\${fitsSuffix}" ]; then
-                                casdaTwoDimImageNames+=(\${FIELD}/\${selavyDir}/\${noiseMap}\${fitsSuffix})
+                            if [ -e "\${FIELD}/\${selavyDir}/\${noiseMap}" ]; then
+                                casdaTwoDimImageNames+=(\${FIELD}/\${selavyDir}/\${noiseMap})
                                 casdaTwoDimImageTypes+=(\${noiseType})
                                 casdaTwoDimThumbTitles+=("\${noiseLabel}")
-                                casdaTwoDimImageNames+=(\${FIELD}/\${selavyDir}/\${compMap}\${fitsSuffix})
+                                casdaTwoDimImageNames+=(\${FIELD}/\${selavyDir}/\${compMap})
                                 casdaTwoDimImageTypes+=(\${compMapType})
                                 casdaTwoDimThumbTitles+=("\${compMapLabel}")
-                                casdaTwoDimImageNames+=(\${FIELD}/\${selavyDir}/\${compResidual}\${fitsSuffix})
+                                casdaTwoDimImageNames+=(\${FIELD}/\${selavyDir}/\${compResidual})
                                 casdaTwoDimImageTypes+=(\${compResidualType})
                                 casdaTwoDimThumbTitles+=("\${compResidualLabel}")
                             fi
@@ -264,15 +259,15 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                     # Get the continuum models used for continuum subtraction
                     setContsubFilenames
                     if [ "\${CONTSUB_METHOD}" == "CleanModel" ]; then
-                        if [ -e "\${FIELD}/\${contsubDir}/\${contsubCleanModelFullname}\${fitsSuffix}" ]; then
-                            casdaTwoDimImageNames+=(\${FIELD}/\${contsubDir}/\${contsubCleanModelFullname}\${fitsSuffix})
+                        if [ -e "\${FIELD}/\${contsubDir}/\${contsubCleanModelFullname}" ]; then
+                            casdaTwoDimImageNames+=(\${FIELD}/\${contsubDir}/\${contsubCleanModelFullname})
                             casdaTwoDimImageTypes+=(\${contsubCleanModelType})
                             casdaTwoDimThumbTitles+=("\${contsubCleanModelLabel}")
                         fi
                     fi
                     if [ "\${CONTSUB_METHOD}" == "Cmodel" ]; then
-                        if [ -e "\${FIELD}/\${contsubDir}/\${contsubCmodelImage}\${fitsSuffix}" ]; then
-                            casdaTwoDimImageNames+=(\${FIELD}/\${contsubDir}/\${contsubCmodelImage}\${fitsSuffix})
+                        if [ -e "\${FIELD}/\${contsubDir}/\${contsubCmodelImage}" ]; then
+                            casdaTwoDimImageNames+=(\${FIELD}/\${contsubDir}/\${contsubCmodelImage})
                             casdaTwoDimImageTypes+=(\${contsubCmodelType})
                             casdaTwoDimThumbTitles+=("\${contsubCmodelLabel}")
                         fi
@@ -290,17 +285,9 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                 for subband in ${SUBBAND_WRITER_LIST}; do
         
                     setImageProperties spectral
-                    fitsSuffix=""
-                    if [ "\${ADD_FITS_SUFFIX}" == "true" ] && [ "\${IMAGETYPE_SPECTRAL}" != "fits" ]; then
-                        fitsSuffix=".fits"
-                    fi
-                    if [ -e "\${FIELD}/\${imageName}\${fitsSuffix}" ]; then
-                        casdaOtherDimImageNames+=(\${FIELD}/\${imageName}\${fitsSuffix})
+                    if [ -e "\${FIELD}/\${imageName}" ]; then
+                        casdaOtherDimImageNames+=(\${FIELD}/\${imageName})
                         casdaOtherDimImageTypes+=("\${imageType}")
-                        fitsSuffix=""
-                        if [ "\${ADD_FITS_SUFFIX}" == "true" ] && [ "\${IMAGETYPE_SPECTRAL}" != "fits" ]; then
-                            fitsSuffix=".fits"
-                        fi                        
                         if [ -e "\${FIELD}/\${selavyDir}" ]; then
                             casdaOtherDimImageSpectra+=("\${FIELD}/\${selavySpectraDir}/spec*.fits")
                             casdaOtherDimImageNoise+=("\${FIELD}/\${selavySpectraDir}/noiseSpec*.fits")
@@ -311,8 +298,8 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                             casdaOtherDimImageFDF+=("")
                             casdaOtherDimImageRMSF+=("")
                             casdaOtherDimImagePol+=("")
-                            if [ -e "\${FIELD}/\${selavyDir}/\${noiseMap}\${fitsSuffix}" ]; then
-                                casdaOtherDimImageNames+=(\${FIELD}/\${selavyDir}/\${noiseMap}\${fitsSuffix})
+                            if [ -e "\${FIELD}/\${selavyDir}/\${noiseMap}" ]; then
+                                casdaOtherDimImageNames+=(\${FIELD}/\${selavyDir}/\${noiseMap})
                                 casdaOtherDimImageTypes+=(\${noiseType})
                             fi
                         else
@@ -327,7 +314,7 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                             casdaOtherDimImagePol+=("")
                         fi
                         if [ "\${BEAM}" == "all" ] && [ "\${imageCode}" == "restored" ]; then
-                            casdaOtherDimImageNames+=(\${FIELD}/\${weightsImage}\${fitsSuffix})
+                            casdaOtherDimImageNames+=(\${FIELD}/\${weightsImage})
                             casdaOtherDimImageTypes+=("\${weightsType}")
                             casdaOtherDimImageSpectra+=("")
                             casdaOtherDimImageNoise+=("")
@@ -351,18 +338,10 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                         contImage=\${imageName}
                         pol=\$(echo "\$POLN" | tr '[:upper:]' '[:lower:]')
                         setImageProperties contcube "\$pol"
-                        fitsSuffix=""
-                        if [ "\${ADD_FITS_SUFFIX}" == "true" ] && [ "\${IMAGETYPE_CONTCUBE}" != "fits" ]; then
-                            fitsSuffix=".fits"
-                        fi
-                        if [ -e "\${FIELD}/\${imageName}\${fitsSuffix}" ]; then
-                            casdaOtherDimImageNames+=(\${FIELD}/\${imageName}\${fitsSuffix})
+                        if [ -e "\${FIELD}/\${imageName}" ]; then
+                            casdaOtherDimImageNames+=(\${FIELD}/\${imageName})
                             casdaOtherDimImageTypes+=("\${imageType}")
                             ### Not yet writing extracted files direct to FITS, so change the assignment of fitsSuffix
-                            fitsSuffix=""
-                            if [ "\${ADD_FITS_SUFFIX}" == "true" ] && [ "\${IMAGETYPE_CONTCUBE}" != "fits" ]; then
-                                fitsSuffix=".fits"
-                            fi                        
                             if [ -e "\${FIELD}/\${selavyDir}" ] && [ "\${DO_RM_SYNTHESIS}" == "true" ]; then
                                 prefix="\${FIELD}/\${selavyPolDir}/${SELAVY_POL_OUTPUT_BASE}"
                                 suffix="SB${SB_SCIENCE}_\${contImage%%.fits}*.fits}"
@@ -392,7 +371,7 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                                 casdaOtherDimImagePol+=("")
                             fi
                             if [ "\${BEAM}" == "all" ] && [ "\${imageCode}" == "restored" ]; then
-                                casdaOtherDimImageNames+=(\${FIELD}/\${weightsImage}\${fitsSuffix})
+                                casdaOtherDimImageNames+=(\${FIELD}/\${weightsImage})
                                 casdaOtherDimImageTypes+=("\${weightsType}")
                                 casdaOtherDimImageSpectra+=("")
                                 casdaOtherDimImageNoise+=("")
