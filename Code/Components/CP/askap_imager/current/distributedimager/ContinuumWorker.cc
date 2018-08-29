@@ -1063,9 +1063,19 @@ void ContinuumWorker::logBeamInfo()
             ASKAPCHECK((itsBeamList.size() == (itsBeamList.rbegin()->first + 1)),
                        "Beam list doesn't finish at channel " << itsBeamList.size() - 1);
             beamlog.beamlist() = itsBeamList;
-            ASKAPLOG_DEBUG_STR(logger, "Writing list of individual channel beams to beam log "
-                              << beamlog.filename());
-            beamlog.write();
+
+            if (itsComms.isSingleSink()){
+                std::list<int> creators=itsComms.getCubeCreators();
+                ASKAPASSERT(creators.size()==1);
+                int creatorRank=creators.front();
+                beamlog.gather(itsComms, creatorRank);
+            }
+            if (itsComms.isCubeCreator()){
+                
+                ASKAPLOG_DEBUG_STR(logger, "Writing list of individual channel beams to beam log "
+                                   << beamlog.filename());
+                beamlog.write();
+            }
         }
     }
 

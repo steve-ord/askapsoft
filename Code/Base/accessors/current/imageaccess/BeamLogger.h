@@ -34,6 +34,7 @@
 #include <vector>
 
 // ASKAPsoft includes
+#include <askapparallel/AskapParallel.h>
 #include <casacore/casa/Arrays/Vector.h>
 #include <casacore/casa/Quanta/Quantum.h>
 #include <Common/ParameterSet.h>
@@ -87,6 +88,14 @@ class BeamLogger {
         /// the beam log can not be opened, both vectors are cleared
         /// and an error message is written to the log.
         void read();
+
+    /// @brief Gather channels from different ranks onto a single,
+    /// nominated rank, combining the lists of channel information
+    /// @details Each rank (other than the nominated one) sends the
+    /// channel and beam information to the nominated rank. The
+    /// beamlists are aggregated on that rank ready for writing.
+    void gather(askapparallel::AskapParallel &comms, int rankToGather);
+    
 
         /// @brief Return the beam information
     std::map<unsigned int, casa::Vector<casa::Quantum<double> > > beamlist() const {return itsBeamList;};

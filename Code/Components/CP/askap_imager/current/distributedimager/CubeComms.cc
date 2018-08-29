@@ -182,6 +182,11 @@ bool CubeComms::isCubeCreator(){
 void CubeComms::addCubeCreator(int creator_rank) {
     cubeCreators.push_back(creator_rank);
 }
+
+std::list<int> CubeComms::getCubeCreators() {
+    return cubeCreators;
+}
+
 void CubeComms::setSingleSink() {
     std::map<int,int>::iterator it;
     it = writerMap.begin();

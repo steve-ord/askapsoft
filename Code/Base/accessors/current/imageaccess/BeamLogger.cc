@@ -35,9 +35,15 @@
 
 // ASKAPsoft includes
 #include <askap/AskapLogging.h>
+#include <askapparallel/AskapParallel.h>
 #include <casacore/casa/Arrays/Vector.h>
 #include <casacore/casa/Quanta/Quantum.h>
 #include <Common/ParameterSet.h>
+#include <Blob/BlobString.h>
+#include <Blob/BlobIBufString.h>
+#include <Blob/BlobOBufString.h>
+#include <Blob/BlobIStream.h>
+#include <Blob/BlobOStream.h>
 
 // Local package includeas
 #include <imageaccess/CasaImageAccess.h>
@@ -130,6 +136,64 @@ void BeamLogger::read()
     }
 
 }
+
+void BeamLogger::gather(askapparallel::AskapParallel &comms, int rankToGather)
+{
+    if(comms.isParallel()){
+
+        for(int rank=0; rank<comms.nProcs();rank++){
+
+            if( rank != rankToGather) {
+                if(rank == comms.rank()) {
+                    // send to desired rank
+                    LOFAR::BlobString bs;
+                    bs.resize(0);
+                    LOFAR::BlobOBufString bob(bs);
+                    LOFAR::BlobOStream out(bob);
+                    out.putStart("gatherBeam", 1);
+                    unsigned int size=itsBeamList.size();
+                    out << size;
+                    if (itsBeamList.size()>0){
+                        std::map<unsigned int, casa::Vector<casa::Quantum<double> > >::iterator beam=itsBeamList.begin();
+                        for(;beam!=itsBeamList.end();beam++){
+                            out << beam->first
+                                << beam->second[0].getValue("arcsec")
+                                << beam->second[1].getValue("arcsec")
+                                << beam->second[2].getValue("deg");
+                        }
+                    }
+                    out.putEnd();
+                    comms.sendBlob(bs, rankToGather);
+                }
+                else {
+                    LOFAR::BlobString bs;
+                    bs.resize(0);
+                    comms.receiveBlob(bs, rank);
+                    LOFAR::BlobIBufString bib(bs);
+                    LOFAR::BlobIStream in(bib);
+                    int version = in.getStart("gatherBeam");
+                    ASKAPASSERT(version == 1);
+                    unsigned int size, chan;
+                    double bmaj,bmin,bpa;
+                    in >> size;
+                    if (size > 0){
+                        in >> chan >> bmaj >> bmin >> bpa;
+                        casa::Vector<casa::Quantum<double> > currentbeam(3);
+                        currentbeam[0] = casa::Quantum<double>(bmaj, "arcsec");
+                        currentbeam[1] = casa::Quantum<double>(bmin, "arcsec");
+                        currentbeam[2] = casa::Quantum<double>(bpa, "deg");
+                        itsBeamList[chan] = currentbeam;
+                    }
+                    in.getEnd();
+                }
+            }
+ 
+        }
+
+    }
+
+}
+
 
 }
 }

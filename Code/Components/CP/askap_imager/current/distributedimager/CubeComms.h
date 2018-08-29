@@ -73,6 +73,8 @@ namespace cp {
             /// @details This adds a rank to a vector of ranks
             /// each is the rank of a creator of a cube
             void addCubeCreator(int creator_rank);
+        /// @brief Return the list of creator ranks
+        std::list<int> getCubeCreators();
 
             /// @brief initialises the writer list
             /// @details By evenly dividing the writing across
