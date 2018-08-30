@@ -192,7 +192,7 @@ void BeamLogger::gather(askapparallel::AskapParallel &comms, int rankToGather)
                             itsBeamList[chan] = currentbeam;
                         }
                     }
-                    else ASKAPLOG_DEBUG_STR9logger, "No data");
+                    else ASKAPLOG_DEBUG_STR(logger, "No data");
                     in.getEnd();
                 }
             }
