@@ -562,9 +562,6 @@ void ContinuumWorker::buildSpectralCube()
                        << uvwMachineCacheTolerance / casa::C::pi * 180. * 3600. << " arcsec");
 
 
-    // Whether we need to write the beam log at the end
-    bool doLogBeams = false;
-
     // the workUnits may include different epochs (for the same channel)
     // the order is strictly by channel - with multiple work units per channel.
     // so you can increment the workUnit until the frequency changes - then you know you
@@ -746,8 +743,6 @@ void ContinuumWorker::buildSpectralCube()
 
             if (itsComms.isWriter()) {
 
-                doLogBeams = true;
-
                 ASKAPLOG_INFO_STR(logger, "I have (including my own) " << itsComms.getOutstanding() << " units to write");
                 ASKAPLOG_INFO_STR(logger, "I have " << itsComms.getClients().size() << " clients with work");
                 int cubeChannel = workUnits[workUnitCount - 1].get_globalChannel() - this->baseCubeGlobalChannel;
@@ -906,11 +901,9 @@ void ContinuumWorker::buildSpectralCube()
         }
     }
 
-    if (doLogBeams) {
-        // write out the beam log
-        ASKAPLOG_INFO_STR(logger, "About to log the full set of restoring beams");
-        logBeamInfo();
-    }
+    // write out the beam log
+    ASKAPLOG_INFO_STR(logger, "About to log the full set of restoring beams");
+    logBeamInfo();
 
 }
 void ContinuumWorker::handleImageParams(askap::scimath::Params::ShPtr params,
