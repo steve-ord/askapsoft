@@ -53,17 +53,20 @@ namespace askap {
 namespace accessors {
 
 BeamLogger::BeamLogger():
-    itsFilename("")
+    itsFilename(""),
+    itsBeamList()
 {
 }
 
 BeamLogger::BeamLogger(const LOFAR::ParameterSet &parset):
-    itsFilename(parset.getString("beamLog", ""))
+    itsFilename(parset.getString("beamLog", "")),
+    itsBeamList()
 {
 }
 
 BeamLogger::BeamLogger(const std::string &filename):
-    itsFilename(filename)
+    itsFilename(filename),
+    itsBeamList()
 {
 }
 
