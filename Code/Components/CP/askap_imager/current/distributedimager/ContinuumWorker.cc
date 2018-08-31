@@ -84,7 +84,7 @@ ASKAP_LOGGER(logger, ".ContinuumWorker");
 
 ContinuumWorker::ContinuumWorker(LOFAR::ParameterSet& parset,
                                  CubeComms& comms)
-    : itsParset(parset), itsComms(comms)
+    : itsParset(parset), itsComms(comms), itsBeamList()
 {
     itsAdvisor = boost::shared_ptr<synthesis::AdviseDI> (new synthesis::AdviseDI(itsComms, itsParset));
     itsAdvisor->prepare();
