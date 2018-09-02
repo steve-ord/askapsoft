@@ -165,6 +165,15 @@ EOFINNER
     if [ \$err != 0 ]; then
         exit \$err
     fi
+
+    if [ "\${imageCode}" == "restored" ] || [ "\${imageCode}" == "residual" ] || [ "\${imageCode}" == "contsub" ]; then
+        # Find the cube statistics
+        loadModule mpi4py
+        cube=${imageName}
+        echo "Finding cube stats for \${cube}"
+        srun --export=ALL --ntasks=\${NCORES} --ntasks-per-node=\${NPPN} \${PIPELINEDIR}/findCubeStatistics.py -c \${cube}
+    fi
+
 else
     echo "WARNING - no good images were found for mosaicking image type '\${imageCode}'!"
 fi
