@@ -140,39 +140,50 @@ void BeamLogger::read()
 
 }
 
-void BeamLogger::gather(askapparallel::AskapParallel &comms, int rankToGather)
+void BeamLogger::gather(askapparallel::AskapParallel &comms, int rankToGather, bool includeMaster)
 {
 
-    ASKAPLOG_DEBUG_STR(logger, "Gathering the beam info");
+    ASKAPLOG_DEBUG_STR(logger, "Gathering the beam info - on rank " << comms.rank() << " and gathering onto rank " << rankToGather);
     
     if (comms.isParallel()) {
 
-        for (int rank = 0; rank < comms.nProcs(); rank++) {
+        int minrank=0;
+        if (!includeMaster){
+            minrank=1;
+        }
 
-            if (rank != rankToGather) {
-                if (rank == comms.rank()) {
-                    ASKAPLOG_DEBUG_STR(logger, "Sending from rank " << comms.rank() <<" to rank " << rankToGather);
-                    // send to desired rank
-                    LOFAR::BlobString bs;
-                    bs.resize(0);
-                    LOFAR::BlobOBufString bob(bs);
-                    LOFAR::BlobOStream out(bob);
-                    out.putStart("gatherBeam", 1);
-                    unsigned int size = itsBeamList.size();
-                    out << size;
-                    if (itsBeamList.size() > 0) {
-                        ASKAPLOG_DEBUG_STR(logger, "This has data, so sending beam list of size " << size);
-                        std::map<unsigned int, casa::Vector<casa::Quantum<double> > >::iterator beam = itsBeamList.begin();
-                        for (; beam != itsBeamList.end(); beam++) {
-                            out << beam->first
-                                << beam->second[0].getValue("arcsec")
-                                << beam->second[1].getValue("arcsec")
-                                << beam->second[2].getValue("deg");
-                        }
-                    }
-                    out.putEnd();
-                    comms.sendBlob(bs, rankToGather);
-                } else {
+        if (comms.rank() != rankToGather) {
+            // If we are here, the current rank does not do the gathering.
+            // Instead, send the data to the rank that is.
+
+            ASKAPLOG_DEBUG_STR(logger, "Sending from rank " << comms.rank() <<" to rank " << rankToGather);
+            // send to desired rank
+            LOFAR::BlobString bs;
+            bs.resize(0);
+            LOFAR::BlobOBufString bob(bs);
+            LOFAR::BlobOStream out(bob);
+            out.putStart("gatherBeam", 1);
+            unsigned int size = itsBeamList.size();
+            out << size;
+            if (itsBeamList.size() > 0) {
+                ASKAPLOG_DEBUG_STR(logger, "This has data, so sending beam list of size " << size);
+                std::map<unsigned int, casa::Vector<casa::Quantum<double> > >::iterator beam = itsBeamList.begin();
+                for (; beam != itsBeamList.end(); beam++) {
+                    out << beam->first
+                        << beam->second[0].getValue("arcsec")
+                        << beam->second[1].getValue("arcsec")
+                        << beam->second[2].getValue("deg");
+                }
+            }
+            out.putEnd();
+            comms.sendBlob(bs, rankToGather);
+        } else {
+
+            // The rank on which we are gathering the data
+            // Loop over all the others and read their beam.
+            for (int rank = minrank; rank < comms.nProcs(); rank++) {
+                
+                if (rank != comms.rank()) {
                     ASKAPLOG_DEBUG_STR(logger, "Preparing to receive beamlist from rank " << rank);
                     LOFAR::BlobString bs;
                     bs.resize(0);
@@ -195,13 +206,17 @@ void BeamLogger::gather(askapparallel::AskapParallel &comms, int rankToGather)
                             itsBeamList[chan] = currentbeam;
                         }
                     }
-                    else ASKAPLOG_DEBUG_STR(logger, "No data");
+                    else {
+                        ASKAPLOG_DEBUG_STR(logger, "No data from rank " << rank);
+                    }
                     in.getEnd();
+                    
                 }
+                
             }
-
+            
         }
-
+        
     }
 
 }
