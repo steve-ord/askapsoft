@@ -163,8 +163,14 @@ if [ "$DO_SCIENCE_FIELD" == "true" ] && [ "$NEED_BEAM_CENTRES" == "true" ]; then
         if [ "${IS_BETA}" != "true" ]; then
             # For non-BETA data, we look for this field's footprint
             # information in the SB parset
-            awkcomp="\$3==\"$FIELD\""
-            srcstr=$(awk "$awkcomp" "$sbinfo" | awk -F".field_name" '{print $1}')
+
+            # split on the equals sign, and get the entire value of the parameter - allows for spaces.
+            # Use this to match the field name, and then get the string that looks like
+            #  "common.target.src1"
+            awkcomp="\$2==\"$FIELD\""
+            srcstr=$(awk -F " = " "$awkcomp" "$sbinfo" | awk -F".field_name" '{print $1}')
+
+            # Use that to get the footprint info for that particular field
             FP_NAME=$(grep "$srcstr.footprint.name" "$sbinfo" | awk '{print $3}')
             FP_PITCH=$(grep "$srcstr.footprint.pitch" "$sbinfo" | awk '{print $3}')
             FP_PA=$(grep "$srcstr.pol_axis" "$sbinfo" | awk '{print $4}' | sed -e 's/\]//g')
