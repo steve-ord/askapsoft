@@ -404,9 +404,15 @@ EOF
     FIELD_LIST=""
     TILE_LIST=""
     NUM_TILES=0
-    for FIELD in $(sort -k2 "$FIELDLISTFILE" | awk '{print $2}' | uniq );
+    # Set the IFS, so that we only split on newlines, not spaces (allowing for spaces within the field names
+    IFS="
+"
+    # Determine the field name to be everything under 'Name' - including spaces (so can be multiple columns)
+    for FIELD in $(sort -k2 "$FIELDLISTFILE" | awk '{split($0,a); field=a[2];for(i=3;i<NF-3;i++){field=sprintf("%s %s",field,a[i]);} print field}');
     do
-        FIELD_LIST="$FIELD_LIST $FIELD"
+        # keep the fields split by newlines
+        FIELD_LIST="$FIELD_LIST
+$FIELD"
         getTile
         if [ "$FIELD" != "$TILE" ]; then
             isNew=true
@@ -416,7 +422,8 @@ EOF
                 fi
             done
             if [ "$isNew" == "true" ]; then
-                TILE_LIST="$TILE_LIST $TILE"
+                TILE_LIST="$TILE_LIST
+$TILE"
                 ((NUM_TILES++))
             fi
         fi
