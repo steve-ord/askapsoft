@@ -152,8 +152,8 @@ if [ "$DO_SCIENCE_FIELD" == "true" ] && [ "$NEED_BEAM_CENTRES" == "true" ]; then
         # Get the centre location of each field (from the list of
         # fields in the metadata directory - the filename is recorded
         # in $FIELDLISTFILE, and set in prepareMetadata.sh)
-        ra=$(grep "$FIELD" "$FIELDLISTFILE" | awk '{print $3}' | head -1)
-        dec=$(grep "$FIELD" "$FIELDLISTFILE" | awk '{print $4}' | head -1)
+        ra=$(grep "$FIELD" "$FIELDLISTFILE" | awk '{print $(NF-3)}' | head -1)
+        dec=$(grep "$FIELD" "$FIELDLISTFILE" | awk '{print $(NF-2)}' | head -1)
         dec=$(echo "$dec" | awk -F'.' '{printf "%s:%s:%s.%s",$1,$2,$3,$4}')
 
         # Initialise to blank values
