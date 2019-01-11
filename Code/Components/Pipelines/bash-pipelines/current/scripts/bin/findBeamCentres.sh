@@ -248,18 +248,22 @@ if [ "$DO_SCIENCE_FIELD" == "true" ] && [ "$NEED_BEAM_CENTRES" == "true" ]; then
                 fi
 
                 # This uses the CLI tool "footprint" to set the footprint
-                footprintArgs="-d $ra,$dec -p $FP_PITCH"
-                if [ "$FP_PA" != "" ]; then
-                    footprintArgs="$footprintArgs -r $FP_PA"
-                fi
                 loadModule askapcli
                 NUM_BEAMS_FOOTPRINT=$(footprint info ${FP_NAME} | grep n_beams | awk '{print $3}')
-                footprint calculate $footprintArgs "$FP_NAME" > "${footprintOut}"
+                if [ "$FP_PA" != "" ]; then
+                    footprint calculate -d $ra,$dec -r $FP_PA -p $FP_PITCH "$FP_NAME" > "${footprintOut}"
+                else
+                    footprint calculate -d $ra,$dec -p $FP_PITCH "$FP_NAME" > "${footprintOut}"
+                fi
                 err=$?
                 unloadModule askapcli
                 if [ $err -ne 0 ]; then
                     echo "ERROR - the 'footprint' command failed."
-                    echo "        Full command:   footprint calculate $footprintArgs $FP_NAME"
+                    if [ "$FP_PA" != "" ]; then
+                        echo "        Full command:   footprint calculate -d $ra,$dec -r $FP_PA -p $FP_PITCH $FP_NAME"
+                    else
+                        echo "        Full command:   footprint calculate -d $ra,$dec -p $FP_PITCH $FP_NAME"
+                    fi
                     echo "Exiting pipeline."
                     exit $err
                 fi
