@@ -147,6 +147,7 @@ if [ "$DO_SCIENCE_FIELD" == "true" ] && [ "$NEED_BEAM_CENTRES" == "true" ]; then
     
 
     # Define the footprint for each field
+    IFS="${IFS_FIELDS}"
     for FIELD in ${FIELD_LIST}; do
 
         # Get the centre location of each field (from the list of
@@ -338,6 +339,7 @@ if [ "$DO_SCIENCE_FIELD" == "true" ] && [ "$NEED_BEAM_CENTRES" == "true" ]; then
         fi
         
     done
+    IFS="${IFS_DEFAULT}"
 
 fi
 

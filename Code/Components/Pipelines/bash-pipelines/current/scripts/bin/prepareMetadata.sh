@@ -405,8 +405,7 @@ EOF
     TILE_LIST=""
     NUM_TILES=0
     # Set the IFS, so that we only split on newlines, not spaces (allowing for spaces within the field names
-    IFS="
-"
+    IFS="${IFS_FIELDS}"
     # Determine the field name to be everything under 'Name' - including spaces (so can be multiple columns)
     for FIELD in $(sort -k2 "$FIELDLISTFILE" | awk '{split($0,a); field=a[2];for(i=3;i<NF-3;i++){field=sprintf("%s %s",field,a[i]);} print field}');
     do
@@ -428,6 +427,7 @@ $TILE"
             fi
         fi
     done
+    IFS="${IFS_DEFAULT}"
 
     # Print a simplified list of fields for the user
     echo "List of fields: "
