@@ -116,10 +116,16 @@ echo "Mosaicking tile \$THISTILE"
 
 # First get the list of FIELDs that contribute to this TILE
 TILE_FIELD_LIST=""
+IFS="${IFS_FIELDS}"
 for FIELD in \$FIELD_LIST; do
     getTile
     if [ "\$THISTILE" == "ALL" ] || [ "\$TILE" == "\$THISTILE" ]; then
-        TILE_FIELD_LIST="\$TILE_FIELD_LIST \$FIELD"
+        if [ "\${TILE_FIELD_LIST}" == "" ]; then
+            TILE_FIELD_LIST="\$FIELD"
+        else
+            TILE_FIELD_LIST="\$TILE_FIELD_LIST
+\$FIELD"
+        fi
     fi
 done
 echo "Tile \$THISTILE has field list \$TILE_FIELD_LIST"
@@ -143,6 +149,7 @@ for FIELD in \${TILE_FIELD_LIST}; do
         fi
     fi
 done
+IFS="${IFS_DEFAULT}"
 
 if [ "\$THISTILE" == "ALL" ]; then
     jobCode=linmosC_Full_\${imageCode}

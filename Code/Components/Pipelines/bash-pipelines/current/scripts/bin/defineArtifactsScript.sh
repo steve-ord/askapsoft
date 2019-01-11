@@ -33,8 +33,9 @@
 
 # Define list of possible MSs:
 msNameList=()
-for FIELD in ${FIELD_LIST}; do
-    for BEAM in ${BEAMS_TO_USE}; do
+for BEAM in ${BEAMS_TO_USE}; do
+    IFS="${IFS_FIELDS}"
+    for FIELD in ${FIELD_LIST}; do
         findScienceMSnames
         if [ "${DO_APPLY_CAL_CONT}" == "true" ]; then
             msNameList+=(${FIELD}/${msSciAvCal})
@@ -45,6 +46,7 @@ for FIELD in ${FIELD_LIST}; do
             msNameList+=(${FIELD}/${msSci})
         fi
     done
+    IFS="${IFS_DEFAULT}"
 done
     
 imageCodeList="restored altrestored image contsub residual sensitivity psf psfimage"
@@ -176,11 +178,13 @@ if [ "\${doBeams}" == "true" ]; then
     LOCAL_BEAM_LIST="\$LOCAL_BEAM_LIST \${beams}"
 fi
 
-LOCAL_FIELD_LIST=". "
+LOCAL_FIELD_LIST="."
 if [ "\${doFieldMosaics}" == "true" ]; then
-    LOCAL_FIELD_LIST="\$LOCAL_FIELD_LIST ${FIELD_LIST}"
+    LOCAL_FIELD_LIST="\$LOCAL_FIELD_LIST
+${FIELD_LIST}"
 fi
 
+IFS="${IFS_FIELDS}"
 for FIELD in \${LOCAL_FIELD_LIST}; do
 
     if [ "\${FIELD}" == "." ]; then
@@ -194,6 +198,7 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
 
     for TILE in \${TILE_LIST}; do
 
+        IFS="${IFS_DEFAULT}"
         for BEAM in \${theBeamList}; do
                 
             # Gather lists of continuum images
@@ -391,7 +396,7 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
             done
         
         done
-
+        IFS="${IFS_FIELDS}"
     done
 
 done
@@ -417,6 +422,7 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
 
     for TILE in \${TILE_LIST}; do
 
+        IFS="${IFS_DEFAULT}"
         for BEAM in \${theBeamList}; do               
 
             setImageProperties cont
@@ -445,8 +451,10 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                 catTypes+=(spectral-line-emission)
             fi
         done
+        IFS="${IFS_FIELDS}"
     done
 done
+IFS="${IFS_FIELDS}"
 ##############################
 # Next, search for MSs
 
@@ -487,13 +495,16 @@ if [ -e "\${TABLE}" ]; then
     calTables+=(BPCAL/\${TABLE##*/})
 fi
 
-for FIELD in \${FIELD_LIST}; do 
-    for BEAM in \${beams}; do
+
+for BEAM in \${beams}; do
+    IFS="${IFS_FIELDS}"
+    for FIELD in \${FIELD_LIST}; do 
         findScienceMSnames
         if [ -e "\${FIELD}/\${gainscaltab}" ]; then
             calTables+=(\${FIELD}/\${gainscaltab})
         fi
     done
+    IFS="${IFS_DEFAULT}"
 done
 
 
@@ -554,6 +565,7 @@ if [ "\${DO_CONTINUUM_VALIDATION}" == "true" ]; then
     validationDirs=()
     validationFiles=()
     if [ \${NUM_FIELDS} -gt 1 ]; then
+        IFS="${IFS_FIELDS}"
         for FIELD in \${FIELD_LIST}; do
             setImageProperties cont
             if [ -e "\${FIELD}/\${validationDir}/\${validationFile}" ]; then
@@ -561,6 +573,7 @@ if [ "\${DO_CONTINUUM_VALIDATION}" == "true" ]; then
                 validationFiles+=("\${FIELD}/\${validationDir}/\${validationFile}")
             fi
         done
+        IFS="${IFS_DEFAULT}"
     else
         FIELD="."
         TILE="ALL"

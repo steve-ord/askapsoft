@@ -64,6 +64,7 @@ ALT_IMAGER_SINGLE_FILE=${ALT_IMAGER_SINGLE_FILE}
 ALT_IMAGER_SINGLE_FILE_CONTCUBE=${ALT_IMAGER_SINGLE_FILE_CONTCUBE}
 PROJECT_ID=${PROJECT_ID}
 
+IFS="${IFS_FIELDS}"
 for FIELD in \${FIELD_LIST}; do
 
     # diagnostics directory for individual beam data
@@ -86,6 +87,7 @@ for FIELD in \${FIELD_LIST}; do
     beamwiseCubeStats.py -c \${FIELD}/\${imageName}
 
     # Cube stats and restoring beam for the continuum cubes, iterating over polarisation
+    IFS="${IFS_DEFAULT}"
     for POLN in \${POL_LIST}; do
 
         # make a lower-case version of the polarisation, for image name

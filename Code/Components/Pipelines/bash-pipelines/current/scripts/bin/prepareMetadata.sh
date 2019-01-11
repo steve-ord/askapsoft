@@ -432,12 +432,13 @@ $TILE"
     # Print a simplified list of fields for the user
     echo "List of fields: "
     COUNT=0
+    IFS="${IFS_FIELDS}"
     for FIELD in ${FIELD_LIST}; do
         ID=$(echo "$COUNT" | awk '{printf "%02d",$1}')
         echo "${ID} - ${FIELD}"
         ((COUNT++))
     done
-
+    IFS="${IFS_DEFAULT}"
 
     # Set the OPAL Project ID
     BACKUP_PROJECT_ID=${PROJECT_ID}
