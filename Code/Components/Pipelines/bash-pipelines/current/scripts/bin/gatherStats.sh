@@ -94,7 +94,7 @@ if [ -d "${FAILURE_DIRECTORY}" ]; then
             find ${BASEDIR} -name "*\${job}*" -exec cp {} \$dir \;
             jobname=\$(grep \$job \$statsTXT | head -1 | awk '{print \$3}' | sed -e 's/_master//g')
             echo "\$(whoami) ${NOW} \${jobname} ${BASEDIR}" > \${dir}/README
-            touch \${dir}/NEW
+            touch "\${dir}/NEW"
             chmod -R g+w \${dir}
         done
     fi

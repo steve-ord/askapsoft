@@ -153,7 +153,7 @@ if [ "\${USE_AOFLAGGER}" == "true" ]; then
     if [ \$err != 0 ]; then
         exit \$err
     else
-        touch $FLAG_CHECK_FILE
+        touch "$FLAG_CHECK_FILE"
     fi
 
 else
@@ -187,7 +187,7 @@ EOFINNER
         if [ \$err != 0 ]; then
             exit \$err
         else
-            touch $FLAG_AV_CHECK_FILE
+            touch "$FLAG_AV_CHECK_FILE"
         fi
     fi
 
@@ -236,7 +236,7 @@ EOFINNER
         if [ \$err != 0 ]; then
             exit \$err
         else
-            touch $FLAG_AV_CHECK_FILE
+            touch "$FLAG_AV_CHECK_FILE"
         fi
 
     fi

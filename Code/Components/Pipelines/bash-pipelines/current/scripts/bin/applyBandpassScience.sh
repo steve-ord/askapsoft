@@ -103,7 +103,7 @@ extractStats "\${log}" \${NCORES} "\${SLURM_JOB_ID}" \${err} ${jobname} "txt,csv
 if [ \$err != 0 ]; then
     exit \$err
 else
-    touch $BANDPASS_CHECK_FILE
+    touch "$BANDPASS_CHECK_FILE"
 fi
 
 EOFOUTER
