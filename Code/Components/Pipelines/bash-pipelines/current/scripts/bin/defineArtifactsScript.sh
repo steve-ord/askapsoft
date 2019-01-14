@@ -458,14 +458,15 @@ IFS="${IFS_FIELDS}"
 ##############################
 # Next, search for MSs
 
-# for now, get all averaged continuum beam-wise MSs
+# for now, get all averaged continuum beam-wise MSs, and, if requested, all calibrated spectral MSs.
 msNames=()
 possibleMSnames="${msNameList[@]}"
 
-for ms in \${possibleMSnames}; do
+for((i=0;i<\${#msNameList[@]};i++)); do
 
+    ms=\${msNameList[i]}
     if [ -e "\${ms}" ]; then
-        msNames+=(\${ms})
+        msNames+=("\${ms}")
     fi
 
 done
@@ -489,10 +490,10 @@ if [ -e "\${TABLE}" ]; then
 
     # If the bandpass table is elsewhere, copy it to the BPCAL directory
     if [ ! -e "${ORIGINAL_OUTPUT}/BPCAL/\${TABLE##*/}" ]; then
-        cp -r \${TABLE} ${ORIGINAL_OUTPUT}/BPCAL
+        cp -r "\${TABLE}" "${ORIGINAL_OUTPUT}/BPCAL"
     fi
 
-    calTables+=(BPCAL/\${TABLE##*/})
+    calTables+=("BPCAL/\${TABLE##*/}")
 fi
 
 
@@ -501,7 +502,7 @@ for BEAM in \${beams}; do
     for FIELD in \${FIELD_LIST}; do 
         findScienceMSnames
         if [ -e "\${FIELD}/\${gainscaltab}" ]; then
-            calTables+=(\${FIELD}/\${gainscaltab})
+            calTables+=("\${FIELD}/\${gainscaltab}")
         fi
     done
     IFS="${IFS_DEFAULT}"
@@ -517,38 +518,41 @@ if [ "\${PREPARE_FOR_CASDA}" == "true" ]; then
     # Tar up the directory structure with the cal tables, logs,
     # slurm files & diagnostics etc, and add to the evaluation file list
 
+    tarfile=calibration-metadata-processing-logs.tar
+
     # cal tables
-    tarlist="\${calTables[@]}"
+    for((i=0;i<\${#calTables[@]};i++)); do
+        table=\${calTables[i]}
+        tar rvf \$tarfile "\$table"
+    done
+
     # diagnostics directory
-    tarlist="\${tarlist} \${diagnostics##*/}"
+    tar rvf \$tarfile "\${diagnostics##*/}"
     # metadata directory
-    tarlist="\${tarlist} \${metadata##*/}"
+    tar rvf \$tarfile "\${metadata##*/}"
     # stats directory, tarred & compressed
-    tar zcvf stats.tgz \${stats##*/}
-    tarlist="\${tarlist} stats.tgz"
+    tar zcvf stats.tgz "\${stats##*/}"
+    tar rvf \$tarfile stats.tgz
     # stats summary files
     for file in "${OUTPUT}"/stats-all*.txt; do
-        tarlist="\${tarlist} \${file##*/}"
+        tar rvf \$tarfile "\${file##*/}"
     done
     # slurm jobscripts directory, tarred & compressed
-    tar zcvf slurmFiles.tgz \${slurms##*/}
-    tarlist="\${tarlist} slurmFiles.tgz"
+    tar zcvf slurmFiles.tgz "\${slurms##*/}"
+    tar rvf \$tarfile slurmFiles.tgz
     # slurm output directory, tarred & compressed
-    tar zcvf slurmOutputs.tgz \${slurmOut##*/}
-    tarlist="\${tarlist} slurmOutputs.tgz"
+    tar zcvf slurmOutputs.tgz "\${slurmOut##*/}"
+    tar rvf \$tarfile slurmOutputs.tgz
     # logs directory, tarred & compressed
-    tar zcvf logs.tgz \${logs##*/}
-    tarlist="\${tarlist} logs.tgz"
+    tar zcvf logs.tgz "\${logs##*/}"
+    tar rvf \$tarfile logs.tgz
     # parsets directory, tarred & compressed
-    tar zcvf parsets.tgz \${parsets##*/}
-    tarlist="\${tarlist} parsets.tgz"
+    tar zcvf parsets.tgz "\${parsets##*/}"
+    tar rvf \$tarfile parsets.tgz
     # beam logs for spectral cubes
     mkdir -p SpectralCube_BeamLogs
     cp */beamlog* SpectralCube_BeamLogs
-    tarlist="\${tarlist} SpectralCube_BeamLogs"
-
-    tarfile=calibration-metadata-processing-logs.tar
-    tar cvf \$tarfile \${tarlist}
+    tar rvf \$tarfile SpectralCube_BeamLogs
 
     evalNames+=(\$tarfile)
     evalFormats+=(calibration)
@@ -584,27 +588,29 @@ if [ "\${DO_CONTINUUM_VALIDATION}" == "true" ]; then
         fi
     fi
     
-    for dir in \${validationDirs[@]}; do
+    for((i=0;i<\${#validationDirs[@]};i++)); do
+        dir=\${validationDirs[i]}
         echo "Have validation directory \$dir"
-        cd \${dir##/*}/..
+        cd "\${dir##/*}/.."
         echo "Moved to \$(pwd)"
-        echo "Running: tar cvf \${dir##*/}.tar \${dir##*/}"
-        tar cvf \${dir##*/}.tar \${dir##*/}
+        echo "Running: tar cvf \${dir##*/}.tar \\${dir##*/}"
+        tar cvf "\${dir##*/}.tar" "\${dir##*/}"
         echo "Done"
         cd -
         echo "Now in \$(pwd)"
-        evalNames+=(\${dir}.tar)
+        evalNames+=("\${dir}.tar")
         evalFormats+=(tar)
     done
 
-    for valfile in \${validationFiles[@]}; do
+    for((i=0;i<\${#validationFiles[@]};i++)); do
+        valfile=\${validationFiles[i]}
         echo "Have validation file \$valfile"
-        evalNames+=(\${valfile})
+        evalNames+=("\${valfile}")
         evalFormats+=(validation-metrics)
     done
 
     # Add the archived config file, getting the relative path correct.
-    evalNames+=(\${slurmOut##*/}/\${archivedConfig##*/})
+    evalNames+=("\${slurmOut##*/}/\${archivedConfig##*/}")
     evalFormats+=(txt)
 
 fi

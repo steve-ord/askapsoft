@@ -64,10 +64,11 @@ expectedImageNames=()
 expectedImageNames=(\${casdaTwoDimImageNames[@]})
 expectedImageNames+=(\${casdaOtherDimImageNames[@]})
 
-echo "Image names = " "\${expectedImageNames[@]}"
+echo "Image names = \${expectedImageNames[@]}"
 
-for image in "\${expectedImageNames[@]}"; do
+for((i=0;i<\${#expectedImageNames[@]};i++)); do
 
+    image=\${expectedImageNames[i]}
     echo "Launching conversion job for \$image"
     casaim=\${image%%.fits}
     fitsim=\${image%%.fits}.fits
