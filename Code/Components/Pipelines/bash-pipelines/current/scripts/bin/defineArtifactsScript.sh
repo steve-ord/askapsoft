@@ -32,18 +32,31 @@
 #
 
 # Define list of possible MSs:
-msNameList=()
+#msNameList=()
+msNameList=""
 for BEAM in ${BEAMS_TO_USE}; do
     IFS="${IFS_FIELDS}"
     for FIELD in ${FIELD_LIST}; do
         findScienceMSnames
         if [ "${DO_APPLY_CAL_CONT}" == "true" ]; then
-            msNameList+=(${FIELD}/${msSciAvCal})
+            #            msNameList+=("${FIELD}/${msSciAvCal}")
+            if [ "${msNameList}" == "" ]; then
+                msNameList="${FIELD}/${msSciAvCal}"
+            else
+                msNameList="${msNameList}
+${FIELD}/${msSciAvCal}"
+            fi
         else
-            msNameList+=(${FIELD}/${msSciAv})
+            if [ "${msNameList}" == "" ]; then
+                msNameList="${FIELD}/${msSciAv}"
+            else
+                msNameList="${msNameList}
+${FIELD}/${msSciAv}"
+            fi
         fi
         if [ "${ARCHIVE_SPECTRAL_MS}" == "true" ]; then
-            msNameList+=(${FIELD}/${msSci})
+            msNameList="${msNameList}
+${FIELD}/${msSci}"
         fi
     done
     IFS="${IFS_DEFAULT}"
@@ -162,7 +175,6 @@ IMAGETYPE_CONT=${IMAGETYPE_CONT}
 IMAGETYPE_CONTCUBE=${IMAGETYPE_CONTCUBE}
 IMAGETYPE_SPECTRAL=${IMAGETYPE_SPECTRAL}
 
-GAINS_CAL_TABLE="${GAINS_CAL_TABLE}"
 DO_CONTINUUM_VALIDATION="${DO_CONTINUUM_VALIDATION}"
 
 CONTSUB_METHOD="${CONTSUB_METHOD}"
@@ -224,11 +236,11 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                             fi
 
                             if [ -e "\${FIELD}/\${imageName}" ]; then
-                                casdaTwoDimImageNames+=(\${FIELD}/\${imageName})
+                                casdaTwoDimImageNames+=("\${FIELD}/\${imageName}")
                                 casdaTwoDimImageTypes+=("\${imageType}")
                                 casdaTwoDimThumbTitles+=("\${label}")
                                 if [ "\${BEAM}" == "all" ] && [ "\${imageCode}" == "restored" ]; then
-                                    casdaTwoDimImageNames+=(\${FIELD}/\${weightsImage})
+                                    casdaTwoDimImageNames+=("\${FIELD}/\${weightsImage}")
                                     casdaTwoDimImageTypes+=("\${weightsType}")
                                     casdaTwoDimThumbTitles+=("\${weightsLabel}")
                                 fi
@@ -246,13 +258,13 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                                 fi
                             fi
                             if [ -e "\${FIELD}/\${selavyDir}/\${noiseMap}" ]; then
-                                casdaTwoDimImageNames+=(\${FIELD}/\${selavyDir}/\${noiseMap})
+                                casdaTwoDimImageNames+=("\${FIELD}/\${selavyDir}/\${noiseMap}")
                                 casdaTwoDimImageTypes+=(\${noiseType})
                                 casdaTwoDimThumbTitles+=("\${noiseLabel}")
-                                casdaTwoDimImageNames+=(\${FIELD}/\${selavyDir}/\${compMap})
+                                casdaTwoDimImageNames+=("\${FIELD}/\${selavyDir}/\${compMap}")
                                 casdaTwoDimImageTypes+=(\${compMapType})
                                 casdaTwoDimThumbTitles+=("\${compMapLabel}")
-                                casdaTwoDimImageNames+=(\${FIELD}/\${selavyDir}/\${compResidual})
+                                casdaTwoDimImageNames+=("\${FIELD}/\${selavyDir}/\${compResidual}")
                                 casdaTwoDimImageTypes+=(\${compResidualType})
                                 casdaTwoDimThumbTitles+=("\${compResidualLabel}")
                             fi
@@ -265,14 +277,14 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                     setContsubFilenames
                     if [ "\${CONTSUB_METHOD}" == "CleanModel" ]; then
                         if [ -e "\${FIELD}/\${contsubDir}/\${contsubCleanModelImage}" ]; then
-                            casdaTwoDimImageNames+=(\${FIELD}/\${contsubDir}/\${contsubCleanModelImage})
+                            casdaTwoDimImageNames+=("\${FIELD}/\${contsubDir}/\${contsubCleanModelImage}")
                             casdaTwoDimImageTypes+=(\${contsubCleanModelType})
                             casdaTwoDimThumbTitles+=("\${contsubCleanModelLabel}")
                         fi
                     fi
                     if [ "\${CONTSUB_METHOD}" == "Cmodel" ]; then
                         if [ -e "\${FIELD}/\${contsubDir}/\${contsubCmodelImage}" ]; then
-                            casdaTwoDimImageNames+=(\${FIELD}/\${contsubDir}/\${contsubCmodelImage})
+                            casdaTwoDimImageNames+=("\${FIELD}/\${contsubDir}/\${contsubCmodelImage}")
                             casdaTwoDimImageTypes+=(\${contsubCmodelType})
                             casdaTwoDimThumbTitles+=("\${contsubCmodelLabel}")
                         fi
@@ -291,7 +303,7 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
         
                     setImageProperties spectral
                     if [ -e "\${FIELD}/\${imageName}" ]; then
-                        casdaOtherDimImageNames+=(\${FIELD}/\${imageName})
+                        casdaOtherDimImageNames+=("\${FIELD}/\${imageName}")
                         casdaOtherDimImageTypes+=("\${imageType}")
                         if [ -e "\${FIELD}/\${selavyDir}" ]; then
                             casdaOtherDimImageSpectra+=("\${FIELD}/\${selavySpectraDir}/spec*.fits")
@@ -304,7 +316,7 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                             casdaOtherDimImageRMSF+=("")
                             casdaOtherDimImagePol+=("")
                             if [ -e "\${FIELD}/\${selavyDir}/\${noiseMap}" ]; then
-                                casdaOtherDimImageNames+=(\${FIELD}/\${selavyDir}/\${noiseMap})
+                                casdaOtherDimImageNames+=("\${FIELD}/\${selavyDir}/\${noiseMap}")
                                 casdaOtherDimImageTypes+=(\${noiseType})
                             fi
                         else
@@ -319,7 +331,7 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                             casdaOtherDimImagePol+=("")
                         fi
                         if [ "\${BEAM}" == "all" ] && [ "\${imageCode}" == "restored" ]; then
-                            casdaOtherDimImageNames+=(\${FIELD}/\${weightsImage})
+                            casdaOtherDimImageNames+=("\${FIELD}/\${weightsImage}")
                             casdaOtherDimImageTypes+=("\${weightsType}")
                             casdaOtherDimImageSpectra+=("")
                             casdaOtherDimImageNoise+=("")
@@ -344,7 +356,7 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                         pol=\$(echo "\$POLN" | tr '[:upper:]' '[:lower:]')
                         setImageProperties contcube "\$pol"
                         if [ -e "\${FIELD}/\${imageName}" ]; then
-                            casdaOtherDimImageNames+=(\${FIELD}/\${imageName})
+                            casdaOtherDimImageNames+=("\${FIELD}/\${imageName}")
                             casdaOtherDimImageTypes+=("\${imageType}")
                             ### Not yet writing extracted files direct to FITS, so change the assignment of fitsSuffix
                             if [ -e "\${FIELD}/\${selavyDir}" ] && [ "\${DO_RM_SYNTHESIS}" == "true" ]; then
@@ -376,7 +388,7 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
                                 casdaOtherDimImagePol+=("")
                             fi
                             if [ "\${BEAM}" == "all" ] && [ "\${imageCode}" == "restored" ]; then
-                                casdaOtherDimImageNames+=(\${FIELD}/\${weightsImage})
+                                casdaOtherDimImageNames+=("\${FIELD}/\${weightsImage}")
                                 casdaOtherDimImageTypes+=("\${weightsType}")
                                 casdaOtherDimImageSpectra+=("")
                                 casdaOtherDimImageNoise+=("")
@@ -427,27 +439,27 @@ for FIELD in \${LOCAL_FIELD_LIST}; do
 
             setImageProperties cont
             if [ -e "\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.components.xml" ]; then
-                catNames+=(\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.components.xml)
+                catNames+=("\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.components.xml")
                 catTypes+=(continuum-component)
             fi
             if [ -e "\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.islands.xml" ]; then
-                catNames+=(\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.islands.xml)
+                catNames+=("\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.islands.xml")
                 catTypes+=(continuum-island)
             fi
             if [ "\${CONTSUB_METHOD}" == "Components" ]; then
                 setContsubFilenames
                 if [ -e "\${FIELD}/\${contsubDir}/\${contsubComponents}" ]; then
-                    catNames+=(\${FIELD}/\${contsubDir}/\${contsubComponents})
+                    catNames+=("\${FIELD}/\${contsubDir}/\${contsubComponents}")
                     catTypes+=(continuum-component)
                 fi
             fi
             if [ -e "\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.polarisation.xml" ]; then
-                catNames+=(\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.polarisation.xml)
+                catNames+=("\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.polarisation.xml")
                 catTypes+=(polarisation-component)
             fi
             setImageProperties spectral
             if [ -e "\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.hiobjects.xml" ]; then
-                catNames+=(\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.hiobjects.xml)
+                catNames+=("\${FIELD}/\${selavyDir}/selavy-\${imageName%%.fits}.hiobjects.xml")
                 catTypes+=(spectral-line-emission)
             fi
         done
@@ -460,16 +472,17 @@ IFS="${IFS_FIELDS}"
 
 # for now, get all averaged continuum beam-wise MSs, and, if requested, all calibrated spectral MSs.
 msNames=()
-possibleMSnames="${msNameList[@]}"
+possibleMSnames="${msNameList}"
 
-for((i=0;i<\${#msNameList[@]};i++)); do
+IFS=${IFS_FIELDS}
+for ms in \${possibleMSnames}; do
 
-    ms=\${msNameList[i]}
     if [ -e "\${ms}" ]; then
         msNames+=("\${ms}")
     fi
 
 done
+IFS=${IFS_DEFAULT}
 
 ##############################
 # Next, search for Calibration tables
@@ -551,10 +564,10 @@ if [ "\${PREPARE_FOR_CASDA}" == "true" ]; then
     tar rvf \$tarfile parsets.tgz
     # beam logs for spectral cubes
     mkdir -p SpectralCube_BeamLogs
-    cp */beamlog* SpectralCube_BeamLogs
+    cp ./*/beamlog* SpectralCube_BeamLogs
     tar rvf \$tarfile SpectralCube_BeamLogs
 
-    evalNames+=(\$tarfile)
+    evalNames+=("\$tarfile")
     evalFormats+=(calibration)
 fi
 
