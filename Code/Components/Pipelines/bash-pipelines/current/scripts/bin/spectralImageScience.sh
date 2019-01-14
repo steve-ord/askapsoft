@@ -224,7 +224,7 @@ direction="${DIRECTION}"
 if [ "\${direction}" != "" ]; then
     directionDefinition="${Imager}.Images.direction                       = \${direction}"
 else
-    msMetadata=${MS_METADATA}
+    msMetadata="${MS_METADATA}"
     ra=\$(python "${PIPELINEDIR}/parseMSlistOutput.py" --file="\$msMetadata" --val=RA)
     dec=\$(python "${PIPELINEDIR}/parseMSlistOutput.py" --file="\$msMetadata" --val=Dec)
     epoch=\$(python "${PIPELINEDIR}/parseMSlistOutput.py" --file="\$msMetadata" --val=Epoch)

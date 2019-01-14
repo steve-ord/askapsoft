@@ -99,7 +99,7 @@ cp "\$thisfile" "\$(echo "\$thisfile" | sed -e "\$sedstr")"
 useContCube=${USE_CONTCUBE_FOR_SPECTRAL_INDEX}
 NUM_TAYLOR_TERMS=${NUM_TAYLOR_TERMS}
 
-msMetadata=${MS_METADATA}
+msMetadata="${MS_METADATA}"
 ra=\$(python "${PIPELINEDIR}/parseMSlistOutput.py" --file="\$msMetadata" --val=RA)
 ra=\$(echo \$ra | awk -F':' '{printf "%sh%sm%s",\$1,\$2,\$3}')
 dec=\$(python "${PIPELINEDIR}/parseMSlistOutput.py" --file="\$msMetadata" --val=Dec)

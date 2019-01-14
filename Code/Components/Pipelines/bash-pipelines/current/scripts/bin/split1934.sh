@@ -223,7 +223,7 @@ if [ \$err != 0 ]; then
 fi
 
 # Make the metadata file for the new MS
-metadataFile=${MS_METADATA_CAL}
+metadataFile="${MS_METADATA_CAL}"
 NCORES=1
 NPPN=1
 srun --export=ALL --ntasks=\${NCORES} --ntasks-per-node=\${NPPN} ${mslist} --full \${finalMS} 1>& "\${metadataFile}"

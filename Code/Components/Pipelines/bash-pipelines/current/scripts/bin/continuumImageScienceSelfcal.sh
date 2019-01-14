@@ -252,7 +252,7 @@ cp "\$thisfile" "\$(echo "\$thisfile" | sed -e "\$sedstr")"
 
 selfcalMethod=${SELFCAL_METHOD}
 
-msMetadata=${MS_METADATA}
+msMetadata="${MS_METADATA}"
 ra=\$(python "${PIPELINEDIR}/parseMSlistOutput.py" --file="\$msMetadata" --val=RA)
 dec=\$(python "${PIPELINEDIR}/parseMSlistOutput.py" --file="\$msMetadata" --val=Dec)
 epoch=\$(python "${PIPELINEDIR}/parseMSlistOutput.py" --file="\$msMetadata" --val=Epoch)

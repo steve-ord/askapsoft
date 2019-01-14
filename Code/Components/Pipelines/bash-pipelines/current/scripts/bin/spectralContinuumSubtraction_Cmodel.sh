@@ -117,7 +117,7 @@ cp "\$thisfile" "\$(echo "\$thisfile" | sed -e "\$sedstr")"
 useContCube=${USE_CONTCUBE_FOR_SPECTRAL_INDEX}
 NUM_TAYLOR_TERMS=${NUM_TAYLOR_TERMS}
 
-msMetadata=${MS_METADATA}
+msMetadata="${MS_METADATA}"
 DIRECTION="$DIRECTION"
 if [ "\${DIRECTION}" != "" ]; then
     modelDirection="\${DIRECTION}"
