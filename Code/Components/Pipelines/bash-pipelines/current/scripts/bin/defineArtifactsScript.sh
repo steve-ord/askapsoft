@@ -474,7 +474,7 @@ IFS="${IFS_FIELDS}"
 msNames=()
 possibleMSnames="${msNameList}"
 
-IFS=${IFS_FIELDS}
+IFS="${IFS_FIELDS}"
 for ms in \${possibleMSnames}; do
 
     if [ -e "\${ms}" ]; then
@@ -482,7 +482,7 @@ for ms in \${possibleMSnames}; do
     fi
 
 done
-IFS=${IFS_DEFAULT}
+IFS="${IFS_DEFAULT}"
 
 ##############################
 # Next, search for Calibration tables
