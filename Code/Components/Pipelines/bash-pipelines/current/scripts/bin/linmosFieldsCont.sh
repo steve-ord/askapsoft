@@ -68,7 +68,7 @@ for TILE in $FULL_TILE_LIST; do
 
             if [ "${DO_IT}" == "true" ]; then
 
-                sbatchfile=$slurms/linmos_all_cont.sbatch
+                sbatchfile="$slurms/linmos_all_cont.sbatch"
                 cat > "$sbatchfile" <<EOFOUTER
 #!/bin/bash -l
 ${SLURM_CONFIG}
@@ -77,7 +77,7 @@ ${SLURM_CONFIG}
 #SBATCH --ntasks-per-node=1
 #SBATCH --job-name=linmosFullC
 ${exportDirective}
-#SBATCH --output=$slurmOut/slurm-linmosC-%j.out
+#SBATCH --output="$slurmOut/slurm-linmosC-%j.out"
 
 ${askapsoftModuleCommands}
 
@@ -87,8 +87,8 @@ cd $OUTPUT
 
 # Make a copy of this sbatch file for posterity
 sedstr="s/sbatch/\${SLURM_JOB_ID}\.sbatch/g"
-thisfile=$sbatchfile
-cp \$thisfile "\$(echo \$thisfile | sed -e "\$sedstr")"
+thisfile="$sbatchfile"
+cp "\$thisfile" "\$(echo "\$thisfile" | sed -e "\$sedstr")"
 
 DO_ALT_IMAGER_CONT="${DO_ALT_IMAGER_CONT}"
 NUM_TAYLOR_TERMS=${NUM_TAYLOR_TERMS}
@@ -167,8 +167,8 @@ if [ "\${imList}" != "" ]; then
 
     if [ \${listCount} -gt 1 ]; then
         echo "Mosaicking to form \${imageName}"
-        parset=${parsets}/science_\${jobCode}_\${SLURM_JOB_ID}.in
-        log=${logs}/science_\${jobCode}_\${SLURM_JOB_ID}.log
+        parset="${parsets}/science_\${jobCode}_\${SLURM_JOB_ID}.in"
+        log="${logs}/science_\${jobCode}_\${SLURM_JOB_ID}.log"
         cat > "\${parset}" << EOFINNER
 linmos.names            = [\${imList}]
 linmos.weights          = [\${wtList}]

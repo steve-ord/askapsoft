@@ -43,7 +43,7 @@ ${SLURM_CONFIG}
 #SBATCH --ntasks-per-node=1
 #SBATCH --job-name=FITSconvert
 ${exportDirective}
-#SBATCH --output=$slurmOut/slurm-FITSconvert-%j.out
+#SBATCH --output="$slurmOut/slurm-FITSconvert-%j.out"
 
 ${askapsoftModuleCommands}
 
@@ -53,8 +53,8 @@ cd $OUTPUT
 
 # Make a copy of this sbatch file for posterity
 sedstr="s/sbatch/\${SLURM_JOB_ID}\.sbatch/g"
-thisfile=$sbatchfile
-cp \$thisfile "\$(echo \$thisfile | sed -e "\$sedstr")"
+thisfile="$sbatchfile"
+cp "\$thisfile" "\$(echo "\$thisfile" | sed -e "\$sedstr")"
 
 expectedImageNames=()
 
@@ -72,8 +72,8 @@ for image in "\${expectedImageNames[@]}"; do
     casaim=\${image%%.fits}
     fitsim=\${image%%.fits}.fits
     
-    parset=$parsets/convertToFITS_\${casaim##*/}_\${SLURM_JOB_ID}.in
-    log=$logs/convertToFITS_\${casaim##*/}_\${SLURM_JOB_ID}.log
+    parset="${parsets}/convertToFITS_\${casaim##*/}_\${SLURM_JOB_ID}.in"
+    log="${logs}/convertToFITS_\${casaim##*/}_\${SLURM_JOB_ID}.log"
     
     ${fitsConvertText}
 

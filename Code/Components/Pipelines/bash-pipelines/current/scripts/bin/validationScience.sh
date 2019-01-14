@@ -28,7 +28,7 @@
 #
 if [ "${DO_VALIDATION_SCIENCE}" == "true" ]; then
     
-    sbatchfile=$slurms/validationScience.sbatch
+    sbatchfile="$slurms/validationScience.sbatch"
     cat > "$sbatchfile" <<EOFOUTER
 #!/bin/bash -l
 ${SLURM_CONFIG}
@@ -37,7 +37,7 @@ ${SLURM_CONFIG}
 #SBATCH --ntasks-per-node=1
 #SBATCH --job-name=validateSci
 ${exportDirective}
-#SBATCH --output=$slurmOut/slurm-validationScience-%j.out
+#SBATCH --output="$slurmOut/slurm-validationScience-%j.out"
 
 ${askapsoftModuleCommands}
 
@@ -47,8 +47,8 @@ cd $OUTPUT
 
 # Make a copy of this sbatch file for posterity
 sedstr="s/sbatch/\${SLURM_JOB_ID}\.sbatch/g"
-thisfile=$sbatchfile
-cp \$thisfile "\$(echo \$thisfile | sed -e "\$sedstr")"
+thisfile="$sbatchfile"
+cp "\$thisfile" "\$(echo "\$thisfile" | sed -e "\$sedstr")"
 
 diagnostics=$diagnostics
 FIELD_LIST="${FIELD_LIST}"

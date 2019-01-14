@@ -98,7 +98,7 @@ function archiveConfig()
     filename=$(basename "$1")
     extension="${filename##*.}"
     filename="${filename%%.*}"
-    archivedConfig=$slurmOut/${filename}__${NOW}.${extension}
+    archivedConfig="$slurmOut/${filename}__${NOW}.${extension}"
     cp "$1" "$archivedConfig"
 
     cat >> "$archivedConfig" <<EOF
@@ -281,7 +281,7 @@ function setContsubFilenames()
     contsubCmodelLabel="Continuum model image from catalogue"
     ####
     # Finally the components parset
-    contsubComponents=modelComponents.contsub.${imageStub}.in
+    contsubComponents="modelComponents.contsub.${imageStub}.in"
 
     # Restore the imageCode to what it was
     imageCode=$imageCodeBackup

@@ -57,7 +57,7 @@ ${SLURM_CONFIG}
 #SBATCH --ntasks-per-node=1
 #SBATCH --job-name=${jobname}
 ${exportDirective}
-#SBATCH --output=$slurmOut/slurm-applyBandpass1934-%j.out
+#SBATCH --output="$slurmOut/slurm-applyBandpass1934-%j.out"
 
 ${askapsoftModuleCommands}
 
@@ -67,8 +67,8 @@ cd $OUTPUT
 
 # Make a copy of this sbatch file for posterity
 sedstr="s/sbatch/\${SLURM_JOB_ID}\.sbatch/g"
-thisfile=$sbatchfile
-cp \$thisfile "\$(echo \$thisfile | sed -e "\$sedstr")"
+thisfile="$sbatchfile"
+cp "\$thisfile" "\$(echo "\$thisfile" | sed -e "\$sedstr")"
 
 RAW_TABLE=${TABLE_BANDPASS}
 SMOOTH_TABLE=${TABLE_BANDPASS}.smooth
@@ -92,7 +92,7 @@ msMetadata=${MS_METADATA_CAL}
 #nChan=\$(python "${PIPELINEDIR}/parseMSlistOutput.py" --file="\${msMetadata}" --val=nChan)
 nChan=${NUM_CHAN_1934}
 
-parset=${parsets}/ccalapply_bp1934_b${BEAM}_\${SLURM_JOB_ID}.in
+parset="${parsets}/ccalapply_bp1934_b${BEAM}_\${SLURM_JOB_ID}.in"
 cat > "\$parset" << EOFINNER
 Ccalapply.dataset                         = \${ms}
 #
@@ -110,7 +110,7 @@ Ccalapply.calibaccess.table               = \${TABLE}
 
 EOFINNER
 
-log=${logs}/ccalapply_bp1934_b${BEAM}_\${SLURM_JOB_ID}.log
+log="${logs}/ccalapply_bp1934_b${BEAM}_\${SLURM_JOB_ID}.log"
 
 NCORES=1
 NPPN=1
