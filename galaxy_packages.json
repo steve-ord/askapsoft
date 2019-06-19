@@ -1,0 +1,14 @@
+{"Common": "/group/askap/sord/yanda/", 
+ "Blob": "/group/askap/sord/yanda/",
+ "askap": "/group/askap/sord/yanda/", 
+ "logfilters" : "/group/askap/sord/yanda/",
+ "imagemath" : "/group/askap/sord/yanda/",
+ "scimath" : "/group/askap/sord/yanda/",
+ "askapparallel" : "/group/askap/sord/yanda/",
+ "accessors" : "/group/askap/sord/yanda/",
+ "components" : "/group/askap/sord/yanda/",
+ "casacore" : "/group/askap/sord/yanda/",
+ "casarest" : "/group/askap/sord/yanda/",
+ "cfitsio" : "ENV:CFITSIO_ROOT",
+ "ice" : "3rdParty/Ice/Ice-3.5.0"
+}
