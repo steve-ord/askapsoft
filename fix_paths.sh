@@ -26,6 +26,6 @@ do
   sed -i '' 's|'include\ \<components/AskapComponentImager.h'|'include\ \<askap/components/AskapComponentImager.h'|g' $file
   sed -i '' 's|'include\ \"components/AskapComponentImager.h'|'include\ \"askap/components/AskapComponentImager.h'|g' $file
 
-  sed -i '' 's|'include\ \<components/ComponentModels/'|'include\ \<casarest/components/ComponentModels/'|g' $file
-  sed -i '' 's|'include\ \"components/ComponentModels/'|'include\ \"casarest/components/ComponentModels/'|g' $file
+#  sed -i '' 's|'include\ \<components/ComponentModels/'|'include\ \<casarest/components/ComponentModels/'|g' $file
+#  sed -i '' 's|'include\ \"components/ComponentModels/'|'include\ \"casarest/components/ComponentModels/'|g' $file
 done
