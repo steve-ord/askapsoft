@@ -46,6 +46,10 @@ source initaskap.sh
 export AIPSPATH=$ASKAP_ROOT/Code/Base/accessors/current
 source initaskap.sh
 
+cd Code
+../fix_paths.sh
+cd ..
+
 cd Code/Systems/cpapps
 
 #
