@@ -6,5 +6,5 @@
  "scimath" : "/group/askap/sord/yanda/;askap_scimath",
  "askapparallel" : "/group/askap/sord/yanda/;askap_askapparallel",
  "accessors" : "/group/askap/sord/yanda/;askap_accessors",
- "components" : "/group/askap/sord/yanda/;askap_components",
+ "components" : "/group/askap/sord/yanda/;askap_components"
 }
