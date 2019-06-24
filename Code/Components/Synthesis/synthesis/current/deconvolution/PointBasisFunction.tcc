@@ -31,13 +31,13 @@
 
 #include <askap_synthesis.h>
 
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 #include <casacore/casa/aips.h>
 ASKAP_LOGGER(decpointbaselogger, ".deconvolution.pointbasis");
 
 #include <deconvolution/PointBasisFunction.h>
 
-using namespace casa;
+using namespace casacore;
 
 namespace askap {
 

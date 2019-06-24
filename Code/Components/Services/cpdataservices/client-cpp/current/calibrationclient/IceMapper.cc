@@ -31,7 +31,7 @@
 #include "askap_cpdataservices.h"
 
 // ASKAPsoft includes
-#include "askap/AskapError.h"
+#include "askap/askap/AskapError.h"
 #include "casacore/casa/aipstype.h"
 
 // Local package includes
@@ -180,7 +180,7 @@ askap::cp::caldataservice::BandpassSolution IceMapper::fromIce(const askap::inte
 // Private
 ///////////////////////////////////////////////
 
-askap::interfaces::FloatComplex IceMapper::toIce(const casa::Complex& val)
+askap::interfaces::FloatComplex IceMapper::toIce(const casacore::Complex& val)
 {
     askap::interfaces::FloatComplex ice_val;;
     ice_val.real = val.real();
@@ -188,9 +188,9 @@ askap::interfaces::FloatComplex IceMapper::toIce(const casa::Complex& val)
     return ice_val;
 }
 
-casa::Complex IceMapper::fromIce(const askap::interfaces::FloatComplex& ice_val)
+casacore::Complex IceMapper::fromIce(const askap::interfaces::FloatComplex& ice_val)
 {
-    return casa::Complex(ice_val.real, ice_val.imag);
+    return casacore::Complex(ice_val.real, ice_val.imag);
 }
 
 askap::interfaces::calparams::JonesIndex IceMapper::toIce(const askap::accessors::JonesIndex& jindex)

@@ -90,7 +90,7 @@ public:
   /// @param[in] index ant/beam index
   /// @param[in] bp JonesJTerm object with gains for the given channel and validity flags
   /// @param[in] chan spectral channel
-  virtual void setBandpass(const JonesIndex &index, const JonesJTerm &bp, const casa::uInt chan);
+  virtual void setBandpass(const JonesIndex &index, const JonesJTerm &bp, const casacore::uInt chan);
 
 protected:
     

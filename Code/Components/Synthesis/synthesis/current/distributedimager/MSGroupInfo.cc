@@ -38,8 +38,8 @@
 #include <iomanip>
 
 // ASKAPsoft includes
-#include <askap/AskapError.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
 #include <casacore/casa/Quanta/Unit.h>
 #include <casacore/measures/Measures/MFrequency.h>
 #include <dataaccess/IConstDataSource.h>
@@ -53,7 +53,7 @@
 ASKAP_LOGGER(logger, ".MSGroupInfo");
 
 using namespace askap::cp;
-using namespace casa;
+using namespace casacore;
 using namespace std;
 
 MSGroupInfo::MSGroupInfo() : itsTotalNumChannels(0)

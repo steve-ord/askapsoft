@@ -44,13 +44,13 @@
 
 
 // ASKAPsoft includes
-#include <askap/AskapError.h>
-#include <askap/AskapLogging.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/Log4cxxLogSink.h>
 #include <measurementequation/SynthesisParamsHelper.h>
 #include <Common/ParameterSet.h>
 #include <fitting/Params.h>
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapUtil.h>
 #include <imageaccess/IImageAccess.h>
 #include <boost/shared_ptr.hpp>
 
@@ -59,37 +59,37 @@ ASKAP_LOGGER(logger, ".testlinmos");
 using namespace askap;
 using namespace askap::synthesis;
 
-casa::MVDirection convertDir(const std::string &ra, const std::string &dec) {
-  casa::Quantity tmpra,tmpdec;
-  casa::Quantity::read(tmpra, ra);
-  casa::Quantity::read(tmpdec,dec);
-  return casa::MVDirection(tmpra,tmpdec);  
+casacore::MVDirection convertDir(const std::string &ra, const std::string &dec) {
+  casacore::Quantity tmpra,tmpdec;
+  casacore::Quantity::read(tmpra, ra);
+  casacore::Quantity::read(tmpdec,dec);
+  return casacore::MVDirection(tmpra,tmpdec);  
 }
 
 // helper method to load beam offsets from the parset file sharing the same format
 // as csimulator feed definition. Due to lack of proper phase tracking per beam in the first experiments
 // we have to set all beam offsets in the MS to zero. Therefore, this information has to be supplied 
 // by other means.
-casa::Vector<casa::MVDirection> loadBeamOffsets(const std::string &fname, const casa::MVDirection &centre)
+casacore::Vector<casacore::MVDirection> loadBeamOffsets(const std::string &fname, const casacore::MVDirection &centre)
 {
    ASKAPLOG_INFO_STR(logger,  "Loading beam offsets from "<<fname);
    LOFAR::ParameterSet parset(fname);
    const std::vector<std::string> beamNames(parset.getStringVector("feeds.names"));
-   const casa::uInt nBeams = beamNames.size();
+   const casacore::uInt nBeams = beamNames.size();
    ASKAPLOG_INFO_STR(logger,  "File contains description for "<<nBeams<<" beams");
    ASKAPCHECK(nBeams > 0, "No beams specified");
-   casa::Vector<casa::MVDirection> result(nBeams, centre);
+   casacore::Vector<casacore::MVDirection> result(nBeams, centre);
    double spacing = 1.;
    if (parset.isDefined("feeds.spacing")) {
-       casa::Quantity qspacing = asQuantity(parset.getString("feeds.spacing"));
+       casacore::Quantity qspacing = asQuantity(parset.getString("feeds.spacing"));
        spacing = qspacing.getValue("rad");
        ASKAPLOG_INFO_STR(logger, "Scaling beam offsets by " << qspacing);       
    } 
-   for (casa::uInt beam = 0; beam < nBeams; ++beam) {
+   for (casacore::uInt beam = 0; beam < nBeams; ++beam) {
         const std::string parName = "feeds." + beamNames[beam];
         const std::vector<double> xy(parset.getDoubleVector(parName));
         ASKAPCHECK(xy.size() == 2, "Expect two elements for each offset");
-        result[beam].shift(xy[0]*spacing, xy[1]*spacing, casa::True);
+        result[beam].shift(xy[0]*spacing, xy[1]*spacing, casacore::True);
    }
    return result;
 }
@@ -97,14 +97,14 @@ casa::Vector<casa::MVDirection> loadBeamOffsets(const std::string &fname, const 
 void process() {
   
   // centres for each beam
-  const casa::Vector<casa::MVDirection> centres = 
+  const casacore::Vector<casacore::MVDirection> centres = 
      loadBeamOffsets("beamoffsets.in", convertDir("15h56m58.871","-79.14.04.28"));
 
      // first attempt at MRO
      //loadBeamOffsets("beamoffsets.in", convertDir("15h39m16.97","-78.42.06.17"));
 
   /*
-  casa::Vector<casa::MVDirection> centres(4);
+  casacore::Vector<casacore::MVDirection> centres(4);
 
   centres[0] = convertDir("13:26:51.70","-42.45.38.90");
   centres[1] = convertDir("13:24:08.26","-42.45.38.90");
@@ -118,7 +118,7 @@ void process() {
   //centres[3] = convertDir("15:55:21.65","-79.40.36.30");
   */
   
-  for (casa::uInt beam = 0; beam<centres.nelements(); ++beam) {
+  for (casacore::uInt beam = 0; beam<centres.nelements(); ++beam) {
        ASKAPLOG_INFO_STR(logger,  "Beam "<<beam + 1<<" pointing centre is "<<printDirection(centres[beam]));
   }
   
@@ -126,25 +126,25 @@ void process() {
   const double fwhm = 1.22*3e8/928e6/12;
   
   accessors::IImageAccess& iacc = SynthesisParamsHelper::imageHandler();
-  const casa::IPosition shape = iacc.shape("beam0.img");
-  const casa::Vector<casa::Quantum<double> > beamInfo = iacc.beamInfo("beam0.img");
+  const casacore::IPosition shape = iacc.shape("beam0.img");
+  const casacore::Vector<casacore::Quantum<double> > beamInfo = iacc.beamInfo("beam0.img");
   ASKAPCHECK(beamInfo.nelements()>=3, "beamInfo is supposed to have at least 3 elements");
-  const casa::CoordinateSystem cs = iacc.coordSys("beam0.img");
-  casa::Vector<casa::Array<float> > pixels(centres.nelements());
+  const casacore::CoordinateSystem cs = iacc.coordSys("beam0.img");
+  casacore::Vector<casacore::Array<float> > pixels(centres.nelements());
   ASKAPASSERT(pixels.nelements()>=1);
   for (size_t beam = 0; beam < pixels.nelements(); ++beam) {
        pixels[beam] = iacc.read("beam" + utility::toString<size_t>(beam)+".img");
        ASKAPASSERT(pixels[beam].shape() == pixels[0].shape());
        ASKAPASSERT(pixels[beam].shape().nonDegenerate().nelements() == 2);
   }
-  casa::IPosition curpos(pixels[0].shape());
-  for (casa::uInt dim=0; dim<curpos.nelements(); ++dim) {
+  casacore::IPosition curpos(pixels[0].shape());
+  for (casacore::uInt dim=0; dim<curpos.nelements(); ++dim) {
        curpos[dim] = 0;
   }
   ASKAPASSERT(curpos.nelements()>=2);
-  const casa::DirectionCoordinate &dc = cs.directionCoordinate(0);
-  casa::Vector<casa::Double> pixel(2,0.);
-  casa::MVDirection world;
+  const casacore::DirectionCoordinate &dc = cs.directionCoordinate(0);
+  casacore::Vector<casacore::Double> pixel(2,0.);
+  casacore::MVDirection world;
   for (int x=0; x<pixels[0].shape()[0];++x) {
        for (int y=0; y<pixels[0].shape()[1];++y) {
             pixel[0] = double(x);
@@ -202,11 +202,11 @@ int main(int argc, const char** argv)
     }
 
     // Ensure that CASA log messages are captured
-    casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-    casa::LogSink::globalSink(globalSink);
+    casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+    casacore::LogSink::globalSink(globalSink);
 
     try {
-        casa::Timer timer;
+        casacore::Timer timer;
         timer.mark();
 
         SynthesisParamsHelper::setUpImageHandler(LOFAR::ParameterSet());

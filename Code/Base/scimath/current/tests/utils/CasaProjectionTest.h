@@ -55,10 +55,10 @@ class CasaProjectionTest : public CppUnit::TestFixture
    CPPUNIT_TEST_SUITE_END();
 public:
    void setUp() {
-      casa::Matrix<casa::Double> xform(2,2,0.);
+      casacore::Matrix<casacore::Double> xform(2,2,0.);
       xform.diagonal() = 1.;
-      const double deg2rad = casa::C::pi/180.;
-      itsCoord.reset(new casa::DirectionCoordinate(casa::MDirection::J2000, casa::Projection(casa::Projection::SIN),
+      const double deg2rad = casacore::C::pi/180.;
+      itsCoord.reset(new casacore::DirectionCoordinate(casacore::MDirection::J2000, casacore::Projection(casacore::Projection::SIN),
                      135*deg2rad, -60*deg2rad,
                      -1.*deg2rad, 1.*deg2rad,
                      xform, 128,128));
@@ -67,12 +67,12 @@ public:
    }
    
    void testSINProjection() {
-      const double deg2rad = casa::C::pi/180.;
+      const double deg2rad = casacore::C::pi/180.;
       itsPixel = 128.;
       toWorld();
-      CPPUNIT_ASSERT(casa::abs(itsWorld[0]-135.*deg2rad)<1e-7);
-      CPPUNIT_ASSERT(casa::abs(itsWorld[1]+60.*deg2rad)<1e-7); 
-      const casa::Vector<casa::Double> referenceCentre = itsWorld.copy();
+      CPPUNIT_ASSERT(casacore::abs(itsWorld[0]-135.*deg2rad)<1e-7);
+      CPPUNIT_ASSERT(casacore::abs(itsWorld[1]+60.*deg2rad)<1e-7); 
+      const casacore::Vector<casacore::Double> referenceCentre = itsWorld.copy();
       itsPixel[0] = 100.;
       itsPixel[1] = 118.;
       toWorld();
@@ -83,8 +83,8 @@ public:
       const double dec = asin(M*cos(referenceCentre[1])+sin(referenceCentre[1])*sqrt(1-L*L-M*M));
       const double ra = referenceCentre[0]+atan2(L, cos(referenceCentre[1])*sqrt(1-L*L-M*M)-M*sin(referenceCentre[1]));
       // check that the result is identical
-      CPPUNIT_ASSERT(casa::abs(itsWorld[0]-ra)<1e-7);
-      CPPUNIT_ASSERT(casa::abs(itsWorld[1]-dec)<1e-7);             
+      CPPUNIT_ASSERT(casacore::abs(itsWorld[0]-ra)<1e-7);
+      CPPUNIT_ASSERT(casacore::abs(itsWorld[1]-dec)<1e-7);             
    }
 protected:
    void toWorld() {
@@ -95,9 +95,9 @@ protected:
       CPPUNIT_ASSERT(itsWorld.nelements() == 2);
    }   
 private:
-   boost::shared_ptr<casa::DirectionCoordinate>  itsCoord; 
-   casa::Vector<casa::Double> itsWorld;
-   casa::Vector<casa::Double> itsPixel;
+   boost::shared_ptr<casacore::DirectionCoordinate>  itsCoord; 
+   casacore::Vector<casacore::Double> itsWorld;
+   casacore::Vector<casacore::Double> itsPixel;
 };
     
 } // namespace scimath

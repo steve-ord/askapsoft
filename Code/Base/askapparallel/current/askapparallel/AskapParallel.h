@@ -37,7 +37,7 @@
 #include "Blob/BlobString.h"
 
 // Local package includes
-#include "askapparallel/MPIComms.h"
+#include "askap/askapparallel/MPIComms.h"
 
 namespace askap {
 namespace askapparallel {

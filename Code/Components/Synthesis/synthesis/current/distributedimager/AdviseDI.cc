@@ -28,13 +28,13 @@
 ///
 
 #include <distributedimager/AdviseDI.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <measurementequation/SynthesisParamsHelper.h>
 #include <dataaccess/TableDataSource.h>
 #include <dataaccess/ParsetInterface.h>
 #include <dataaccess/SharedIter.h>
 #include <askap_synthesis.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 
 
 ASKAP_LOGGER(logger, ".adviseDI");

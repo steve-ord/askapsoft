@@ -33,14 +33,14 @@
 
 // own includes
 #include <askap_synthesis.h>
-#include <askap/AskapUtil.h>
-#include <askap/AskapError.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapUtil.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
 #include <measurementequation/SynthesisParamsHelper.h>
 #include <fitting/Params.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 // just for logging
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 
 // command line parser
 #include <CommandLineParser.h>
@@ -72,8 +72,8 @@ int main(int argc, const char **argv)
 
    try {
       // Ensure that CASA log messages are captured
-      casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-      casa::LogSink::globalSink(globalSink);
+      casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+      casacore::LogSink::globalSink(globalSink);
         
       cmdlineparser::Parser parser; // a command line parser
       // command line parameters
@@ -107,9 +107,9 @@ int main(int argc, const char **argv)
                ASKAPLOG_INFO_STR(logger,"Gain parameter "<<*ci<<" is not present in both parameter sets");
                continue;
            }
-           const casa::Complex g1 = gains1.complexValue(*ci);
-           const casa::Complex g2 = gains2.complexValue(*ci);           
-           //os<<*ci<<" "<<arg(g1)*180./casa::C::pi<<" "<<arg(g2)*180./casa::C::pi<<std::endl;
+           const casacore::Complex g1 = gains1.complexValue(*ci);
+           const casacore::Complex g2 = gains2.complexValue(*ci);           
+           //os<<*ci<<" "<<arg(g1)*180./casacore::C::pi<<" "<<arg(g2)*180./casacore::C::pi<<std::endl;
            os<<*ci<<" "<<abs(g1*conj(g2))<<" "<<arg(g1*conj(g2))<<std::endl;
       }
    }

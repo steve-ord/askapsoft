@@ -36,9 +36,9 @@
 #include <fitting/ComplexDiff.h>
 #include <fitting/Params.h>
 #include <dataaccess/IConstDataAccessor.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <measurementequation/ParameterizedMEComponent.h>
-#include <utils/PolConverter.h>
+#include <askap/scimath/utils/PolConverter.h>
 
 // std includes
 #include <string>
@@ -68,7 +68,7 @@ struct NoXPolBeamIndependentGain : public ParameterizedMEComponent<false> {
    /// @return ComplexDiffMatrix filled with Mueller matrix corresponding to
    /// this effect
    inline scimath::ComplexDiffMatrix get(const accessors::IConstDataAccessor &chunk, 
-                                casa::uInt row) const;   
+                                casacore::uInt row) const;   
 };
 
 } // namespace synthesis

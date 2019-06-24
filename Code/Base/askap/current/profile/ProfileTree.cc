@@ -39,7 +39,7 @@
 #include <profile/ProfileTree.h>
 #include <profile/ProfileData.h>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 using namespace askap;
 

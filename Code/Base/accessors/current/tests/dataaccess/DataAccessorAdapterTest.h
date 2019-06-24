@@ -97,7 +97,7 @@ public:
       OnDemandNoiseAndFlagDA acc2(acc);
       checkAllCube(acc2.noise(),1.);
       checkAllBoolCube(acc2.flag(), false);
-      acc2.rwFlag().set(casa::True);
+      acc2.rwFlag().set(casacore::True);
       checkAllCube(acc2.noise(),1.);
       checkAllBoolCube(acc2.flag(), true);
       acc2.rwNoise().set(2.);
@@ -120,9 +120,9 @@ public:
       checkAllCube(acc.visibility(),1.);
       checkAllCube(acc2.noise(),1.);
       checkAllCube(acc.noise(),1.);      
-      const casa::MDirection ptDir(acc.dishPointing1()[0],casa::MDirection::J2000);
+      const casacore::MDirection ptDir(acc.dishPointing1()[0],casacore::MDirection::J2000);
             
-      for (casa::uInt row=0;row<acc.nRow(); ++row) {
+      for (casacore::uInt row=0;row<acc.nRow(); ++row) {
            CPPUNIT_ASSERT(acc2.feed1()[row] == acc.feed1()[row]);
            CPPUNIT_ASSERT(acc2.feed2()[row] == acc.feed2()[row]);           
            CPPUNIT_ASSERT(acc2.antenna1()[row] == acc.antenna1()[row]);
@@ -143,10 +143,10 @@ public:
            CPPUNIT_ASSERT(acc2.dishPointing2()[row].separation(acc.dishPointing2()[row])<1e-6);
       }
       CPPUNIT_ASSERT(fabs(acc2.time() - acc.time())<1e-6);
-      for (casa::uInt chan=0; chan<acc.nChannel(); ++chan) {
+      for (casacore::uInt chan=0; chan<acc.nChannel(); ++chan) {
            CPPUNIT_ASSERT_DOUBLES_EQUAL(acc.frequency()[chan], acc2.frequency()[chan], 1e-6);           
       }
-      for (casa::uInt pol=0; pol<acc.nPol(); ++pol) {
+      for (casacore::uInt pol=0; pol<acc.nPol(); ++pol) {
            CPPUNIT_ASSERT(acc2.stokes()[pol] == acc.stokes()[pol]);      
       }
       
@@ -267,9 +267,9 @@ public:
   static void testZeroW(const IConstDataAccessor &acc) 
   {
       CPPUNIT_ASSERT(acc.nRow() >= 1);
-      const casa::MDirection fakeTangent(acc.dishPointing1()[0], casa::MDirection::J2000);
-      const casa::Vector<casa::RigidVector<casa::Double, 3> >& uvw = acc.rotatedUVW(fakeTangent);      
-      for (casa::uInt row=0; row<acc.nRow(); ++row) {
+      const casacore::MDirection fakeTangent(acc.dishPointing1()[0], casacore::MDirection::J2000);
+      const casacore::Vector<casacore::RigidVector<casacore::Double, 3> >& uvw = acc.rotatedUVW(fakeTangent);      
+      for (casacore::uInt row=0; row<acc.nRow(); ++row) {
            CPPUNIT_ASSERT_DOUBLES_EQUAL(0,uvw[row](2),1e-7);
       }
   }
@@ -282,7 +282,7 @@ public:
   /// @param[in] B coefficient B
   static void makeCoplanar(DataAccessorStub &acc, const double A, const double B)
   {
-     for (casa::uInt row=0; row<acc.nRow(); ++row) {
+     for (casacore::uInt row=0; row<acc.nRow(); ++row) {
           // In the stubbed class, we use itsUVW for both normal and rotated uvw
           acc.itsUVW[row](2) = A * acc.itsUVW[row](0) + B * acc.itsUVW[row](1); 
      }
@@ -299,16 +299,16 @@ public:
       CPPUNIT_ASSERT(acc.antenna1().nelements() == acc.feed2().nelements());
       CPPUNIT_ASSERT(acc.noise().shape() == acc.visibility().shape());
       CPPUNIT_ASSERT(acc.nPol() == 2);
-      CPPUNIT_ASSERT(acc.stokes()[0] == casa::Stokes::XX);
-      CPPUNIT_ASSERT(acc.stokes()[1] == casa::Stokes::YY);      
+      CPPUNIT_ASSERT(acc.stokes()[0] == casacore::Stokes::XX);
+      CPPUNIT_ASSERT(acc.stokes()[1] == casacore::Stokes::YY);      
   }
   
   /// @param[in] cube a cube to test
   /// @param[in] value all cube should have the same value
-  static void checkAllCube(const casa::Cube<casa::Complex> &cube, const casa::Complex &value) {
-      for (casa::uInt row = 0; row<cube.nrow(); ++row) {
-           for (casa::uInt col = 0; col<cube.ncolumn(); ++col) {
-                for (casa::uInt plane = 0; plane<cube.nplane(); ++plane) {
+  static void checkAllCube(const casacore::Cube<casacore::Complex> &cube, const casacore::Complex &value) {
+      for (casacore::uInt row = 0; row<cube.nrow(); ++row) {
+           for (casacore::uInt col = 0; col<cube.ncolumn(); ++col) {
+                for (casacore::uInt plane = 0; plane<cube.nplane(); ++plane) {
                       CPPUNIT_ASSERT(abs(cube(row,col,plane) - value)<1e-7);
                 }
            }
@@ -317,10 +317,10 @@ public:
   
   /// @param[in] cube a cube to test
   /// @param[in] value all cube should have the same value
-  static void checkAllBoolCube(const casa::Cube<casa::Bool> &cube, const casa::Bool &value) {
-      for (casa::uInt row = 0; row<cube.nrow(); ++row) {
-           for (casa::uInt col = 0; col<cube.ncolumn(); ++col) {
-                for (casa::uInt plane = 0; plane<cube.nplane(); ++plane) {
+  static void checkAllBoolCube(const casacore::Cube<casacore::Bool> &cube, const casacore::Bool &value) {
+      for (casacore::uInt row = 0; row<cube.nrow(); ++row) {
+           for (casacore::uInt col = 0; col<cube.ncolumn(); ++col) {
+                for (casacore::uInt plane = 0; plane<cube.nplane(); ++plane) {
                       CPPUNIT_ASSERT_EQUAL(value, cube(row,col,plane));
                 }
            }

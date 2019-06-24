@@ -33,7 +33,7 @@
 #include <imageaccess/CasaImageAccess.h>
 #include <imageaccess/FitsImageAccess.h>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <string>
 

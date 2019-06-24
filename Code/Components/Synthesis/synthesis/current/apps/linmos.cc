@@ -49,11 +49,11 @@
 // Local packages includes
 #include <measurementequation/SynthesisParamsHelper.h>
 #include <linmos/LinmosAccumulator.h>
-#include <utils/LinmosUtils.h>
+#include <askap/scimath/utils/LinmosUtils.h>
 
 ASKAP_LOGGER(logger, ".linmos");
 
-using namespace casa;
+using namespace casacore;
 using namespace askap;
 using namespace askap::synthesis;
 
@@ -255,9 +255,9 @@ static void merge(const LOFAR::ParameterSet &parset) {
         float wgtCutoff = itsCutoff * itsCutoff;
         for( ; iterWgt != outWgtPix.end() ; iterWgt++ ) {
             if (*iterWgt >= wgtCutoff) {
-                *iterMask = casa::True;
+                *iterMask = casacore::True;
             } else {
-                *iterMask = casa::False;
+                *iterMask = casacore::False;
                 setNaN(*iterWgt);
             }
             iterMask++;

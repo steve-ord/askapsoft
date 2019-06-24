@@ -36,41 +36,41 @@
 #include <vector>
 #include <algorithm>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_linalg.h>
 
-using namespace casa;
+using namespace casacore;
 using namespace std;
 
 using namespace askap;
 
 // return results
-const casa::Matrix<casa::Complex>& EigenSolver::getEigenVectors() const throw()
+const casacore::Matrix<casacore::Complex>& EigenSolver::getEigenVectors() const throw()
 {
  return vec;
 }
 
-const casa::Vector<casa::Double>& EigenSolver::getEigenValues() const throw()
+const casacore::Vector<casacore::Double>& EigenSolver::getEigenValues() const throw()
 {
  return val;
 }
 
-const casa::Matrix<casa::Complex>& EigenSolver::getV() const throw()
+const casacore::Matrix<casacore::Complex>& EigenSolver::getV() const throw()
 {
  return vecV;
 }
 
 // solve eigenproblem and fill vec and val data members
-void EigenSolver::solveEigen(const casa::Matrix<casa::Complex> &in)
-                               throw(casa::AipsError)
+void EigenSolver::solveEigen(const casacore::Matrix<casacore::Complex> &in)
+                               throw(casacore::AipsError)
 {
   // temporary code which works for real matrices only
   // extra copying is happening here
   ASKAPASSERT(in.nrow() == in.ncolumn());
-  casa::uInt size = in.nrow();
+  casacore::uInt size = in.nrow();
   gsl_matrix *V = gsl_matrix_alloc(size,size);
   ASKAPDEBUGASSERT(V!=NULL);
   

@@ -30,9 +30,9 @@
 #ifndef MAP_KEY_ITERATOR_TEST_H
 #define MAP_KEY_ITERATOR_TEST_H
 
-#include <askap/AskapError.h>
-#include <askap/AskapUtil.h>
-#include <askap/MapKeyIterator.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapUtil.h>
+#include <askap/askap/MapKeyIterator.h>
 
 #include <cppunit/extensions/HelperMacros.h>
 

@@ -27,16 +27,16 @@
 
 #include <dataaccess/TableDataSource.h>
 #include <askap_accessors.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 #include <casacore/casa/Logging/LogIO.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 ASKAP_LOGGER(logger, "");
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <dataaccess/SharedIter.h>
 #include <dataaccess/IDataConverterImpl.h>
 #include <parallel/ParallelWriteIterator.h>
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 
 // casa
 #include <casacore/measures/Measures/MFrequency.h>
@@ -65,9 +65,9 @@ void doReadWriteTest(askap::askapparallel::AskapParallel &comms, const std::stri
      IDataSelectorPtr sel=ds.createSelector();
      //sel->chooseFeed(1);  
      IDataConverterPtr conv=ds.createConverter();
-     conv->setFrequencyFrame(casa::MFrequency::Ref(casa::MFrequency::TOPO),"MHz");
-     conv->setEpochFrame(casa::MEpoch(casa::Quantity(53635.5,"d"),
-                         casa::MEpoch::Ref(casa::MEpoch::UTC)),"s");
+     conv->setFrequencyFrame(casacore::MFrequency::Ref(casacore::MFrequency::TOPO),"MHz");
+     conv->setEpochFrame(casacore::MEpoch(casacore::Quantity(53635.5,"d"),
+                         casacore::MEpoch::Ref(casacore::MEpoch::UTC)),"s");
      IDataSharedIter it=ds.createIterator(sel,conv);
      ParallelWriteIterator::masterIteration(comms,it);
      ASKAPLOG_INFO_STR(logger, "Master has finished its job");
@@ -82,15 +82,15 @@ void doReadWriteTest(askap::askapparallel::AskapParallel &comms, const std::stri
            it->antenna1();
            it->feed1();
            it->uvw();
-           for (casa::uInt chan=0; chan<it->nChannel(); ++chan) {
-                it->rwVisibility().xzPlane(chan).set(casa::Complex(it->frequency()[chan]-1420.,0.));
+           for (casacore::uInt chan=0; chan<it->nChannel(); ++chan) {
+                it->rwVisibility().xzPlane(chan).set(casacore::Complex(it->frequency()[chan]-1420.,0.));
            }
            const double l=0., m=0.003975472185;
-           for (casa::uInt row = 0; row<it->nRow(); ++row) {
-                for (casa::uInt chan=0; chan<it->nChannel(); ++chan) {
-                     const double phase = 2.*casa::C::pi*(it->uvw()(row)(0)*l+it->uvw()(row)(1)*m)/casa::C::c*it->frequency()[chan]*1e6;
-                     const casa::Complex phasor(cos(phase),sin(phase));
-                     casa::Array<casa::Complex> tmp = it->rwVisibility().yzPlane(row).row(chan);
+           for (casacore::uInt row = 0; row<it->nRow(); ++row) {
+                for (casacore::uInt chan=0; chan<it->nChannel(); ++chan) {
+                     const double phase = 2.*casacore::C::pi*(it->uvw()(row)(0)*l+it->uvw()(row)(1)*m)/casacore::C::c*it->frequency()[chan]*1e6;
+                     const casacore::Complex phasor(cos(phase),sin(phase));
+                     casacore::Array<casacore::Complex> tmp = it->rwVisibility().yzPlane(row).row(chan);
                      tmp *= phasor;
                 }
            }
@@ -105,10 +105,10 @@ int main(int argc, const char **argv) {
   
   try {
      // Ensure that CASA log messages are captured
-     casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-     casa::LogSink::globalSink(globalSink);
+     casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+     casacore::LogSink::globalSink(globalSink);
     
-     casa::Timer timer;
+     casacore::Timer timer;
      timer.mark();
     
      if (argc!=2) {

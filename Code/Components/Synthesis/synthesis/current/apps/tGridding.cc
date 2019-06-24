@@ -38,18 +38,18 @@
 #include "askap_synthesis.h"
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 #include <fitting/Params.h>
-#include "askap/StatReporter.h"
+#include "askap/askap/StatReporter.h"
 #include <casacore/casa/Logging/LogIO.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 #include <CommandLineParser.h>
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 #include <Common/ParameterSet.h>
 #include <gridding/VisGridderFactory.h>
 #include <measurementequation/SynthesisParamsHelper.h>
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapUtil.h>
 #include <dataaccess/TableDataSource.h>
 #include <dataaccess/ParsetInterface.h>
 #include <dataaccess/MemBufferDataAccessor.h>
@@ -70,8 +70,8 @@ int main(int argc, const char** argv)
 
     try {
         // Ensure that CASA log messages are captured
-        casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-        casa::LogSink::globalSink(globalSink);
+        casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+        casacore::LogSink::globalSink(globalSink);
 
         StatReporter stats;
 
@@ -117,8 +117,8 @@ int main(int argc, const char** argv)
             accessors::IDataSelectorPtr sel=ds.createSelector();
             sel << subset;
             accessors::IDataConverterPtr conv=ds.createConverter();
-            conv->setFrequencyFrame(casa::MFrequency::Ref(casa::MFrequency::TOPO), "Hz");
-            conv->setDirectionFrame(casa::MDirection::Ref(casa::MDirection::J2000));
+            conv->setFrequencyFrame(casacore::MFrequency::Ref(casacore::MFrequency::TOPO), "Hz");
+            conv->setDirectionFrame(casacore::MDirection::Ref(casacore::MDirection::J2000));
             // ensure that time is counted in seconds since 0 MJD
             conv->setEpochFrame();
             

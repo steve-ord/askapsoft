@@ -28,7 +28,7 @@
 ///
 #ifndef ASKAP_ANALYSIS_CURVATURE_MAP_H_
 #define ASKAP_ANALYSIS_CURVATURE_MAP_H_
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 #include <Common/ParameterSet.h>
 #include <string>
 #include <casacore/casa/Arrays/MaskedArray.h>
@@ -76,9 +76,9 @@ class CurvatureMapCreator {
         analysisutilities::SubimageDef *itsSubimageDef;
         boost::shared_ptr<Weighter> itsWeighter;
         std::string itsFilename;
-        casa::MaskedArray<float> itsArray;
-        casa::IPosition itsShape;
-        casa::IPosition itsLocation;
+        casacore::MaskedArray<float> itsArray;
+        casacore::IPosition itsShape;
+        casacore::IPosition itsLocation;
         float itsSigmaCurv;
 };
 

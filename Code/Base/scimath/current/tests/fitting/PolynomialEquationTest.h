@@ -28,7 +28,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <cmath>
 #include <map>
 
@@ -55,12 +55,12 @@ namespace askap
 
       private:
         boost::shared_ptr<PolynomialEquation> itsPolyPerfect, itsPolyWrong;
-        casa::Vector<double> itsArguments;
-        casa::Vector<double> itsDataPerfect;
-        casa::Vector<double> itsDataWrong;
-        casa::Vector<double> itsWeights;
-        casa::Vector<double> itsModelPerfect;
-        casa::Vector<double> itsModelWrong;
+        casacore::Vector<double> itsArguments;
+        casacore::Vector<double> itsDataPerfect;
+        casacore::Vector<double> itsDataWrong;
+        casacore::Vector<double> itsWeights;
+        casacore::Vector<double> itsModelPerfect;
+        casacore::Vector<double> itsModelWrong;
         Params itsIPWrong;
 
       public:
@@ -87,13 +87,13 @@ namespace askap
 
           /// Set the true parameters
           Params ipPerfect;
-          casa::Vector<double> quadratic(3);
+          casacore::Vector<double> quadratic(3);
           quadratic(0)=1;
           quadratic(1)=2;
           quadratic(2)=3;
           ipPerfect.add("poly", quadratic);
           
-          casa::Vector<double> guess(3);
+          casacore::Vector<double> guess(3);
           guess(0)=2;
           guess(1)=-3;
           guess(2)=5;
@@ -117,7 +117,7 @@ namespace askap
         {
           CPPUNIT_ASSERT(itsPolyPerfect->parameters().names().size()==1);
           CPPUNIT_ASSERT(itsPolyPerfect->parameters().names()[0]=="poly");
-          const casa::Vector<double> param = itsPolyPerfect->parameters().value("poly");
+          const casacore::Vector<double> param = itsPolyPerfect->parameters().value("poly");
           CPPUNIT_ASSERT(param.nelements() == 3);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.,param[0],1e-7);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(2.,param[1],1e-7);
@@ -129,7 +129,7 @@ namespace askap
           PolynomialEquation poly2(*itsPolyPerfect);
           CPPUNIT_ASSERT(poly2.parameters().names().size()==1);
           CPPUNIT_ASSERT(poly2.parameters().names()[0]=="poly");
-          const casa::Vector<double> param = poly2.parameters().value("poly");
+          const casacore::Vector<double> param = poly2.parameters().value("poly");
           CPPUNIT_ASSERT(param.nelements() == 3);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.,param[0],1e-7);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(2.,param[1],1e-7);
@@ -141,7 +141,7 @@ namespace askap
           PolynomialEquation poly2(*itsPolyPerfect);
           CPPUNIT_ASSERT(poly2.parameters().names().size()==1);
           CPPUNIT_ASSERT(poly2.parameters().names()[0]=="poly");
-          casa::Vector<double> param = poly2.parameters().value("poly").copy();
+          casacore::Vector<double> param = poly2.parameters().value("poly").copy();
           CPPUNIT_ASSERT(param.nelements() == 3);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.,param[0],1e-7);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(2.,param[1],1e-7);
@@ -151,7 +151,7 @@ namespace askap
           param[0]=-3.; param[1]=-1.1; param[2]=6.; param[3]=-8.;
           Params newParams;
           newParams.add("poly",param);
-          newParams.add("test",casa::Complex(-1.,3.));
+          newParams.add("test",casacore::Complex(-1.,3.));
           poly2.setParameters(newParams);
           CPPUNIT_ASSERT(poly2.parameters().names().size()==2);
           CPPUNIT_ASSERT(poly2.parameters().names()[0]=="poly");
@@ -163,8 +163,8 @@ namespace askap
           CPPUNIT_ASSERT_DOUBLES_EQUAL(1.,param[0],1e-7);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(2.,param[1],1e-7);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(3.,param[2],1e-7);         
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.,casa::real(poly2.parameters().complexValue("test")),1e-7);
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(3.,casa::imag(poly2.parameters().complexValue("test")),1e-7);          
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(-1.,casacore::real(poly2.parameters().complexValue("test")),1e-7);
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(3.,casacore::imag(poly2.parameters().complexValue("test")),1e-7);          
           param.assign(poly2.parameters().value("poly").copy());
           CPPUNIT_ASSERT(param.nelements() == 4);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(-3.,param[0],1e-7);
@@ -174,9 +174,9 @@ namespace askap
           
           const boost::shared_ptr<Params> pParam = poly2.rwParameters();
           CPPUNIT_ASSERT(pParam);
-          pParam->update("test",casa::Complex(1,-8.));
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.,casa::real(poly2.parameters().complexValue("test")),1e-7);
-          CPPUNIT_ASSERT_DOUBLES_EQUAL(-8.,casa::imag(poly2.parameters().complexValue("test")),1e-7);                    
+          pParam->update("test",casacore::Complex(1,-8.));
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(1.,casacore::real(poly2.parameters().complexValue("test")),1e-7);
+          CPPUNIT_ASSERT_DOUBLES_EQUAL(-8.,casacore::imag(poly2.parameters().complexValue("test")),1e-7);                    
         }
 
         void testPredict()
@@ -222,7 +222,7 @@ namespace askap
           Params ip(comp.parameters());
           GenericNormalEquations normeq;//(ip);
           comp.calcEquations(normeq);
-          casa::Vector<double> pvals(ip.value("poly").size());
+          casacore::Vector<double> pvals(ip.value("poly").size());
           pvals.set(0.0);
           ip.update("poly", pvals);
           // data points are not good to discriminate between two parabolas,
@@ -266,7 +266,7 @@ namespace askap
               CPPUNIT_ASSERT(abs(q.cond()-11500.5)<1.0);
           }
 
-          const casa::Vector<double> result = itsIPWrong.value("poly");
+          const casacore::Vector<double> result = itsIPWrong.value("poly");
           //std::cout<<result<<std::endl;
           CPPUNIT_ASSERT(fabs(result[0]-1.)<1e-5 && fabs(result[1]-2.)<1e-5 && fabs(result[2]-3.)<1e-5);
         }

@@ -33,7 +33,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <fitting/PolXProducts.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 namespace askap {
 
@@ -58,21 +58,21 @@ protected:
   /// @brief helper method to check that two complex numbers match
   /// @param[in] expected expected value
   /// @param[in] actual value to test
-  static void compareComplex(const casa::Complex &expected, const casa::Complex &actual) {
+  static void compareComplex(const casacore::Complex &expected, const casacore::Complex &actual) {
        const double tolerance = 1e-7;
-       CPPUNIT_ASSERT_DOUBLES_EQUAL(double(casa::real(expected)),double(casa::real(actual)),tolerance);
-       CPPUNIT_ASSERT_DOUBLES_EQUAL(double(casa::imag(expected)),double(casa::imag(actual)),tolerance);
+       CPPUNIT_ASSERT_DOUBLES_EQUAL(double(casacore::real(expected)),double(casacore::real(actual)),tolerance);
+       CPPUNIT_ASSERT_DOUBLES_EQUAL(double(casacore::imag(expected)),double(casacore::imag(actual)),tolerance);
   }
   
   /// @brief helper method to check buffers 
   /// @param[in] pxp cross-products buffer to test
   /// @param[in] nX number of pixels for the first dimension
   /// @param[in] nY number of pixels for the second dimension
-  static void checkAllElementsAreZero(const PolXProducts &pxp, casa::uInt nX, casa::uInt nY) {
-     for (casa::uInt x=0; x<nX; ++x) {
-          for (casa::uInt y=0; y<nY; ++y) {
-               for (casa::uInt p1=0; p1<pxp.nPol(); ++p1) {
-                    for (casa::uInt p2=0; p2<pxp.nPol(); ++p2) {
+  static void checkAllElementsAreZero(const PolXProducts &pxp, casacore::uInt nX, casacore::uInt nY) {
+     for (casacore::uInt x=0; x<nX; ++x) {
+          for (casacore::uInt y=0; y<nY; ++y) {
+               for (casacore::uInt p1=0; p1<pxp.nPol(); ++p1) {
+                    for (casacore::uInt p2=0; p2<pxp.nPol(); ++p2) {
                          compareComplex(0., pxp.getModelProduct(x,y,p1,p2));
                          compareComplex(0., pxp.getModelMeasProduct(x,y,p1,p2));                         
                     }
@@ -86,14 +86,14 @@ protected:
   /// @param[in] nX number of pixels for the first dimension
   /// @param[in] nY number of pixels for the second dimension
   /// @param[in] factor additional multiplicative factor for added numbers
-  static void addToElements(PolXProducts &pxp, casa::uInt nX, casa::uInt nY, const float factor = 1.) {
-     for (casa::uInt x=0; x<nX; ++x) {
-          for (casa::uInt y=0; y<nY; ++y) {
-               for (casa::uInt p1=0; p1<pxp.nPol(); ++p1) {
-                    for (casa::uInt p2=0; p2<=p1; ++p2) {
+  static void addToElements(PolXProducts &pxp, casacore::uInt nX, casacore::uInt nY, const float factor = 1.) {
+     for (casacore::uInt x=0; x<nX; ++x) {
+          for (casacore::uInt y=0; y<nY; ++y) {
+               for (casacore::uInt p1=0; p1<pxp.nPol(); ++p1) {
+                    for (casacore::uInt p2=0; p2<=p1; ++p2) {
                          // unique value for every product
                          const float tagValue = (10.*x+100.*y+float(p1)+0.1*p2)*factor;
-                         const casa::Complex cTag(tagValue,-tagValue);
+                         const casacore::Complex cTag(tagValue,-tagValue);
                          pxp.add(x,y,p1,p2,cTag,-cTag);
                     }
                }
@@ -104,7 +104,7 @@ protected:
   
 public:
   void testConstruct() {
-     PolXProducts pxp(4,casa::IPosition(2,3,5),true);
+     PolXProducts pxp(4,casacore::IPosition(2,3,5),true);
      CPPUNIT_ASSERT_EQUAL(4u,pxp.nPol());
      // check that internal buffers are constructed with correct dimensions
      // (i.e. no exceptions have been thrown)
@@ -112,12 +112,12 @@ public:
   }
   
   void testConstructVector() {
-     PolXProducts pxp(2,casa::IPosition(),true);
+     PolXProducts pxp(2,casacore::IPosition(),true);
      CPPUNIT_ASSERT_EQUAL(2u,pxp.nPol());
      // check that internal buffers are constructed with correct dimensions
      // (i.e. no exceptions have been thrown)
-     for (casa::uInt p1=0; p1<2; ++p1) {
-          for (casa::uInt p2=0; p2<2; ++p2) {
+     for (casacore::uInt p1=0; p1<2; ++p1) {
+          for (casacore::uInt p2=0; p2<2; ++p2) {
                compareComplex(0., pxp.getModelProduct(p1,p2));
                compareComplex(0., pxp.getModelMeasProduct(p1,p2));                         
           }
@@ -125,12 +125,12 @@ public:
   }
   
   void testReference() {
-     PolXProducts pxp(4,casa::IPosition(2,3,5),true);
+     PolXProducts pxp(4,casacore::IPosition(2,3,5),true);
      CPPUNIT_ASSERT_EQUAL(4u,pxp.nPol());
      // fill the buffers with different values
      addToElements(pxp, 3, 5, 1.);
      // make a reference
-     PolXProducts pxp2(4,casa::IPosition(2,3,5),true);
+     PolXProducts pxp2(4,casacore::IPosition(2,3,5),true);
      pxp2.reference(pxp);
      addToElements(pxp2, 3, 5, -1.);
      checkAllElementsAreZero(pxp,3,5);
@@ -142,7 +142,7 @@ public:
      addToElements(pxp3, 3, 5, 1.);
      
      // use assignment operator, should also give reference semantics 
-     PolXProducts pxp4(2,casa::IPosition(),true);
+     PolXProducts pxp4(2,casacore::IPosition(),true);
      pxp4 = pxp2;
      addToElements(pxp4, 3, 5, -2.);
      checkAllElementsAreZero(pxp4,3,5);
@@ -152,18 +152,18 @@ public:
   }
   
   void testSlice() {
-     PolXProducts pxp(4,casa::IPosition(2,3,5),true);
+     PolXProducts pxp(4,casacore::IPosition(2,3,5),true);
      CPPUNIT_ASSERT_EQUAL(4u,pxp.nPol());
      // fill the buffers with different values
      addToElements(pxp, 3, 5, 1.);
      // now check all slices
-     for (casa::uInt x=0; x<3; ++x) {
-          for (casa::uInt y=0; y<5; ++y) {
+     for (casacore::uInt x=0; x<3; ++x) {
+          for (casacore::uInt y=0; y<5; ++y) {
                const PolXProducts slice = pxp.slice(x,y);
-               for (casa::uInt p1=0; p1<4; ++p1) {
-                    for (casa::uInt p2=0; p2<=p1; ++p2) {
+               for (casacore::uInt p1=0; p1<4; ++p1) {
+                    for (casacore::uInt p2=0; p2<=p1; ++p2) {
                          const float tagValue = 10.*x+100.*y+float(p1)+0.1*p2;
-                         const casa::Complex cTag(tagValue,-tagValue);
+                         const casacore::Complex cTag(tagValue,-tagValue);
                          compareComplex(cTag, slice.getModelProduct(p1,p2));
                          compareComplex(-cTag, slice.getModelMeasProduct(p1,p2));
                          if (p1 != p2) {
@@ -177,15 +177,15 @@ public:
           }
      }
      // check reference semantics and read-only access
-     for (casa::uInt x=0; x<3; ++x) {
-          for (casa::uInt y=0; y<5; ++y) {
-               PolXProducts slice = pxp.slice(casa::IPosition(2,int(x),int(y)));
+     for (casacore::uInt x=0; x<3; ++x) {
+          for (casacore::uInt y=0; y<5; ++y) {
+               PolXProducts slice = pxp.slice(casacore::IPosition(2,int(x),int(y)));
                const PolXProducts roSlice = pxp.roSlice(x,y);
                slice.reset(); // this shouldn't affect roSlice, which is a copy
-               for (casa::uInt p1=0; p1<4; ++p1) {
-                    for (casa::uInt p2=0; p2<=p1; ++p2) {
+               for (casacore::uInt p1=0; p1<4; ++p1) {
+                    for (casacore::uInt p2=0; p2<=p1; ++p2) {
                          const float tagValue = 10.*x+100.*y+float(p1)+0.1*p2;
-                         const casa::Complex cTag(tagValue,-tagValue);
+                         const casacore::Complex cTag(tagValue,-tagValue);
                          // roSlice should have the old value
                          compareComplex(cTag, roSlice.getModelProduct(p1,p2));
                          compareComplex(-cTag, roSlice.getModelMeasProduct(p1,p2));
@@ -201,19 +201,19 @@ public:
      }               
   }
   void testResize() {
-     PolXProducts pxp(2,casa::IPosition(),true);
+     PolXProducts pxp(2,casacore::IPosition(),true);
      CPPUNIT_ASSERT_EQUAL(2u,pxp.nPol());
-     pxp.resize(casa::IPosition(2,3,5), true);
+     pxp.resize(casacore::IPosition(2,3,5), true);
      CPPUNIT_ASSERT_EQUAL(2u,pxp.nPol());
      // check that internal buffers are constructed with correct dimensions
      // (i.e. no exceptions have been thrown)
      checkAllElementsAreZero(pxp,3,5);
      // resize back
-     pxp.resize(casa::IPosition(),false);
+     pxp.resize(casacore::IPosition(),false);
      pxp.reset();
      CPPUNIT_ASSERT_EQUAL(2u,pxp.nPol());
      // resize with a change of polarisation vector dimensions
-     pxp.resize(4,casa::IPosition(2,3,5), true);
+     pxp.resize(4,casacore::IPosition(2,3,5), true);
      CPPUNIT_ASSERT_EQUAL(4u,pxp.nPol());
      // check that internal buffers are constructed with correct dimensions
      // (i.e. no exceptions have been thrown)
@@ -233,11 +233,11 @@ public:
      TestHelper pxp;
      CPPUNIT_ASSERT_EQUAL(4u,pxp.nPol());
      
-     for (casa::uInt p1=0; p1<pxp.nPol(); ++p1) {
-          for (casa::uInt p2=0; p2<=p1; ++p2) {
-               const casa::uInt index = pxp.polToIndex(p1,p2);
+     for (casacore::uInt p1=0; p1<pxp.nPol(); ++p1) {
+          for (casacore::uInt p2=0; p2<=p1; ++p2) {
+               const casacore::uInt index = pxp.polToIndex(p1,p2);
                CPPUNIT_ASSERT(index < pxp.nPol()*(pxp.nPol()+1)/2);
-               const std::pair<casa::uInt,casa::uInt> pols = pxp.indexToPol(index);
+               const std::pair<casacore::uInt,casacore::uInt> pols = pxp.indexToPol(index);
                CPPUNIT_ASSERT_EQUAL(p1, pols.first);
                CPPUNIT_ASSERT_EQUAL(p2, pols.second);               
           }
@@ -246,23 +246,23 @@ public:
   
   // this is checked in the debug mode only!
   void testDimensionMismatch() {
-     PolXProducts pxp(4,casa::IPosition(2,3,5),true);
+     PolXProducts pxp(4,casacore::IPosition(2,3,5),true);
      CPPUNIT_ASSERT_EQUAL(4u,pxp.nPol());
      // the following will throw an exception
      pxp.getModelProduct(0,1);     
   }
   
   void testAdd() {
-     PolXProducts pxp(4,casa::IPosition(2,3,5),true);
+     PolXProducts pxp(4,casacore::IPosition(2,3,5),true);
      CPPUNIT_ASSERT_EQUAL(4u,pxp.nPol());
      // fill the buffers with different values
-     for (casa::uInt x=0; x<3; ++x) {
-          for (casa::uInt y=0; y<5; ++y) {
-               for (casa::uInt p1=0; p1<pxp.nPol(); ++p1) {
-                    for (casa::uInt p2=0; p2<pxp.nPol(); ++p2) {
+     for (casacore::uInt x=0; x<3; ++x) {
+          for (casacore::uInt y=0; y<5; ++y) {
+               for (casacore::uInt p1=0; p1<pxp.nPol(); ++p1) {
+                    for (casacore::uInt p2=0; p2<pxp.nPol(); ++p2) {
                          // unique value for every product
                          const float tagValue = 10.*x+100.*y+float(p1)+0.1*p2;
-                         const casa::Complex cTag(tagValue,-tagValue);
+                         const casacore::Complex cTag(tagValue,-tagValue);
                          pxp.addModelMeasProduct(x,y,p1,p2,cTag);
                          if (p2<=p1) {
                              pxp.addModelProduct(x,y,p1,p2,-cTag);
@@ -273,16 +273,16 @@ public:
      }
      // now check all elements, check 1D vectors through the slices, check
      // reference semantics by updating elements via slices
-     for (casa::uInt x=0; x<3; ++x) {
-          for (casa::uInt y=0; y<5; ++y) {
+     for (casacore::uInt x=0; x<3; ++x) {
+          for (casacore::uInt y=0; y<5; ++y) {
                PolXProducts slice = pxp.slice(x,y);
                const PolXProducts roSlice = pxp.roSlice(x,y);
                CPPUNIT_ASSERT_EQUAL(pxp.nPol(),slice.nPol());
                CPPUNIT_ASSERT_EQUAL(pxp.nPol(),roSlice.nPol());
-               for (casa::uInt p1=0; p1<slice.nPol(); ++p1) {
-                    for (casa::uInt p2=0; p2<slice.nPol(); ++p2) {
+               for (casacore::uInt p1=0; p1<slice.nPol(); ++p1) {
+                    for (casacore::uInt p2=0; p2<slice.nPol(); ++p2) {
                          const float tagValue = 10.*x+100.*y+float(p1)+0.1*p2;
-                         const casa::Complex cTag(tagValue,-tagValue);
+                         const casacore::Complex cTag(tagValue,-tagValue);
                          compareComplex(cTag, roSlice.getModelMeasProduct(p1,p2));
                          compareComplex(cTag, slice.getModelMeasProduct(p1,p2));
                          compareComplex(cTag, pxp.getModelMeasProduct(x,y,p1,p2));
@@ -292,7 +292,7 @@ public:
                              compareComplex(-cTag, pxp.getModelProduct(x,y,p1,p2));                             
                          } else {
                              // model products should be equal to the conjugated product for (p2,p1)  
-                             const casa::Complex expected = conj(roSlice.getModelProduct(p2,p1));
+                             const casacore::Complex expected = conj(roSlice.getModelProduct(p2,p1));
                              // do checks
                              compareComplex(expected, roSlice.getModelProduct(p1,p2));
                              compareComplex(expected, slice.getModelProduct(p1,p2));

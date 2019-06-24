@@ -39,11 +39,11 @@
 #include <calibaccess/TableCalSolutionConstSource.h>
 #include <calibaccess/ServiceCalSolutionSourceStub.h>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 // logging stuff
 #include <askap_accessors.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 ASKAP_LOGGER(logger, ".calibaccess");
 
 namespace askap {
@@ -93,9 +93,9 @@ boost::shared_ptr<ICalSolutionConstSource> CalibAccessFactory::calSolutionSource
        if (readonly) {
            result.reset(new TableCalSolutionConstSource(fname));
        } else {
-           const casa::uInt maxAnt = parset.getUint32("calibaccess.table.maxant",36);
-           const casa::uInt maxBeam = parset.getUint32("calibaccess.table.maxbeam",30);
-           const casa::uInt maxChan = parset.getUint32("calibaccess.table.maxchan",16416);
+           const casacore::uInt maxAnt = parset.getUint32("calibaccess.table.maxant",36);
+           const casacore::uInt maxBeam = parset.getUint32("calibaccess.table.maxbeam",30);
+           const casacore::uInt maxChan = parset.getUint32("calibaccess.table.maxchan",16416);
            const bool reuse = parset.getBool("calibaccess.table.reuse", false);
            if (reuse) {
                if (TableCalSolutionConstSource::tableExists(fname)) {

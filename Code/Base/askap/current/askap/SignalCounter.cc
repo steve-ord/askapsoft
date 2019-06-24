@@ -25,7 +25,7 @@
 /// @author Ben Humphreys <ben.humphreys@csiro.au>
 
 // Include own header file first
-#include "askap/SignalCounter.h"
+#include "askap/askap/SignalCounter.h"
 
 using namespace askap;
 

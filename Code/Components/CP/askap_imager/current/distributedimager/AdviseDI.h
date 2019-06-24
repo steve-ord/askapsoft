@@ -102,15 +102,15 @@ namespace askap {
             std::vector<int> getChannels();
 
             ///
-            casa::MVDirection getTangent(int ms=0) {return itsTangent[ms];};
+            casacore::MVDirection getTangent(int ms=0) {return itsTangent[ms];};
 
-            casa::MVEpoch getEpoch(int ms=0) {return itsEpoch[ms]; };
+            casacore::MVEpoch getEpoch(int ms=0) {return itsEpoch[ms]; };
 
-            casa::MPosition getPosition(int ms=0) {return itsPosition[ms]; };
+            casacore::MPosition getPosition(int ms=0) {return itsPosition[ms]; };
 
-            vector<casa::MFrequency> getBaryFrequencies() {return itsBaryFrequencies;};
+            vector<casacore::MFrequency> getBaryFrequencies() {return itsBaryFrequencies;};
 
-            vector<casa::MFrequency> getTopoFrequencies() {return itsTopoFrequencies;};
+            vector<casacore::MFrequency> getTopoFrequencies() {return itsTopoFrequencies;};
 
             cp::ContinuumWorkUnit getAllocation(int id);
 
@@ -133,11 +133,11 @@ namespace askap {
 
             LOFAR::ParameterSet& itsParset;
 
-            casa::uInt itsRef;
+            casacore::uInt itsRef;
 
-            vector<casa::MFrequency> itsBaryFrequencies;
+            vector<casacore::MFrequency> itsBaryFrequencies;
 
-            vector<casa::MFrequency> itsTopoFrequencies;
+            vector<casacore::MFrequency> itsTopoFrequencies;
 
 
             double minFrequency;
@@ -146,13 +146,13 @@ namespace askap {
 
 
 
-            std::vector<casa::MVDirection> itsTangent;
+            std::vector<casacore::MVDirection> itsTangent;
 
-            std::vector<casa::Vector<casa::MDirection> > itsDirVec;
+            std::vector<casacore::Vector<casacore::MDirection> > itsDirVec;
 
-            std::vector<casa::MVEpoch> itsEpoch;
+            std::vector<casacore::MVEpoch> itsEpoch;
 
-            std::vector<casa::MPosition> itsPosition;
+            std::vector<casacore::MPosition> itsPosition;
 
             std::vector< std::vector<double> > chanFreq;
             std::vector< std::vector<double> > chanWidth;
@@ -163,7 +163,7 @@ namespace askap {
             std::vector< std::vector<double> > itsAllocatedFrequencies;
             std::vector< std::vector<cp::ContinuumWorkUnit> > itsAllocatedWork;
 
-            int match(int ms_number,  casa::MVFrequency freq);
+            int match(int ms_number,  casacore::MVFrequency freq);
 
             std::vector<int> getBeams();
 

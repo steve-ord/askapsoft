@@ -30,7 +30,7 @@
 
 #include <iostream>
 
-using namespace casa;
+using namespace casacore;
 using namespace std;
 
 int main() 

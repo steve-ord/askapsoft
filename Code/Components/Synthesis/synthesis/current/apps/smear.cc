@@ -27,13 +27,13 @@
 #include <casacore/images/Images/PagedImage.h>
 #include <casacore/images/Images/ImageInterface.h>
 #include <casacore/casa/Arrays/Array.h>
-#include <utils/PaddingUtils.h>
+#include <askap/scimath/utils/PaddingUtils.h>
 #include <casacore/lattices/Lattices/ArrayLattice.h>
 #include <casacore/lattices/LatticeMath/LatticeFFT.h>
 #include <casacore/lattices/LEL/LatticeExpr.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
-using namespace casa;
+using namespace casacore;
 using namespace askap;
 
 int main() {
@@ -44,13 +44,13 @@ try {
   ASKAPASSERT(doubleShape.nelements()>=2);
   doubleShape(0)*=2;
   doubleShape(1)*=2;
-  ArrayLattice<casa::Complex> scratch(doubleShape);
+  ArrayLattice<casacore::Complex> scratch(doubleShape);
   scratch.set(0.);
   scimath::PaddingUtils::inject(scratch,img);
-  //scratch.copyData(casa::LatticeExpr<casa::Complex>(toComplex(img)));
+  //scratch.copyData(casacore::LatticeExpr<casacore::Complex>(toComplex(img)));
   LatticeFFT::cfft2d(scratch, True);
 
-  ArrayLattice<casa::Complex> scratch2(scratch.shape());
+  ArrayLattice<casacore::Complex> scratch2(scratch.shape());
   scratch2.set(0.);
   IPosition pos(scratch2.shape().nelements(),0);
   IPosition inpos(scratch.shape().nelements(),0);
@@ -75,7 +75,7 @@ try {
   }
  
   LatticeFFT::cfft2d(scratch2,False);
-  //out.copyData(casa::LatticeExpr<casa::Float>(real(scratch2)));
+  //out.copyData(casacore::LatticeExpr<casacore::Float>(real(scratch2)));
   scimath::PaddingUtils::extract(out,scratch2);
 }
 catch(AskapError &ae) {

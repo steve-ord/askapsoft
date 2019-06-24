@@ -21,7 +21,7 @@
 /// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 ///
 
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 ASKAP_LOGGER(logger, ".testloadgridder");
 
 #include <testloadgridder/TestLoadGridder.h>
@@ -81,7 +81,7 @@ namespace askap
       itsConvFunc[0](cCenter,cCenter)=1.0; // 1,1,0 = 1
     }
     
-    void TestLoadGridder::correctConvolution(casa::Array<double>& image)
+    void TestLoadGridder::correctConvolution(casacore::Array<double>& image)
     {
     }
 

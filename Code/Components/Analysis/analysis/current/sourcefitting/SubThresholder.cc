@@ -29,8 +29,8 @@
 
 #include <askap_analysis.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 
 #include <sourcefitting/SubThresholder.h>
 #include <sourcefitting/RadioSource.h>
@@ -80,8 +80,8 @@ SubThresholder::~SubThresholder()
 // }
 
 void SubThresholder::define(RadioSource &src,
-                            casa::Matrix<casa::Double> pos,
-                            casa::Vector<casa::Double> &array)
+                            casacore::Matrix<casacore::Double> pos,
+                            casacore::Vector<casacore::Double> &array)
 {
     this->saveArray(src, pos, array);
     this->define(src);
@@ -89,8 +89,8 @@ void SubThresholder::define(RadioSource &src,
 
 
 void SubThresholder::saveArray(RadioSource &src,
-                               casa::Matrix<casa::Double> pos,
-                               casa::Vector<casa::Double> &f)
+                               casacore::Matrix<casacore::Double> pos,
+                               casacore::Vector<casacore::Double> &f)
 {
     int xmin = src.boxXmin();
     int ymin = src.boxYmin();

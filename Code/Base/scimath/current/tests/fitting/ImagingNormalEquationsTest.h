@@ -32,7 +32,7 @@
 #include <Blob/BlobIStream.h>
 
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <boost/shared_ptr.hpp>
 
 #include <algorithm>
@@ -106,16 +106,16 @@ namespace askap
         {
           testCopy();
           CPPUNIT_ASSERT(p2);
-          p2->addSlice("Value1", casa::Vector<double>(5,0.1), 
-                  casa::Vector<double>(5, 1.), casa::Vector<double>(5,0.5),
-                  casa::Vector<double>(5,-40.), casa::IPosition(1,0));
+          p2->addSlice("Value1", casacore::Vector<double>(5,0.1), 
+                  casacore::Vector<double>(5, 1.), casacore::Vector<double>(5,0.5),
+                  casacore::Vector<double>(5,-40.), casacore::IPosition(1,0));
           testAllElements(extractVector(p2->normalMatrixDiagonal(), "Value1"),5,1.);
           testAllElements(extractVector(p2->normalMatrixSlice(), "Value1"),5,0.1);
           testAllElements(extractVector(p2->preconditionerSlice(), "Value1"),5,0.5);
           testAllElements(extractVector(p2->dataVector(), "Value1"),5,-40.);
           testAllElements(p2->dataVector("Value1"),5,-40.);
           
-          p2->addDiagonal("Value2", casa::Vector<double>(3, 1.), casa::Vector<double>(3, 10.));
+          p2->addDiagonal("Value2", casacore::Vector<double>(3, 1.), casacore::Vector<double>(3, 10.));
           testAllElements(extractVector(p2->normalMatrixDiagonal(), "Value2"),3,1.);
           testAllElements(extractVector(p2->normalMatrixSlice(), "Value2"),0,0.);
           testAllElements(extractVector(p2->preconditionerSlice(), "Value2"),0,0.);
@@ -161,10 +161,10 @@ namespace askap
           testAllElements(p3->dataVector("Value2"),3,10.);
           
           // change original values
-          p2->addSlice("Value1", casa::Vector<double>(5,0.1), 
-                  casa::Vector<double>(5, 1.), casa::Vector<double>(5,0.5),
-                  casa::Vector<double>(5,-40.), casa::IPosition(1,0));
-          p2->addDiagonal("Value2", casa::Vector<double>(3, 1.), casa::Vector<double>(3, 10.));
+          p2->addSlice("Value1", casacore::Vector<double>(5,0.1), 
+                  casacore::Vector<double>(5, 1.), casacore::Vector<double>(5,0.5),
+                  casacore::Vector<double>(5,-40.), casacore::IPosition(1,0));
+          p2->addDiagonal("Value2", casacore::Vector<double>(3, 1.), casacore::Vector<double>(3, 10.));
           
           // test that they were indeed changed
           testAllElements(extractVector(p2->normalMatrixDiagonal(), "Value1"),5,2.);
@@ -224,10 +224,10 @@ namespace askap
           testAllElements(p3->dataVector("Value2"),3,10.);
           
           // change original values
-          p2->addSlice("Value1", casa::Vector<double>(5,0.1), 
-                  casa::Vector<double>(5, 1.), casa::Vector<double>(5,0.5),
-                  casa::Vector<double>(5,-40.), casa::IPosition(1,0));
-          p2->addDiagonal("Value2", casa::Vector<double>(3, 1.), casa::Vector<double>(3, 10.));
+          p2->addSlice("Value1", casacore::Vector<double>(5,0.1), 
+                  casacore::Vector<double>(5, 1.), casacore::Vector<double>(5,0.5),
+                  casacore::Vector<double>(5,-40.), casacore::IPosition(1,0));
+          p2->addDiagonal("Value2", casacore::Vector<double>(3, 1.), casacore::Vector<double>(3, 10.));
           
           // test that they were indeed changed
           testAllElements(extractVector(p2->normalMatrixDiagonal(), "Value1"),5,2.);
@@ -288,9 +288,9 @@ namespace askap
           ip.add("Value4");
           p1.reset(new ImagingNormalEquations(ip));
           CPPUNIT_ASSERT(p1);
-          p1->addSlice("Value1", casa::Vector<double>(5,0.), 
-                  casa::Vector<double>(5, 1.), casa::Vector<double>(5,0.1),
-                  casa::Vector<double>(5,10.), casa::IPosition(1,0));
+          p1->addSlice("Value1", casacore::Vector<double>(5,0.), 
+                  casacore::Vector<double>(5, 1.), casacore::Vector<double>(5,0.1),
+                  casacore::Vector<double>(5,10.), casacore::IPosition(1,0));
         
           p3->merge(*p1);
         
@@ -316,9 +316,9 @@ namespace askap
           ip2.add("Value2");
           p2.reset(new ImagingNormalEquations(ip2));
           CPPUNIT_ASSERT(p2);
-          p2->addSlice("Value2", casa::Vector<double>(7,-0.1), 
-                  casa::Vector<double>(7, 1.), casa::Vector<double>(7,0.2),
-                  casa::Vector<double>(7,-10.), casa::IPosition(1,0));
+          p2->addSlice("Value2", casacore::Vector<double>(7,-0.1), 
+                  casacore::Vector<double>(7, 1.), casacore::Vector<double>(7,0.2),
+                  casacore::Vector<double>(7,-10.), casacore::IPosition(1,0));
           
           //now Value2 is expected to be overwritten, because the shape has been changed
           p3->merge(*p2);
@@ -348,16 +348,16 @@ namespace askap
           CPPUNIT_ASSERT(p2);
           
           // add a slice with the same dimension
-          p2->addSlice("Value1", casa::Vector<double>(5,0.2), 
-                  casa::Vector<double>(5, 1.1), casa::Vector<double>(5,0.5),
-                  casa::Vector<double>(5,30.), casa::IPosition(1,0));
+          p2->addSlice("Value1", casacore::Vector<double>(5,0.2), 
+                  casacore::Vector<double>(5, 1.1), casacore::Vector<double>(5,0.5),
+                  casacore::Vector<double>(5,30.), casacore::IPosition(1,0));
           testAllElements(extractVector(p2->normalMatrixDiagonal(), "Value1"),5,2.1);
           testAllElements(extractVector(p2->normalMatrixSlice(), "Value1"),5,0.3);
           testAllElements(extractVector(p2->preconditionerSlice(), "Value1"),5,1.0);
           testAllElements(p2->dataVector("Value1"),5,-10.);
           
           // add diagonal with the same dimension
-          p2->addDiagonal("Value2", casa::Vector<double>(3, 0.9), casa::Vector<double>(3, 1.));
+          p2->addDiagonal("Value2", casacore::Vector<double>(3, 0.9), casacore::Vector<double>(3, 1.));
           testAllElements(extractVector(p2->normalMatrixDiagonal(), "Value2"),3,1.9);
           testAllElements(extractVector(p2->normalMatrixSlice(), "Value2"),0,0.);
           testAllElements(extractVector(p2->preconditionerSlice(), "Value2"),0,0.);
@@ -378,9 +378,9 @@ namespace askap
           CPPUNIT_ASSERT(p2);
           
           // now add slice with the different dimension to check that it generates an exception
-          p2->addSlice("Value1", casa::Vector<double>(7,0.2), 
-                  casa::Vector<double>(5, 1.1), casa::Vector<double>(5,0.2),
-                  casa::Vector<double>(7,30.), casa::IPosition(1,0));
+          p2->addSlice("Value1", casacore::Vector<double>(7,0.2), 
+                  casacore::Vector<double>(5, 1.1), casacore::Vector<double>(5,0.2),
+                  casacore::Vector<double>(7,30.), casacore::IPosition(1,0));
         }
         
         void testBlobStream() {
@@ -388,7 +388,7 @@ namespace askap
           ip.add("Value0");
           ip.add("Value1", 1.5);
           uint imsize=10*10;
-          casa::Vector<double> im(imsize);
+          casacore::Vector<double> im(imsize);
           im.set(3.0);
           ip.add("Image2", im);
           p1.reset(new ImagingNormalEquations(ip));
@@ -412,14 +412,14 @@ namespace askap
         }
     protected:
         /// @brief a helper method to access map elements
-        /// @details This method extracts a casa::Vector out of the map
+        /// @details This method extracts a casacore::Vector out of the map
         /// doing all necessary checks.
         /// @param[in] inMap input map passed by const reference
         /// @param[in] key string key
-        /// @return casa::Vector corresponding to the given key
-        static const casa::Vector<double> extractVector(const std::map<std::string, 
-               casa::Vector<double> > &inMap, const std::string &key) {
-          std::map<std::string, casa::Vector<double> >::const_iterator ci = inMap.find(key);
+        /// @return casacore::Vector corresponding to the given key
+        static const casacore::Vector<double> extractVector(const std::map<std::string, 
+               casacore::Vector<double> > &inMap, const std::string &key) {
+          std::map<std::string, casacore::Vector<double> >::const_iterator ci = inMap.find(key);
           CPPUNIT_ASSERT(ci != inMap.end());
           return ci->second;
         } 
@@ -430,10 +430,10 @@ namespace askap
         /// @param[in] vec input vector (passed by const reference)
         /// @param[in] expectedSize expected size of the vector
         /// @param[in] expectedValue expected value of all elements
-        static void testAllElements(const casa::Vector<double> &vec,
-                casa::uInt expectedSize, double expectedValue) {
+        static void testAllElements(const casacore::Vector<double> &vec,
+                casacore::uInt expectedSize, double expectedValue) {
           CPPUNIT_ASSERT(vec.nelements() == expectedSize);
-          for (casa::uInt i=0; i<expectedSize; ++i) {
+          for (casacore::uInt i=0; i<expectedSize; ++i) {
                CPPUNIT_ASSERT(fabs(vec[i]-expectedValue)<1e-6);
           } 
         } 

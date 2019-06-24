@@ -36,7 +36,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-using namespace casa;
+using namespace casacore;
 
 namespace askap {
 
@@ -47,7 +47,7 @@ class DeconvolverMultiTermBasisFunctionTest : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE(DeconvolverMultiTermBasisFunctionTest);
   CPPUNIT_TEST(testCreate);
   CPPUNIT_TEST(testDeconvolveCenter);
-  CPPUNIT_TEST_EXCEPTION(testWrongShape, casa::ArrayShapeError);
+  CPPUNIT_TEST_EXCEPTION(testWrongShape, casacore::ArrayShapeError);
   CPPUNIT_TEST_EXCEPTION(testDeconvolveOffsetPSF, AskapError);
   CPPUNIT_TEST_SUITE_END();
 public:

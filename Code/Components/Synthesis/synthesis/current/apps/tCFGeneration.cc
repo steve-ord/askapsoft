@@ -34,19 +34,19 @@
 
 // ASKAPsoft includes
 #include <fitting/Params.h>
-#include <askap/StatReporter.h>
+#include <askap/askap/StatReporter.h>
 #include <casacore/casa/Logging/LogIO.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 #include <CommandLineParser.h>
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 #include <Common/ParameterSet.h>
 #include <measurementequation/SynthesisParamsHelper.h>
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapUtil.h>
 #include <dataaccess/ParsetInterface.h>
 #include <profile/AskapProfiler.h>
 
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 
 ASKAP_LOGGER(logger, ".tCFGeneration");
 
@@ -68,8 +68,8 @@ int main(int argc, const char** argv)
 
     try {
         // Ensure that CASA log messages are captured
-        casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-        casa::LogSink::globalSink(globalSink);
+        casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+        casacore::LogSink::globalSink(globalSink);
 
         StatReporter stats;
         std::string profileFileName("profile.tCFGeneration");

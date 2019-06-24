@@ -11,8 +11,8 @@
 
 #include "PrimaryBeam.h"
 #include "GaussianPB.h"
-#include <askap/AskapError.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
 #include <Common/ParameterSet.h>
 
 #include <casacore/casa/Arrays/Vector.h>

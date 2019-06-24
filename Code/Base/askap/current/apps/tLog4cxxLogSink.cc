@@ -27,8 +27,8 @@
 
 // ASKAPsoft includes
 #include <askap_askap.h>
-#include <askap/AskapLogging.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/Log4cxxLogSink.h>
 #include <casacore/casa/Logging/LogIO.h>
 
 using namespace askap;
@@ -37,16 +37,16 @@ int main()
 {
   ASKAPLOG_INIT("tLog4cxxLogSink.log_cfg");
 
-  casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-  casa::LogSink::globalSink (globalSink);
-  casa::LogIO logger;
-  logger << casa::LogOrigin("tLog4cxxLogSink") << casa::LogIO::DEBUGGING
-	 << "debug message" << casa::LogIO::POST;
-  logger << casa::LogOrigin("tLog4cxxLogSink") << casa::LogIO::NORMAL
-	 << "info message" << casa::LogIO::POST;
-  logger << casa::LogOrigin("tLog4cxxLogSink") << casa::LogIO::WARN
-	 << "warning message" << casa::LogIO::POST;
-  logger << casa::LogOrigin("tLog4cxxLogSink") << casa::LogIO::SEVERE
-	 << "error message" << casa::LogIO::POST;
+  casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+  casacore::LogSink::globalSink (globalSink);
+  casacore::LogIO logger;
+  logger << casacore::LogOrigin("tLog4cxxLogSink") << casacore::LogIO::DEBUGGING
+	 << "debug message" << casacore::LogIO::POST;
+  logger << casacore::LogOrigin("tLog4cxxLogSink") << casacore::LogIO::NORMAL
+	 << "info message" << casacore::LogIO::POST;
+  logger << casacore::LogOrigin("tLog4cxxLogSink") << casacore::LogIO::WARN
+	 << "warning message" << casacore::LogIO::POST;
+  logger << casacore::LogOrigin("tLog4cxxLogSink") << casacore::LogIO::SEVERE
+	 << "error message" << casacore::LogIO::POST;
   return 0;
 }

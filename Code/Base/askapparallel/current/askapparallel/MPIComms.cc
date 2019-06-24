@@ -48,8 +48,8 @@
 #endif
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 
 using namespace askap::askapparallel;
 

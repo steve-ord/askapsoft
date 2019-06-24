@@ -30,10 +30,10 @@
 #include <askap_analysisutilities.h>
 #include <analysisparallel/SubimageDef.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 
 #include <gsl/gsl_sf_gamma.h>
 
@@ -54,7 +54,7 @@
 #include <duchamp/param.hh>
 #include <duchamp/Outputs/KarmaAnnotationWriter.hh>
 
-using namespace casa;
+using namespace casacore;
 
 ///@brief Where the log messages go.
 ASKAP_LOGGER(logger, ".subimagedef");
@@ -210,10 +210,10 @@ void SubimageDef::defineAllSections()
 
 }
 
-const casa::IPosition SubimageDef::blc(const int workerNum)
+const casacore::IPosition SubimageDef::blc(const int workerNum)
 {
     duchamp::Section subsection = section(workerNum);
-    casa::IPosition blc(subsection.getStartList());
+    casacore::IPosition blc(subsection.getStartList());
     return blc;
 }
 
@@ -375,13 +375,13 @@ const std::set<int> SubimageDef::affectedWorkers(const float x, const float y, c
     return affectedWorkers(int(floor(x)), int(floor(y)), int(floor(z)));
 }
 
-const std::set<int> SubimageDef::affectedWorkers(const casa::IPosition &pos)
+const std::set<int> SubimageDef::affectedWorkers(const casacore::IPosition &pos)
 {
     ASKAPASSERT(pos.size() >= 3);
     return affectedWorkers(int(pos[0]), int(pos[1]), int(pos[2]));
 }
 
-const std::set<int> SubimageDef::affectedWorkers(const casa::Slicer &slice)
+const std::set<int> SubimageDef::affectedWorkers(const casacore::Slicer &slice)
 {
 
     IPosition blc = slice.start();

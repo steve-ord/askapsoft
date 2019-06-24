@@ -28,12 +28,12 @@
 /// @author Matthew Whiting <matthew.whiting@csiro.au>
 #include <askap_analysis.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/casa/Logging/LogIO.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 #include <parallelanalysis/DuchampParallel.h>
 #include <patternmatching/CatalogueMatcher.h>
 
@@ -79,10 +79,10 @@ int main(int argc, const char** argv)
     askap::askapparallel::AskapParallel comms(argc, argv);
     try {
         // Ensure that CASA log messages are captured
-        casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-        casa::LogSink::globalSink(globalSink);
+        casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+        casacore::LogSink::globalSink(globalSink);
 
-        casa::Timer timer;
+        casacore::Timer timer;
         timer.mark();
         std::string parsetFile(getInputs("-inputs", "continuumAnalysis.in", argc, argv));
         LOFAR::ParameterSet parset(parsetFile);

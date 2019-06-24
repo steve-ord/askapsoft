@@ -30,7 +30,7 @@
 #define ASKAP_UTILITY_RANGE_PARTITION_TEST_H
 
 #include <cppunit/extensions/HelperMacros.h>
-#include <askap/RangePartition.h>
+#include <askap/askap/RangePartition.h>
 
 namespace askap {
 

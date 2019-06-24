@@ -29,7 +29,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 // Support classes
-#include "askap/AskapError.h"
+#include "askap/askap/AskapError.h"
 #include "casacore/casa/Arrays/Vector.h"
 #include "casacore/casa/Arrays/Cube.h"
 #include "Blob/BlobIStream.h"
@@ -44,9 +44,9 @@
 #include "Blob/BlobOBufVector.h"
 
 // Classes to test
-#include "utils/CasaBlobUtils.h"
+#include "askap/scimath/utils/CasaBlobUtils.h"
 
-using namespace casa;
+using namespace casacore;
 using namespace LOFAR;
 
 namespace askap {
@@ -75,43 +75,43 @@ class CasaBlobUtilsTest : public CppUnit::TestFixture {
         void testCoordinateSystem()
         {
 
-          casa::CoordinateSystem source;
-          casa::CoordinateSystem target;
+          casacore::CoordinateSystem source;
+          casacore::CoordinateSystem target;
 
           // DirectionCoordinate
           {
-            casa::Vector<casa::Double> refPix(2,512.);
-            casa::Vector<casa::Double> refVal(2,0.0);
-            casa::Vector<casa::Double> increment(2,0.1);
-            casa::Matrix<casa::Double> xform(2,2,0.0);
+            casacore::Vector<casacore::Double> refPix(2,512.);
+            casacore::Vector<casacore::Double> refVal(2,0.0);
+            casacore::Vector<casacore::Double> increment(2,0.1);
+            casacore::Matrix<casacore::Double> xform(2,2,0.0);
             xform.row(0)(0) = 1.0;
             xform.row(1)(1) = 1.0;
-            casa::DirectionCoordinate dc(casa::MDirection::B1950,
-                casa::Projection(casa::Projection::TAN), refVal[0],refVal[1],
+            casacore::DirectionCoordinate dc(casacore::MDirection::B1950,
+                casacore::Projection(casacore::Projection::TAN), refVal[0],refVal[1],
                 increment[0],increment[1], xform, refPix[0],refPix[1]);
             source.addCoordinate(dc);
           }
 
           // SpectralCoordinate
           {
-            casa::Vector<casa::Double> refPix(1,512.);
-            casa::Vector<casa::Double> refVal(1,0.0);
-            casa::Vector<casa::Double> increment(1,0.1);
-            casa::Double restFreq = 0.0;
-            casa::SpectralCoordinate sc(casa::MFrequency::GALACTO,
+            casacore::Vector<casacore::Double> refPix(1,512.);
+            casacore::Vector<casacore::Double> refVal(1,0.0);
+            casacore::Vector<casacore::Double> increment(1,0.1);
+            casacore::Double restFreq = 0.0;
+            casacore::SpectralCoordinate sc(casacore::MFrequency::GALACTO,
                 refVal[0], increment[0], refPix[0], restFreq);
             source.addCoordinate(sc);
           }
 
           // StokesCoordinate
           {
-            casa::Vector<casa::Int> whichStokes(5);
-            whichStokes(0) = casa::Stokes::I;
-            whichStokes(1) = casa::Stokes::XX;
-            whichStokes(2) = casa::Stokes::RR;
-            whichStokes(3) = casa::Stokes::RX;
-            whichStokes(4) = casa::Stokes::XR;
-            casa::StokesCoordinate sc(whichStokes);
+            casacore::Vector<casacore::Int> whichStokes(5);
+            whichStokes(0) = casacore::Stokes::I;
+            whichStokes(1) = casacore::Stokes::XX;
+            whichStokes(2) = casacore::Stokes::RR;
+            whichStokes(3) = casacore::Stokes::RX;
+            whichStokes(4) = casacore::Stokes::XR;
+            casacore::StokesCoordinate sc(whichStokes);
             source.addCoordinate(sc);
           }
 
@@ -140,11 +140,11 @@ class CasaBlobUtilsTest : public CppUnit::TestFixture {
           // DirectionCoordinate tests
           {
             int dcPos;
-            dcPos = source.findCoordinate(casa::Coordinate::DIRECTION,-1);
-            const casa::DirectionCoordinate& sourceDC =
+            dcPos = source.findCoordinate(casacore::Coordinate::DIRECTION,-1);
+            const casacore::DirectionCoordinate& sourceDC =
                 source.directionCoordinate(dcPos);
-            dcPos = target.findCoordinate(casa::Coordinate::DIRECTION,-1);
-            const casa::DirectionCoordinate& targetDC =
+            dcPos = target.findCoordinate(casacore::Coordinate::DIRECTION,-1);
+            const casacore::DirectionCoordinate& targetDC =
                 target.directionCoordinate(dcPos);
             CPPUNIT_ASSERT_EQUAL(sourceDC.directionType(),
                                  targetDC.directionType());
@@ -167,11 +167,11 @@ class CasaBlobUtilsTest : public CppUnit::TestFixture {
           // SpectralCoordinate tests
           {
             int scPos;
-            scPos = source.findCoordinate(casa::Coordinate::SPECTRAL,-1);
-            const casa::SpectralCoordinate& sourceSC =
+            scPos = source.findCoordinate(casacore::Coordinate::SPECTRAL,-1);
+            const casacore::SpectralCoordinate& sourceSC =
                 source.spectralCoordinate(scPos);
-            scPos = target.findCoordinate(casa::Coordinate::SPECTRAL,-1);
-            const casa::SpectralCoordinate& targetSC =
+            scPos = target.findCoordinate(casacore::Coordinate::SPECTRAL,-1);
+            const casacore::SpectralCoordinate& targetSC =
                 target.spectralCoordinate(scPos);
             CPPUNIT_ASSERT_EQUAL(sourceSC.frequencySystem(),
                                  targetSC.frequencySystem());
@@ -185,15 +185,15 @@ class CasaBlobUtilsTest : public CppUnit::TestFixture {
           // StokesCoordinate
           {
             int scPos;
-            scPos = source.findCoordinate(casa::Coordinate::STOKES,-1);
-            const casa::StokesCoordinate& sourceSC =
+            scPos = source.findCoordinate(casacore::Coordinate::STOKES,-1);
+            const casacore::StokesCoordinate& sourceSC =
                 source.stokesCoordinate(scPos);
-            scPos = target.findCoordinate(casa::Coordinate::STOKES,-1);
-            const casa::StokesCoordinate& targetSC =
+            scPos = target.findCoordinate(casacore::Coordinate::STOKES,-1);
+            const casacore::StokesCoordinate& targetSC =
                 target.stokesCoordinate(scPos);
             CPPUNIT_ASSERT_EQUAL(sourceSC.stokes().shape(),
                                  targetSC.stokes().shape());
-            for (casa::Int k = 0; k<sourceSC.stokes().shape(); ++k) {
+            for (casacore::Int k = 0; k<sourceSC.stokes().shape(); ++k) {
               CPPUNIT_ASSERT_EQUAL(sourceSC.stokes()(k),
                                    targetSC.stokes()(k));
             }
@@ -228,33 +228,33 @@ class CasaBlobUtilsTest : public CppUnit::TestFixture {
         }
 
         void testQuantity() {
-           const casa::Quantity q(3.1415, "km/s");
-           casa::Quantity receivedQ(0.1, "MHz");
+           const casacore::Quantity q(3.1415, "km/s");
+           casacore::Quantity receivedQ(0.1, "MHz");
            copyViaBlob(q, receivedQ);
            CPPUNIT_ASSERT_DOUBLES_EQUAL(q.getValue(), receivedQ.getValue(),1e-6);
            CPPUNIT_ASSERT_EQUAL(q.getFullUnit().getName(), receivedQ.getFullUnit().getName());
         }
 
         void testMDirectionRef() {
-          const casa::MDirection::Ref ref(casa::MDirection::AZEL);
-          casa::MDirection::Ref receivedRef(casa::MDirection::J2000);
+          const casacore::MDirection::Ref ref(casacore::MDirection::AZEL);
+          casacore::MDirection::Ref receivedRef(casacore::MDirection::J2000);
           copyViaBlob(ref,receivedRef);
           CPPUNIT_ASSERT_EQUAL(ref.getType(), receivedRef.getType());
         }
 
         void testMVDirection() {
-          const casa::MVDirection dir(casa::Quantity(135.0, "deg"), casa::Quantity(-31.0, "deg"));
-          casa::MVDirection receivedDir(casa::Quantity(1.0, "rad"), casa::Quantity(0, "arcsec"));
+          const casacore::MVDirection dir(casacore::Quantity(135.0, "deg"), casacore::Quantity(-31.0, "deg"));
+          casacore::MVDirection receivedDir(casacore::Quantity(1.0, "rad"), casacore::Quantity(0, "arcsec"));
           copyViaBlob(dir, receivedDir);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(dir.getLong(), receivedDir.getLong(), 1e-6);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(dir.getLat(), receivedDir.getLat(), 1e-6);
         }
 
         void testMDirection() {
-          const casa::MDirection dir(casa::MVDirection(casa::Quantity(135.0, "deg"), casa::Quantity(+31.0, "deg")), 
-                                     casa::MDirection::AZEL);
-          casa::MDirection receivedDir(casa::MVDirection(casa::Quantity(1.0, "rad"), casa::Quantity(0, "arcsec")), 
-                                     casa::MDirection::J2000);
+          const casacore::MDirection dir(casacore::MVDirection(casacore::Quantity(135.0, "deg"), casacore::Quantity(+31.0, "deg")), 
+                                     casacore::MDirection::AZEL);
+          casacore::MDirection receivedDir(casacore::MVDirection(casacore::Quantity(1.0, "rad"), casacore::Quantity(0, "arcsec")), 
+                                     casacore::MDirection::J2000);
           copyViaBlob(dir, receivedDir);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(dir.getValue().getLong(), receivedDir.getValue().getLong(), 1e-6);
           CPPUNIT_ASSERT_DOUBLES_EQUAL(dir.getValue().getLat(), receivedDir.getValue().getLat(), 1e-6);
@@ -262,8 +262,8 @@ class CasaBlobUtilsTest : public CppUnit::TestFixture {
         }
 
         void testStokesTypes() {
-          const casa::Stokes::StokesTypes pol = casa::Stokes::XY;
-          casa::Stokes::StokesTypes receivedPol(casa::Stokes::RR);
+          const casacore::Stokes::StokesTypes pol = casacore::Stokes::XY;
+          casacore::Stokes::StokesTypes receivedPol(casacore::Stokes::RR);
           copyViaBlob(pol, receivedPol);
           CPPUNIT_ASSERT_EQUAL(pol, receivedPol);
         }

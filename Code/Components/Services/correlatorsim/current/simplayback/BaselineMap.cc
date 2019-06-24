@@ -35,8 +35,8 @@
 #include <stdint.h>
 
 // ASKAPsoft includes
-#include "askap/AskapError.h"
-#include "askap/AskapUtil.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapUtil.h"
 #include "Common/ParameterSet.h"
 #include "casacore/measures/Measures/Stokes.h"
 
@@ -44,7 +44,7 @@
 using namespace askap;
 using namespace askap::utility;
 using namespace askap::cp;
-using namespace casa;
+using namespace casacore;
 
 BaselineMap::BaselineMap(const LOFAR::ParameterSet& parset)
 {
@@ -71,7 +71,7 @@ BaselineMap::BaselineMap(const LOFAR::ParameterSet& parset)
     }
 }
 
-int32_t BaselineMap::operator()(int32_t antenna1, int32_t antenna2, const casa::Stokes::StokesTypes& stokes) const
+int32_t BaselineMap::operator()(int32_t antenna1, int32_t antenna2, const casacore::Stokes::StokesTypes& stokes) const
 {
     BaselineMapKey key;
     key.antenna1 = antenna1;

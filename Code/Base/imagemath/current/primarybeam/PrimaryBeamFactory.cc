@@ -11,9 +11,9 @@
 #include <askap_imagemath.h>
 
 // ASKAPsoft includes
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 ASKAP_LOGGER(logger, ".primarybeam.primarybeamfactory");
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/casa/OS/DynLib.h>        // for dynamic library loading
 #include <casacore/casa/BasicSL/String.h>   // for downcase
 

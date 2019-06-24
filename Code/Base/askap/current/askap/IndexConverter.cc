@@ -32,9 +32,9 @@
 ///
 /// @author Max Voronkov <maxim.voronkov@csiro.au>
 
-#include <askap/IndexConverter.h>
-#include <askap/AskapError.h>
-#include <askap/AskapUtil.h>
+#include <askap/askap/IndexConverter.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapUtil.h>
 
 namespace askap {
 

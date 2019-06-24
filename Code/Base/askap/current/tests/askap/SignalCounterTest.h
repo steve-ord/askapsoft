@@ -32,7 +32,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "askap/SignalCounter.h"
+#include "askap/askap/SignalCounter.h"
 
 namespace askap
 {

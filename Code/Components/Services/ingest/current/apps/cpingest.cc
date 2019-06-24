@@ -35,10 +35,10 @@
 
 // ASKAPsoft includes
 #include "cpcommon/ParallelCPApplication.h"
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
-#include "askap/AskapUtil.h"
-#include "askap/StatReporter.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapUtil.h"
+#include "askap/askap/StatReporter.h"
 
 // Local package includes
 #include "ingestpipeline/IngestPipeline.h"

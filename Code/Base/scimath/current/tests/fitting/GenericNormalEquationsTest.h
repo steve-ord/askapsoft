@@ -51,7 +51,7 @@
 #include <Blob/BlobIStream.h>
 
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <boost/shared_ptr.hpp>
 #include <algorithm>
@@ -100,11 +100,11 @@ namespace askap
         
         void testAddDesignMatrixScalar()
         {
-          const casa::uInt nData = 10;
+          const casacore::uInt nData = 10;
           DesignMatrix dm;
-          dm.addDerivative("Value0", casa::Matrix<casa::Double>(nData, 1, 1.0));
-          dm.addDerivative("Value1", casa::Matrix<casa::Double>(nData, 1, 2.0));
-          dm.addResidual(casa::Vector<casa::Double>(nData, -1.0), casa::Vector<double>(nData, 1.0));
+          dm.addDerivative("Value0", casacore::Matrix<casacore::Double>(nData, 1, 1.0));
+          dm.addDerivative("Value1", casacore::Matrix<casacore::Double>(nData, 1, 2.0));
+          dm.addResidual(casacore::Vector<casacore::Double>(nData, -1.0), casacore::Vector<double>(nData, 1.0));
           CPPUNIT_ASSERT(dm.nData() == nData);
           itsNE->add(dm);
           checkScalarResults(nData);
@@ -164,17 +164,17 @@ namespace askap
           
         }
         
-        void checkScalarResults(casa::uInt nData) 
+        void checkScalarResults(casacore::uInt nData) 
         {
           // checking that A^tA and A^B were calculated correctly
           CPPUNIT_ASSERT(itsNE->normalMatrix("Value0", "Value0").shape() == 
-               casa::IPosition(2,1,1));
+               casacore::IPosition(2,1,1));
           CPPUNIT_ASSERT(itsNE->normalMatrix("Value0", "Value1").shape() == 
-               casa::IPosition(2,1,1));
+               casacore::IPosition(2,1,1));
           CPPUNIT_ASSERT(itsNE->normalMatrix("Value1", "Value1").shape() == 
-               casa::IPosition(2,1,1));
+               casacore::IPosition(2,1,1));
           CPPUNIT_ASSERT(itsNE->normalMatrix("Value1", "Value0").shape() == 
-               casa::IPosition(2,1,1));
+               casacore::IPosition(2,1,1));
           CPPUNIT_ASSERT(fabs(itsNE->normalMatrix("Value0", "Value0")(0,0)-
                               double(nData))<1e-7);
           CPPUNIT_ASSERT(fabs(itsNE->normalMatrix("Value1", "Value1")(0,0)-
@@ -189,39 +189,39 @@ namespace askap
           CPPUNIT_ASSERT(fabs(itsNE->dataVector("Value1")[0]+2.*nData)<1e-7);             
         }
         
-        static casa::Matrix<double> populateMatrix(casa::uInt nrow, casa::uInt ncol,
+        static casacore::Matrix<double> populateMatrix(casacore::uInt nrow, casacore::uInt ncol,
                                             const double *buf)
         {
-          casa::Matrix<double> result(nrow,ncol,0.);
-          for (casa::uInt row = 0; row<nrow; ++row) {
-               for (casa::uInt col = 0; col<ncol; ++col,++buf) {
+          casacore::Matrix<double> result(nrow,ncol,0.);
+          for (casacore::uInt row = 0; row<nrow; ++row) {
+               for (casacore::uInt col = 0; col<ncol; ++col,++buf) {
                     result(row,col) = *buf;
                }
           }
           return result;
         }
         
-        static casa::Vector<double> populateVector(casa::uInt size, 
+        static casacore::Vector<double> populateVector(casacore::uInt size, 
                                                    const double *buf)
         {
-          casa::Vector<double> result(size,0.);
+          casacore::Vector<double> result(size,0.);
           std::copy(buf,buf+size,result.cbegin());
           return result;
         }
         
         void testAddDesignMatrixNonScalar()
         {
-          const casa::uInt nData = 10;
+          const casacore::uInt nData = 10;
           DesignMatrix dm;
-          dm.addDerivative("ScalarValue", casa::Matrix<casa::Double>(nData, 1, 1.0));
-          casa::Matrix<casa::Double> matrix(nData,2,2.);
+          dm.addDerivative("ScalarValue", casacore::Matrix<casacore::Double>(nData, 1, 1.0));
+          casacore::Matrix<casacore::Double> matrix(nData,2,2.);
           matrix.column(1) = -1.;
           dm.addDerivative("Value0", matrix);
-          casa::Matrix<casa::Double> matrix2(nData,3,1.);
+          casacore::Matrix<casacore::Double> matrix2(nData,3,1.);
           matrix2.column(1) = 0.;
           matrix2.column(2) = -2.;
           dm.addDerivative("Value1", matrix2);
-          dm.addResidual(casa::Vector<casa::Double>(nData, -1.0), casa::Vector<double>(nData, 1.0));
+          dm.addResidual(casacore::Vector<casacore::Double>(nData, -1.0), casacore::Vector<double>(nData, 1.0));
           CPPUNIT_ASSERT(dm.nData() == nData);
           itsNE->add(dm);
           
@@ -232,27 +232,27 @@ namespace askap
           checkUnknowns<3>(expected);          
         }
         
-        void checkNonScalarResults(casa::uInt nData) 
+        void checkNonScalarResults(casacore::uInt nData) 
         {
           // check normal matrix first
           CPPUNIT_ASSERT(itsNE->normalMatrix("Value0", "Value0").shape() == 
-               casa::IPosition(2,2,2));
+               casacore::IPosition(2,2,2));
           CPPUNIT_ASSERT(itsNE->normalMatrix("Value1", "Value1").shape() == 
-               casa::IPosition(2,3,3));
+               casacore::IPosition(2,3,3));
           CPPUNIT_ASSERT(itsNE->normalMatrix("ScalarValue", 
-               "ScalarValue").shape() == casa::IPosition(2,1,1));
+               "ScalarValue").shape() == casacore::IPosition(2,1,1));
           CPPUNIT_ASSERT(itsNE->normalMatrix("Value0", "Value1").shape() == 
-               casa::IPosition(2,2,3));
+               casacore::IPosition(2,2,3));
           CPPUNIT_ASSERT(itsNE->normalMatrix("Value1", "Value0").shape() == 
-               casa::IPosition(2,3,2));
+               casacore::IPosition(2,3,2));
           CPPUNIT_ASSERT(itsNE->normalMatrix("ScalarValue", "Value0").shape() == 
-               casa::IPosition(2,1,2));
+               casacore::IPosition(2,1,2));
           CPPUNIT_ASSERT(itsNE->normalMatrix("ScalarValue", "Value1").shape() == 
-               casa::IPosition(2,1,3));
+               casacore::IPosition(2,1,3));
           CPPUNIT_ASSERT(itsNE->normalMatrix("Value0", "ScalarValue").shape() == 
-               casa::IPosition(2,2,1));
+               casacore::IPosition(2,2,1));
           CPPUNIT_ASSERT(itsNE->normalMatrix("Value1", "ScalarValue").shape() == 
-               casa::IPosition(2,3,1));
+               casacore::IPosition(2,3,1));
           
           const double m1[] = {4.,-2.,-2.,1.};
           CPPUNIT_ASSERT(norm1(itsNE->normalMatrix("Value0","Value0")-
@@ -349,11 +349,11 @@ namespace askap
         void testConstructorFromDesignMatrix()
         {
           testAddDesignMatrixScalar();
-          const casa::uInt nData = 20;
+          const casacore::uInt nData = 20;
           DesignMatrix dm;
-          dm.addDerivative("Value0", casa::Matrix<casa::Double>(nData, 1, 1.0));
-          dm.addDerivative("Value1", casa::Matrix<casa::Double>(nData, 1, 2.0));
-          dm.addResidual(casa::Vector<casa::Double>(nData, -1.0), casa::Vector<double>(nData, 1.0));
+          dm.addDerivative("Value0", casacore::Matrix<casacore::Double>(nData, 1, 1.0));
+          dm.addDerivative("Value1", casacore::Matrix<casacore::Double>(nData, 1, 2.0));
+          dm.addResidual(casacore::Vector<casacore::Double>(nData, -1.0), casacore::Vector<double>(nData, 1.0));
           CPPUNIT_ASSERT(dm.nData() == nData);
           GenericNormalEquations gne(dm);
           itsNE->merge(gne);
@@ -416,33 +416,33 @@ namespace askap
         void testAddProduct() {
            ComplexDiffMatrix cdm(2,2);
            // some dummy parameters, simple equation sum_j(gij*vj)=y_i
-           cdm(0,0) = ComplexDiff("g11", casa::Complex(1.1,-1.1));
-           cdm(0,1) = ComplexDiff("g12", casa::Complex(1.2,-1.2));
-           cdm(1,0) = ComplexDiff("g21", casa::Complex(2.1,-2.1));
-           cdm(1,1) = ComplexDiff("g22", casa::Complex(2.2,-2.2));
+           cdm(0,0) = ComplexDiff("g11", casacore::Complex(1.1,-1.1));
+           cdm(0,1) = ComplexDiff("g12", casacore::Complex(1.2,-1.2));
+           cdm(1,0) = ComplexDiff("g21", casacore::Complex(2.1,-2.1));
+           cdm(1,1) = ComplexDiff("g22", casacore::Complex(2.2,-2.2));
            
            // vector to multiply
-           casa::Vector<casa::Complex> vec(cdm.nColumn());
-           vec[0] = casa::Complex(10.,1.);
-           vec[1] = casa::Complex(1.,-10.);
+           casacore::Vector<casacore::Complex> vec(cdm.nColumn());
+           vec[0] = casacore::Complex(10.,1.);
+           vec[1] = casacore::Complex(1.,-10.);
            
            // measured data
-           casa::Vector<casa::Complex> measured(vec.nelements());
+           casacore::Vector<casacore::Complex> measured(vec.nelements());
            
            // vector for actual design equations
            ComplexDiffMatrix cdv(cdm.nRow(),1,0.);
-           for (casa::uInt row = 0; row<cdv.nRow(); ++row) {
-                for (casa::uInt col = 0; col<cdm.nColumn(); ++col) {
+           for (casacore::uInt row = 0; row<cdv.nRow(); ++row) {
+                for (casacore::uInt col = 0; col<cdm.nColumn(); ++col) {
                     cdv[row] += cdm(row,col) * vec[col];
                 }
                 measured[row] = cdv[row].value();
            }
            // perturb the measured data a bit to have a non-zero data vector
-           measured[0] += casa::Complex(0.01,-0.01);
-           measured[0] += casa::Complex(-0.02,0.02);
+           measured[0] += casacore::Complex(0.01,-0.01);
+           measured[0] += casacore::Complex(-0.02,0.02);
            // use the standard approach via the design matrix
            DesignMatrix dm;
-           dm.addModel(cdv,measured.reform(casa::IPosition(2,measured.nelements(),1)),casa::Matrix<double>(measured.nelements(),1,1.));
+           dm.addModel(cdv,measured.reform(casacore::IPosition(2,measured.nelements(),1)),casacore::Matrix<double>(measured.nelements(),1,1.));
            GenericNormalEquations ne1;
            ne1.add(dm);
            std::vector<std::string> unknowns1 = ne1.unknowns();
@@ -451,9 +451,9 @@ namespace askap
            // now use the direct approach to obtain normal equations
                       
            // 1D buffer initialised to zero
-           PolXProducts pxp(vec.nelements(), casa::IPosition(), true);
-           for (casa::uInt pol1 = 0; pol1<vec.nelements(); ++pol1) {
-                for (casa::uInt pol2 = 0; pol2<vec.nelements(); ++pol2) {
+           PolXProducts pxp(vec.nelements(), casacore::IPosition(), true);
+           for (casacore::uInt pol1 = 0; pol1<vec.nelements(); ++pol1) {
+                for (casacore::uInt pol2 = 0; pol2<vec.nelements(); ++pol2) {
                      pxp.addModelMeasProduct(pol1,pol2, conj(vec[pol1])*measured[pol2]);
                      if (pol1 >= pol2) {
                          pxp.addModelProduct(pol1,pol2, conj(vec[pol1])*vec[pol2]);
@@ -475,11 +475,11 @@ namespace askap
                 for (size_t par2=0; par2<unknowns1.size(); ++par2) {
                      const std::string parName2 = unknowns1[par2];
                      CPPUNIT_ASSERT(contained(unknowns2,parName2));
-                     const casa::Matrix<double> nm1 = ne1.normalMatrix(parName,parName2);
-                     const casa::Matrix<double> nm2 = ne2.normalMatrix(parName,parName2);
+                     const casacore::Matrix<double> nm1 = ne1.normalMatrix(parName,parName2);
+                     const casacore::Matrix<double> nm2 = ne2.normalMatrix(parName,parName2);
                      CPPUNIT_ASSERT_EQUAL(nm1.shape(),nm2.shape());
-                     for (casa::uInt row=0; row<nm1.nrow(); ++row) {
-                          for (casa::uInt col=0; col<nm1.ncolumn(); ++col) {
+                     for (casacore::uInt row=0; row<nm1.nrow(); ++row) {
+                          for (casacore::uInt col=0; col<nm1.ncolumn(); ++col) {
                                CPPUNIT_ASSERT_DOUBLES_EQUAL(nm1(row,col),nm2(row,col),1e-7);
                           }
                      }
@@ -491,8 +491,8 @@ namespace askap
            for (size_t par=0; par<unknowns1.size(); ++par) {
                 const std::string parName = unknowns1[par];                
                 CPPUNIT_ASSERT(contained(unknowns2,parName));
-                const casa::Vector<double> dv1 = ne1.dataVector(parName);
-                const casa::Vector<double> dv2 = ne2.dataVector(parName);
+                const casacore::Vector<double> dv1 = ne1.dataVector(parName);
+                const casacore::Vector<double> dv2 = ne2.dataVector(parName);
                 CPPUNIT_ASSERT_EQUAL(dv1.nelements(),dv2.nelements());
                 for (size_t index=0; index<dv1.nelements(); ++index) {
                      // we use single precision Complex and have large numbers like 100. squared

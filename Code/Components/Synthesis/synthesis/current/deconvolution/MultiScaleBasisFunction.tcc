@@ -31,7 +31,7 @@
 
 #include <askap_synthesis.h>
 
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 #include <casacore/casa/aips.h>
 #include <casacore/casa/Arrays/Matrix.h>
 #include <casacore/casa/Arrays/Cube.h>
@@ -42,7 +42,7 @@ ASKAP_LOGGER(decmsbaselogger, ".deconvolution.multiscalebasisfunction");
 
 #include <deconvolution/MultiScaleBasisFunction.h>
 
-using namespace casa;
+using namespace casacore;
 
 namespace askap {
 
@@ -77,7 +77,7 @@ namespace askap {
 
             ASKAPLOG_INFO_STR(decmsbaselogger, "Calculating multiscale basis functions");
             // Make a cube and use referencing in Array
-            casa::Cube<T> scaleCube(this->itsBasisFunction);
+            casacore::Cube<T> scaleCube(this->itsBasisFunction);
 
             for (uInt scale = 0; scale < itsScales.nelements(); scale++) {
                 const Float scaleSize = itsScales(scale);

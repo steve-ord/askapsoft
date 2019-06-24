@@ -23,7 +23,7 @@
 
 // ASKAPsoft includes
 #include <askap_accessors.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 #include <AskapTestRunner.h>
 // Test includes
 #include <CasaImageAccessTest.h>

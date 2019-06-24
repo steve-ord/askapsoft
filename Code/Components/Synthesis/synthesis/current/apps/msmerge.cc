@@ -38,10 +38,10 @@
 #include <iterator>
 
 // ASKAPsoft includes
-#include "askap/AskapError.h"
-#include "askap/AskapLogging.h"
-#include "askap/StatReporter.h"
-#include "askap/Log4cxxLogSink.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/StatReporter.h"
+#include "askap/askap/Log4cxxLogSink.h"
 #include "boost/shared_ptr.hpp"
 #include "boost/exception/all.hpp"
 #include "boost/program_options.hpp"
@@ -63,12 +63,12 @@
 ASKAP_LOGGER(logger, ".msmerge2");
 
 using namespace askap;
-using namespace casa;
+using namespace casacore;
 
-boost::shared_ptr<casa::MeasurementSet> create(const std::string& filename, casa::uInt tileNcorr = 4,
-    casa::uInt tileNchan = 1, casa::uInt tileNrow = 0)
+boost::shared_ptr<casacore::MeasurementSet> create(const std::string& filename, casacore::uInt tileNcorr = 4,
+    casacore::uInt tileNchan = 1, casacore::uInt tileNrow = 0)
 {
-    casa::uInt bucketSize =  1024*1024;
+    casacore::uInt bucketSize =  1024*1024;
 
     if (tileNcorr < 1) {
         tileNcorr = 1;
@@ -129,7 +129,7 @@ boost::shared_ptr<casa::MeasurementSet> create(const std::string& filename, casa
     }
 
     // Now we can create the MeasurementSet and add the (empty) subtables
-    boost::shared_ptr<casa::MeasurementSet> ms(new MeasurementSet(newMS, 0));
+    boost::shared_ptr<casacore::MeasurementSet> ms(new MeasurementSet(newMS, 0));
     ms->createDefaultSubtables(Table::New);
     ms->flush();
 
@@ -143,7 +143,7 @@ boost::shared_ptr<casa::MeasurementSet> create(const std::string& filename, casa
     return ms;
 }
 
-void copyAntenna(const casa::MeasurementSet& source, casa::MeasurementSet& dest)
+void copyAntenna(const casacore::MeasurementSet& source, casacore::MeasurementSet& dest)
 {
     const ROMSColumns srcMsc(source);
     const ROMSAntennaColumns& sc = srcMsc.antenna();
@@ -163,7 +163,7 @@ void copyAntenna(const casa::MeasurementSet& source, casa::MeasurementSet& dest)
     dc.flagRow().putColumn(sc.flagRow());
 }
 
-void mergeDataDescription(const casa::MeasurementSet& source, casa::MeasurementSet& dest)
+void mergeDataDescription(const casacore::MeasurementSet& source, casacore::MeasurementSet& dest)
 {
     MSColumns destMsc(dest);
     MSDataDescColumns& dc = destMsc.dataDescription();
@@ -175,7 +175,7 @@ void mergeDataDescription(const casa::MeasurementSet& source, casa::MeasurementS
     dc.polarizationId().put(0, 0);
 }
 
-void copyFeed(const casa::MeasurementSet& source, casa::MeasurementSet& dest)
+void copyFeed(const casacore::MeasurementSet& source, casacore::MeasurementSet& dest)
 {
     const ROMSColumns srcMsc(source);
     const ROMSFeedColumns& sc = srcMsc.feed();
@@ -200,7 +200,7 @@ void copyFeed(const casa::MeasurementSet& source, casa::MeasurementSet& dest)
     dc.interval().putColumn(sc.interval());
 }
 
-void copyField(const casa::MeasurementSet& source, casa::MeasurementSet& dest)
+void copyField(const casacore::MeasurementSet& source, casacore::MeasurementSet& dest)
 {
     const ROMSColumns srcMsc(source);
     const ROMSFieldColumns& sc = srcMsc.field();
@@ -221,7 +221,7 @@ void copyField(const casa::MeasurementSet& source, casa::MeasurementSet& dest)
     dc.referenceDir().putColumn(sc.referenceDir());
 }
 
-void copyObservation(const casa::MeasurementSet& source, casa::MeasurementSet& dest)
+void copyObservation(const casacore::MeasurementSet& source, casacore::MeasurementSet& dest)
 {
     const ROMSColumns srcMsc(source);
     const ROMSObservationColumns& sc = srcMsc.observation();
@@ -243,7 +243,7 @@ void copyObservation(const casa::MeasurementSet& source, casa::MeasurementSet& d
     dc.scheduleType().putColumn(sc.scheduleType());
 }
 
-void copyPointing(const casa::MeasurementSet& source, casa::MeasurementSet& dest)
+void copyPointing(const casacore::MeasurementSet& source, casacore::MeasurementSet& dest)
 {
     const ROMSColumns srcMsc(source);
     const ROMSPointingColumns& sc = srcMsc.pointing();
@@ -276,7 +276,7 @@ void copyPointing(const casa::MeasurementSet& source, casa::MeasurementSet& dest
     dc.tracking().putColumn(sc.tracking());
 }
 
-void copyPolarization(const casa::MeasurementSet& source, casa::MeasurementSet& dest)
+void copyPolarization(const casacore::MeasurementSet& source, casacore::MeasurementSet& dest)
 {
     const ROMSColumns srcMsc(source);
     const ROMSPolarizationColumns& sc = srcMsc.polarization();
@@ -293,22 +293,22 @@ void copyPolarization(const casa::MeasurementSet& source, casa::MeasurementSet& 
     dc.corrProduct().putColumn(sc.corrProduct());
 }
 
-void appendToVector(const casa::Vector<double>& src, std::vector<double>& dest)
+void appendToVector(const casacore::Vector<double>& src, std::vector<double>& dest)
 {
     std::copy(src.begin(), src.end(), std::back_inserter(dest));
 }
 
-casa::Int findSpectralWindowId(const ROMSColumns& msc)
+casacore::Int findSpectralWindowId(const ROMSColumns& msc)
 {
-    const casa::uInt nrows = msc.nrow();
+    const casacore::uInt nrows = msc.nrow();
     ASKAPCHECK(nrows > 0, "No rows in main table");
-    const casa::ROMSDataDescColumns& ddc = msc.dataDescription();
+    const casacore::ROMSDataDescColumns& ddc = msc.dataDescription();
 
-    casa::Int r0 = -1; // Row zero SpWindow id
+    casacore::Int r0 = -1; // Row zero SpWindow id
 
-    for (casa::uInt row = 0; row < nrows; ++row) {
-        const casa::Int dataDescId = msc.dataDescId()(row);
-        const casa::Int spwId = ddc.spectralWindowId()(dataDescId);
+    for (casacore::uInt row = 0; row < nrows; ++row) {
+        const casacore::Int dataDescId = msc.dataDescId()(row);
+        const casacore::Int spwId = ddc.spectralWindowId()(dataDescId);
 
         if (row == 0) {
             r0 = spwId;
@@ -326,17 +326,17 @@ casa::Int findSpectralWindowId(const ROMSColumns& msc)
 // spectral window id is used. All rows in a given source measurement set
 // must refer to the same spectral window id.
 void mergeSpectralWindow(const std::vector< boost::shared_ptr<const ROMSColumns> >& srcMscs,
-                         casa::MeasurementSet& dest)
+                         casacore::MeasurementSet& dest)
 {
     ASKAPCHECK(!srcMscs.empty(), "Vector of source measurement sets is empty");
 
     MSColumns destMsc(dest);
     MSSpWindowColumns& dc = destMsc.spectralWindow();
-    const casa::Int DEST_ROW = 0;
+    const casacore::Int DEST_ROW = 0;
 
     // 1: Create a single spectral window in the destination measurement set.
     // Populate it with the simple cells (i.e. those not needing merging)
-    const casa::Int spwIdForFirstMs = findSpectralWindowId(*srcMscs[0]);
+    const casacore::Int spwIdForFirstMs = findSpectralWindowId(*srcMscs[0]);
     const ROMSSpWindowColumns& sc = srcMscs[0]->spectralWindow();
     dest.spectralWindow().addRow();
     dc.measFreqRef().put(DEST_ROW, sc.measFreqRef()(spwIdForFirstMs));
@@ -359,7 +359,7 @@ void mergeSpectralWindow(const std::vector< boost::shared_ptr<const ROMSColumns>
     for (uInt i = 0; i < srcMscs.size(); ++i) {
         // The below function obtains the spwid refered to by all rows in the
         // main table. This throws an exception if they are not all identical.
-        const casa::Int srcSpwId = findSpectralWindowId(*srcMscs[i]);
+        const casacore::Int srcSpwId = findSpectralWindowId(*srcMscs[i]);
 
         const ROMSSpWindowColumns& spwc = srcMscs[i]->spectralWindow();
         nChan += spwc.numChan()(srcSpwId);
@@ -373,20 +373,20 @@ void mergeSpectralWindow(const std::vector< boost::shared_ptr<const ROMSColumns>
 
     // 3: Add those merged cells
     dc.numChan().put(DEST_ROW, nChan);
-    dc.chanFreq().put(DEST_ROW, casa::Vector<double>(chanFreq));
-    dc.chanWidth().put(DEST_ROW, casa::Vector<double>(chanWidth));
-    dc.effectiveBW().put(DEST_ROW, casa::Vector<double>(effectiveBW));
-    dc.resolution().put(DEST_ROW, casa::Vector<double>(resolution));
+    dc.chanFreq().put(DEST_ROW, casacore::Vector<double>(chanFreq));
+    dc.chanWidth().put(DEST_ROW, casacore::Vector<double>(chanWidth));
+    dc.effectiveBW().put(DEST_ROW, casacore::Vector<double>(effectiveBW));
+    dc.resolution().put(DEST_ROW, casacore::Vector<double>(resolution));
     dc.totalBandwidth().put(DEST_ROW, totalBandwidth);
 }
 
 void mergeMainTable(const std::vector< boost::shared_ptr<const ROMSColumns> >& srcMscs,
-                    casa::MeasurementSet& dest, const IPosition& tileShape)
+                    casacore::MeasurementSet& dest, const IPosition& tileShape)
 {
     MSColumns dc(dest);
     // Add rows upfront
     const ROMSColumns& sc = *(srcMscs[0]);
-    const casa::uInt nRows = sc.nrow();
+    const casacore::uInt nRows = sc.nrow();
     dest.addRow(nRows);
     ASKAPLOG_INFO_STR(logger,  "tileshape="<< tileShape(0) << ","<<tileShape(1)<<","<<tileShape(2) );
     // 2: Size the matrix for data and flag
@@ -395,8 +395,8 @@ void mergeMainTable(const std::vector< boost::shared_ptr<const ROMSColumns> >& s
     for (uInt i = 0; i < srcMscs.size(); i++) {
         nChanTotal += srcMscs[i]->data().shape(0)(1);
     }
-    casa::Cube<casa::Complex> data(nPol, nChanTotal,tileShape(2));
-    casa::Cube<casa::Bool> flag(nPol, nChanTotal,tileShape(2));
+    casacore::Cube<casacore::Complex> data(nPol, nChanTotal,tileShape(2));
+    casacore::Cube<casacore::Bool> flag(nPol, nChanTotal,tileShape(2));
 
     // For each row
     int lastPerc = 0;
@@ -438,8 +438,8 @@ void mergeMainTable(const std::vector< boost::shared_ptr<const ROMSColumns> >& s
         // 3: Copy the data from each input into the output matrix
         uInt destChan = 0;
         for (uInt i = 0; i < srcMscs.size(); ++i) {
-            const casa::Cube<casa::Complex> srcData = srcMscs[i]->data().getColumnRange(rowslicer);
-            const casa::Cube<casa::Bool> srcFlag = srcMscs[i]->flag().getColumnRange(rowslicer);
+            const casacore::Cube<casacore::Complex> srcData = srcMscs[i]->data().getColumnRange(rowslicer);
+            const casacore::Cube<casacore::Bool> srcFlag = srcMscs[i]->flag().getColumnRange(rowslicer);
             const uInt nChan = srcMscs[i]->data().shape(0)(1);
             for (uInt irow = 0; irow < nRowsThisIteration; irow++) {
                 data(Slice(), Slice(destChan,nChan), irow) = srcData(Slice(), Slice(), irow);
@@ -453,16 +453,16 @@ void mergeMainTable(const std::vector< boost::shared_ptr<const ROMSColumns> >& s
     }
 }
 
-void merge(const std::vector<std::string>& inFiles, const std::string& outFile, casa::uInt tileNcorr = 4,
-    casa::uInt tileNchan = 1, casa::uInt tileNrow = 0)
+void merge(const std::vector<std::string>& inFiles, const std::string& outFile, casacore::uInt tileNcorr = 4,
+    casacore::uInt tileNchan = 1, casacore::uInt tileNrow = 0)
 {
     // Open the input measurement sets
-    std::vector< boost::shared_ptr<const casa::MeasurementSet> > in;
+    std::vector< boost::shared_ptr<const casacore::MeasurementSet> > in;
     std::vector< boost::shared_ptr<const ROMSColumns> > inColumns;
     std::vector<std::string>::const_iterator it;
     uInt nChanOut = 0;
     for (it = inFiles.begin(); it != inFiles.end(); ++it) {
-        const boost::shared_ptr<const casa::MeasurementSet> p(new casa::MeasurementSet(*it));
+        const boost::shared_ptr<const casacore::MeasurementSet> p(new casacore::MeasurementSet(*it));
         in.push_back(p);
         inColumns.push_back(boost::shared_ptr<const ROMSColumns>(new ROMSColumns(*p)));
         nChanOut += inColumns.back()->data().shape(0)(1);
@@ -471,8 +471,8 @@ void merge(const std::vector<std::string>& inFiles, const std::string& outFile, 
     if (tileNchan < 1) tileNchan = 1;
     // Set tileNrow large, but not so large that caching takes > 1GB
     if (tileNrow==0) {
-        const casa::uInt nTilesPerRow = (nChanOut-1)/tileNchan+1;
-        const casa::uInt bucketSize = std::max(8192u,1024*1024*1024/nTilesPerRow);
+        const casacore::uInt nTilesPerRow = (nChanOut-1)/tileNchan+1;
+        const casacore::uInt bucketSize = std::max(8192u,1024*1024*1024/nTilesPerRow);
         tileNrow = std::max(1u,bucketSize / (8 * tileNcorr * tileNchan));
         ASKAPLOG_INFO_STR(logger, "Setting tileNrow to " << tileNrow);
     // Don't allow tiny size buckets
@@ -483,9 +483,9 @@ void merge(const std::vector<std::string>& inFiles, const std::string& outFile, 
 
 
     // Create the output measurement set
-    ASKAPCHECK(!casa::File(outFile).exists(), "File or table "
+    ASKAPCHECK(!casacore::File(outFile).exists(), "File or table "
             << outFile << " already exists!");
-    boost::shared_ptr<casa::MeasurementSet> out(create(outFile,tileNcorr,tileNchan,tileNrow));
+    boost::shared_ptr<casacore::MeasurementSet> out(create(outFile,tileNcorr,tileNchan,tileNrow));
 
     ASKAPLOG_INFO_STR(logger,  "First copy " << inFiles[0]<< " into " << outFile);
 
@@ -548,8 +548,8 @@ int main(int argc, const char** argv)
     }
 
     // Ensure that CASA log messages are captured
-    casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-    casa::LogSink::globalSink(globalSink);
+    casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+    casacore::LogSink::globalSink(globalSink);
 
     try {
         StatReporter stats;

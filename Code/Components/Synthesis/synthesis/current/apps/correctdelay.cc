@@ -30,10 +30,10 @@
 
 #include <dataaccess/TableDataSource.h>
 #include <askap_synthesis.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 ASKAP_LOGGER(logger, "");
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <dataaccess/SharedIter.h>
 #include <dataaccess/ParsetInterface.h>
 
@@ -51,7 +51,7 @@ ASKAP_LOGGER(logger, "");
 
 #include <measurementequation/IMeasurementEquation.h>
 //#include <dataaccess/MemBufferDataAccessor.h>
-#include <askapparallel/MPIComms.h>
+#include <askap/askapparallel/MPIComms.h>
 
 // std
 #include <stdexcept>
@@ -68,30 +68,30 @@ using namespace askap::accessors;
 /// @brief apply delays to the given data source
 /// @details ds data source to work with
 /// @details delays vector with delays (one per antenna) (in ns)
-void correctDelays(const IDataSource &ds, const casa::Vector<double> &delays) {
+void correctDelays(const IDataSource &ds, const casacore::Vector<double> &delays) {
   IDataSelectorPtr sel=ds.createSelector();
   //sel->chooseFeed(1);  
   IDataConverterPtr conv=ds.createConverter();
-  conv->setFrequencyFrame(casa::MFrequency::Ref(casa::MFrequency::TOPO),"Hz");
-  conv->setEpochFrame(casa::MEpoch(casa::Quantity(53635.5,"d"),
-                      casa::MEpoch::Ref(casa::MEpoch::UTC)),"s");
+  conv->setFrequencyFrame(casacore::MFrequency::Ref(casacore::MFrequency::TOPO),"Hz");
+  conv->setEpochFrame(casacore::MEpoch(casacore::Quantity(53635.5,"d"),
+                      casacore::MEpoch::Ref(casacore::MEpoch::UTC)),"s");
   IDataSharedIter it=ds.createIterator(sel,conv);
   for (it.init();it!=it.end();it.next()) {
-       const casa::Vector<double> freqs = it->frequency();
+       const casacore::Vector<double> freqs = it->frequency();
        ASKAPDEBUGASSERT(freqs.nelements() == it->nChannel());
-       for (casa::uInt row=0; row< it->nRow(); ++row) {
-            casa::Matrix<casa::Complex> thisRow = it->rwVisibility().yzPlane(row);
-            const casa::uInt ant1 = it->antenna1()[row];
-            const casa::uInt ant2 = it->antenna2()[row];
+       for (casacore::uInt row=0; row< it->nRow(); ++row) {
+            casacore::Matrix<casacore::Complex> thisRow = it->rwVisibility().yzPlane(row);
+            const casacore::uInt ant1 = it->antenna1()[row];
+            const casacore::uInt ant2 = it->antenna2()[row];
             ASKAPCHECK((ant1 < delays.nelements()) && (ant2 < delays.nelements()), "Encountered antenna with underfined delay: baseline "<<
                         ant1<<" - "<<ant2<<" at row="<<row<<", delays defined for "<<delays.nelements()<<" antennas");
             // minus sign because we're correcting
-            const double delayBy2pi = -2.*casa::C::pi*(delays[ant2] - delays[ant1])*1e-9; // delays are in ns
-            for (casa::uInt ch=0; ch<freqs.nelements(); ++ch) {
+            const double delayBy2pi = -2.*casacore::C::pi*(delays[ant2] - delays[ant1])*1e-9; // delays are in ns
+            for (casacore::uInt ch=0; ch<freqs.nelements(); ++ch) {
                  ASKAPDEBUGASSERT(ch < thisRow.nrow());
-                 casa::Vector<casa::Complex> allPols = thisRow.row(ch);
+                 casacore::Vector<casacore::Complex> allPols = thisRow.row(ch);
                  const float phase = static_cast<float> (delayBy2pi * freqs[ch]);
-                 const casa::Complex phasor(cos(phase),sin(phase));
+                 const casacore::Complex phasor(cos(phase),sin(phase));
                  allPols *= phasor;
             }
        }
@@ -100,7 +100,7 @@ void correctDelays(const IDataSource &ds, const casa::Vector<double> &delays) {
 
 int main(int argc, char **argv) {
   try {
-     casa::Timer timer;
+     casacore::Timer timer;
 
      timer.mark();
      
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
      TableDataSource ds(msName.getValue(),TableDataSource::MEMORY_BUFFERS | TableDataSource::WRITE_PERMITTED);     
      
      // delays are hardcoded for now
-     casa::Vector<double> delays(3,0.);
+     casacore::Vector<double> delays(3,0.);
      //delays[0] = 0.;
      //delays[1] = 0.;
      //delays[2] = 0.;

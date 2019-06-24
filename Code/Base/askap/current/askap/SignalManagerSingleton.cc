@@ -25,14 +25,14 @@
 /// @author Ben Humphreys <ben.humphreys@csiro.au>
 
 // Include own header file first
-#include "askap/SignalManagerSingleton.h"
+#include "askap/askap/SignalManagerSingleton.h"
 
 // System includes
 #include <csignal>
 #include <vector>
 
 // Local package includes
-#include "askap/AskapError.h"
+#include "askap/askap/AskapError.h"
 #include "ISignalHandler.h"
 
 using namespace askap;

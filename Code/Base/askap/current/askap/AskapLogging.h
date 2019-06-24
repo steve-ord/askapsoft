@@ -55,8 +55,8 @@
 #include <iostream>
 #include <string>
 
-#include <askap/AskapError.h>
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapUtil.h>
 
 namespace askap {
 

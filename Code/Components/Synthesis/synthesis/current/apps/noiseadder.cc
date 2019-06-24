@@ -27,10 +27,10 @@
 
 #include <dataaccess/TableDataSource.h>
 #include <askap_synthesis.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 ASKAP_LOGGER(logger, "");
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <dataaccess/SharedIter.h>
 #include <dataaccess/ParsetInterface.h>
 
@@ -48,7 +48,7 @@ ASKAP_LOGGER(logger, "");
 #include <measurementequation/GaussianNoiseME.h>
 #include <measurementequation/IMeasurementEquation.h>
 #include <dataaccess/MemBufferDataAccessor.h>
-#include <askapparallel/MPIComms.h>
+#include <askap/askapparallel/MPIComms.h>
 
 // std
 #include <stdexcept>
@@ -67,9 +67,9 @@ void addNoise(const IDataSource &ds, const IMeasurementEquation &ime) {
   IDataSelectorPtr sel=ds.createSelector();
   //sel->chooseFeed(1);  
   IDataConverterPtr conv=ds.createConverter();
-  conv->setFrequencyFrame(casa::MFrequency::Ref(casa::MFrequency::TOPO),"MHz");
-  conv->setEpochFrame(casa::MEpoch(casa::Quantity(53635.5,"d"),
-                      casa::MEpoch::Ref(casa::MEpoch::UTC)),"s");
+  conv->setFrequencyFrame(casacore::MFrequency::Ref(casacore::MFrequency::TOPO),"MHz");
+  conv->setEpochFrame(casacore::MEpoch(casacore::Quantity(53635.5,"d"),
+                      casacore::MEpoch::Ref(casacore::MEpoch::UTC)),"s");
   IDataSharedIter it=ds.createIterator(sel,conv);
   //for (size_t run=0;run<10;++run)
   for (it.init();it!=it.end();it.next()) {
@@ -81,7 +81,7 @@ void addNoise(const IDataSource &ds, const IMeasurementEquation &ime) {
 
 int main(int argc, char **argv) {
   try {
-     casa::Timer timer;
+     casacore::Timer timer;
 
      timer.mark();
      
@@ -97,8 +97,8 @@ int main(int argc, char **argv) {
      // Initialize MPI (also succeeds if no MPI available).
      askap::askapparallel::MPIComms comms(argc, argv);
 
-     casa::Int seed1 = casa::Int(time(0));
-     casa::Int seed2 = casa::Int(comms.rank());
+     casacore::Int seed1 = casacore::Int(time(0));
+     casacore::Int seed2 = casacore::Int(comms.rank());
      std::cerr<<"Using seeds: "<<seed1<<" "<<seed2<<std::endl;
      GaussianNoiseME noiseME(noiseVariance,seed1,seed2);
      

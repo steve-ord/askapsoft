@@ -30,7 +30,7 @@
 #define ASKAP_UTILITY_INDEX_CONVERTER_TEST_H
 
 #include <cppunit/extensions/HelperMacros.h>
-#include <askap/IndexConverter.h>
+#include <askap/askap/IndexConverter.h>
 
 #include <string>
 

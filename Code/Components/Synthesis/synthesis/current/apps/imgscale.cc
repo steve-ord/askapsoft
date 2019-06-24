@@ -25,7 +25,7 @@
 #include <casacore/casa/Arrays/IPosition.h>
 #include <casacore/images/Images/PagedImage.h>
 #include <CommandLineParser.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/coordinates/Coordinates/DirectionCoordinate.h>
 #include <casacore/coordinates/Coordinates/CoordinateSystem.h>
 #include <casacore/coordinates/Coordinates/Coordinate.h>
@@ -41,12 +41,12 @@
 using namespace askap;
 using namespace std;
 
-void printDirection(ostream &os,const casa::MDirection &dir)  {
+void printDirection(ostream &os,const casacore::MDirection &dir)  {
     double lngbuf=dir.getValue().getLong("deg").getValue();
     if (lngbuf<0) lngbuf+=360.;
-    os<<(dir.getRefString()!="GALACTIC"?casa::MVAngle::Format(casa::MVAngle::TIME):
-          casa::MVAngle::Format(casa::MVAngle::ANGLE))<<casa::MVAngle(casa::Quantity(lngbuf,"deg"))<<" "<<
-          casa::MVAngle(dir.getValue().getLat("deg"))<<
+    os<<(dir.getRefString()!="GALACTIC"?casacore::MVAngle::Format(casacore::MVAngle::TIME):
+          casacore::MVAngle::Format(casacore::MVAngle::ANGLE))<<casacore::MVAngle(casacore::Quantity(lngbuf,"deg"))<<" "<<
+          casacore::MVAngle(dir.getValue().getLat("deg"))<<
           " ("<<dir.getRefString()<<")";
 }
 
@@ -61,8 +61,8 @@ int main(int argc, const char** argv) {
 
 	 // I hope const_cast is temporary here
 	 parser.process(argc, const_cast<char**> (argv));
-         casa::PagedImage<casa::Float> img(imgfile.getValue());
-         casa::IPosition shape = img.shape();
+         casacore::PagedImage<casacore::Float> img(imgfile.getValue());
+         casacore::IPosition shape = img.shape();
          ASKAPASSERT(shape.nelements()>=2);
          const int xcentre = 269;
          const int ycentre = 247;
@@ -73,7 +73,7 @@ int main(int argc, const char** argv) {
          ASKAPASSERT(ycentre-boxsz>=0);
          for (int x=xcentre-boxsz;x<=xcentre+boxsz;++x) {
               for (int y=xcentre-boxsz;y<=xcentre+boxsz;++y) {
-                   casa::IPosition pos(shape.nelements(),0);
+                   casacore::IPosition pos(shape.nelements(),0);
                    pos[0]=x;
                    pos[1]=shape[1]-y-1;
                    const float val = img(pos);

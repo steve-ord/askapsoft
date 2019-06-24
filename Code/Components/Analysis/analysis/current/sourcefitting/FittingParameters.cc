@@ -27,8 +27,8 @@
 
 #include <askap_analysis.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 
 #include <sourcefitting/FittingParameters.h>
 #include <sourcefitting/Fitter.h>
@@ -145,7 +145,7 @@ FittingParameters::FittingParameters(const LOFAR::ParameterSet& parset)
 
 //**************************************************************//
 
-void FittingParameters::setBoxFlux(casa::Vector<casa::Double> f)
+void FittingParameters::setBoxFlux(casacore::Vector<casacore::Double> f)
 {
 
     itsBoxFlux = 0.;

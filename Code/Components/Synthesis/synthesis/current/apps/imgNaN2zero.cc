@@ -25,7 +25,7 @@
 #include <casacore/casa/Arrays/IPosition.h>
 #include <casacore/images/Images/PagedImage.h>
 #include <CommandLineParser.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/coordinates/Coordinates/DirectionCoordinate.h>
 #include <casacore/coordinates/Coordinates/CoordinateSystem.h>
 #include <casacore/coordinates/Coordinates/Coordinate.h>
@@ -41,12 +41,12 @@
 using namespace askap;
 using namespace std;
 
-void printDirection(ostream &os,const casa::MDirection &dir)  {
+void printDirection(ostream &os,const casacore::MDirection &dir)  {
     double lngbuf=dir.getValue().getLong("deg").getValue();
     if (lngbuf<0) lngbuf+=360.;
-    os<<(dir.getRefString()!="GALACTIC"?casa::MVAngle::Format(casa::MVAngle::TIME):
-          casa::MVAngle::Format(casa::MVAngle::ANGLE))<<casa::MVAngle(casa::Quantity(lngbuf,"deg"))<<" "<<
-          casa::MVAngle(dir.getValue().getLat("deg"))<<
+    os<<(dir.getRefString()!="GALACTIC"?casacore::MVAngle::Format(casacore::MVAngle::TIME):
+          casacore::MVAngle::Format(casacore::MVAngle::ANGLE))<<casacore::MVAngle(casacore::Quantity(lngbuf,"deg"))<<" "<<
+          casacore::MVAngle(dir.getValue().getLat("deg"))<<
           " ("<<dir.getRefString()<<")";
 }
 
@@ -61,13 +61,13 @@ int main(int argc, const char** argv) {
 
 	 // I hope const_cast is temporary here
 	 parser.process(argc, const_cast<char**> (argv));
-     casa::PagedImage<casa::Float> img(imgfile.getValue());
-     const casa::IPosition shape = img.shape();
+     casacore::PagedImage<casacore::Float> img(imgfile.getValue());
+     const casacore::IPosition shape = img.shape();
      ASKAPASSERT(shape.nelements()>=2);
-     casa::IPosition curpos(shape.nelements(),0);
-     casa::uInt nElements = shape.product();
-     casa::uInt countNaNs = 0;
-     for (casa::uInt i=0;i<nElements;++i) {
+     casacore::IPosition curpos(shape.nelements(),0);
+     casacore::uInt nElements = shape.product();
+     casacore::uInt countNaNs = 0;
+     for (casacore::uInt i=0;i<nElements;++i) {
           float val = img(curpos);
           if (std::isnan(val)) {
               val = 0;

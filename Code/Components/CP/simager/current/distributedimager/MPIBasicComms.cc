@@ -40,8 +40,8 @@
 #include <mpi.h>
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 #include "casacore/casa/OS/Timer.h"
 #include "Blob/BlobIStream.h"
 #include "Blob/BlobIBufVector.h"
@@ -270,7 +270,7 @@ void MPIBasicComms::sendMessage(const IMessage& msg, int dest)
 
     int messageType = msg.getMessageType();
 
-    casa::Timer timer;
+    casacore::Timer timer;
     timer.mark();
 
     // First send the size of the buffer
@@ -359,7 +359,7 @@ void MPIBasicComms::sendMessageBroadcast(const IMessage& msg)
     out << msg;
     out.putEnd();
 
-    casa::Timer timer;
+    casacore::Timer timer;
     timer.mark();
 
     // First broadcast the size of the mesage broadcast

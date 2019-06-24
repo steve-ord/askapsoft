@@ -37,12 +37,12 @@
 #include <vector>
 
 // ASKAPsoft includes
-#include <askap/AskapError.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
 #include <measurementequation/SynthesisParamsHelper.h>
 #include <imageaccess/ImageAccessFactory.h>
 #include <Common/ParameterSet.h>
-#include <utils/PolConverter.h>
+#include <askap/scimath/utils/PolConverter.h>
 #include <casacore/casa/Arrays/IPosition.h>
 #include <casacore/coordinates/Coordinates/SpectralCoordinate.h>
 #include <casacore/coordinates/Coordinates/DirectionCoordinate.h>
@@ -56,7 +56,7 @@
 ASKAP_LOGGER(logger, ".CubeBuilder");
 
 using namespace askap::cp;
-using namespace casa;
+using namespace casacore;
 using namespace std;
 using namespace askap::synthesis;
 CubeBuilder::CubeBuilder(const LOFAR::ParameterSet& parset,const std::string& name) {

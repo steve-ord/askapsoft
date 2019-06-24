@@ -32,8 +32,8 @@
 #include <catalogues/Casda.h>
 #include <askap_analysis.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 
 #include <sourcefitting/RadioSource.h>
 #include <sourcefitting/FitResults.h>
@@ -74,8 +74,8 @@ CasdaComponent::CasdaComponent(sourcefitting::RadioSource &obj,
 
     sourcefitting::FitResults results = obj.fitResults(fitType);
 
-    casa::Gaussian2D<Double> gauss = obj.gaussFitSet(fitType)[fitNumber];
-    casa::Vector<Double> errors = obj.fitResults(fitType).errors(fitNumber);
+    casacore::Gaussian2D<Double> gauss = obj.gaussFitSet(fitType)[fitNumber];
+    casacore::Vector<Double> errors = obj.fitResults(fitType).errors(fitNumber);
     itsFlag4 = !obj.fitResults(fitType).isGood();
 
     ASKAPLOG_DEBUG_STR(logger, "Defining island to go with component for source " << obj.getName() << ", fit #"<<fitNumber);
@@ -112,9 +112,9 @@ CasdaComponent::CasdaComponent(sourcefitting::RadioSource &obj,
 
     double freqScale = 0.;
     if (newHead_freq.WCS().spec >= 0) {
-        casa::Unit imageFreqUnits(newHead_freq.WCS().cunit[newHead_freq.WCS().spec]);
-        casa::Unit freqUnits(casda::freqUnit);
-        freqScale = casa::Quantity(1., imageFreqUnits).getValue(freqUnits);
+        casacore::Unit imageFreqUnits(newHead_freq.WCS().cunit[newHead_freq.WCS().spec]);
+        casacore::Unit freqUnits(casda::freqUnit);
+        freqScale = casacore::Quantity(1., imageFreqUnits).getValue(freqUnits);
     }
     itsFreq = zworld * freqScale;
 
@@ -231,12 +231,12 @@ const double CasdaComponent::intFluxErr()
 
 const double CasdaComponent::intFlux(std::string unit)
 {
-    return casa::Quantum<float>(itsFluxInt.value(), casda::intFluxUnitContinuum).getValue(unit);
+    return casacore::Quantum<float>(itsFluxInt.value(), casda::intFluxUnitContinuum).getValue(unit);
 }
 
 const double CasdaComponent::intFluxErr(std::string unit)
 {
-    return casa::Quantum<float>(itsFluxInt.error(), casda::intFluxUnitContinuum).getValue(unit);
+    return casacore::Quantum<float>(itsFluxInt.error(), casda::intFluxUnitContinuum).getValue(unit);
 }
 
 const double CasdaComponent::freq()
@@ -246,7 +246,7 @@ const double CasdaComponent::freq()
 
 const double CasdaComponent::freq(std::string unit)
 {
-    return casa::Quantum<float>(itsFreq, casda::freqUnit).getValue(unit);
+    return casacore::Quantum<float>(itsFreq, casda::freqUnit).getValue(unit);
 }
 
 const double CasdaComponent::alpha()

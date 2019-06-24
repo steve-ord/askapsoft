@@ -35,7 +35,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <opcal/ObservationDescription.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 namespace askap
 {
@@ -54,7 +54,7 @@ namespace askap
       void testCreate() {
          ObservationDescription obs;
          CPPUNIT_ASSERT(!obs.isValid());
-         const casa::MVDirection dir(casa::Quantity(1.01,"rad"), casa::Quantity(-1.1,"rad"));
+         const casacore::MVDirection dir(casacore::Quantity(1.01,"rad"), casacore::Quantity(-1.1,"rad"));
          ObservationDescription obs1("test",5,3600.5, 3, dir, 1e9);
          CPPUNIT_ASSERT(obs1.name() == "test");
          CPPUNIT_ASSERT(obs1.isValid());
@@ -118,7 +118,7 @@ namespace askap
       }
       
       void testIllegalUpdate() {
-         const casa::MVDirection dir(casa::Quantity(1.01,"rad"), casa::Quantity(-1.1,"rad"));
+         const casacore::MVDirection dir(casacore::Quantity(1.01,"rad"), casacore::Quantity(-1.1,"rad"));
          ObservationDescription obs("test",5,3600.5, 3, dir, 1e9);
          CPPUNIT_ASSERT(obs.isValid());
          CPPUNIT_ASSERT_DOUBLES_EQUAL(3600.5, obs.startTime(), 1e-6);

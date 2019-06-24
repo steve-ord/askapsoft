@@ -43,13 +43,13 @@
 
 using namespace askap;
 using namespace boost;
-using namespace casa;
+using namespace casacore;
 using namespace accessors;
 
 /// Some example object-function, requires read-write access to
 /// visibility() (original visibility or a buffer)
 struct TestInSituTransform {
-   TestInSituTransform(casa::Double il, casa::Double im) : l(il), m(im){}
+   TestInSituTransform(casacore::Double il, casacore::Double im) : l(il), m(im){}
    
    // some transform
    void operator()(IDataAccessor &da) const {
@@ -65,7 +65,7 @@ struct TestInSituTransform {
 	}
    }
 private:
-   casa::Double l,m;   // offsets in radians divided by wavelength (m^-1)
+   casacore::Double l,m;   // offsets in radians divided by wavelength (m^-1)
 };
 
 struct TestTransform {

@@ -43,7 +43,7 @@
 #include <string>
 
 // own includes
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapUtil.h>
 #include <profile/ProfileData.h>
 
 // boost includes

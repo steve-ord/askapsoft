@@ -39,7 +39,7 @@
 #include <casacore/casa/Quanta/Quantum.h>
 #include <casacore/casa/Quanta/MVPosition.h>
 #include <casacore/casa/BasicSL/Constants.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <gridding/VisGridderFactory.h>
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -88,9 +88,9 @@ namespace askap
 
       accessors::IDataSharedIter idi;
       boost::shared_ptr<Axes> itsAxes;
-      boost::shared_ptr<casa::Array<double> > itsModel;
-      boost::shared_ptr<casa::Array<double> > itsModelPSF;
-      boost::shared_ptr<casa::Array<double> > itsModelWeights;
+      boost::shared_ptr<casacore::Array<double> > itsModel;
+      boost::shared_ptr<casacore::Array<double> > itsModelPSF;
+      boost::shared_ptr<casacore::Array<double> > itsModelWeights;
 
   public:
       void setUp()
@@ -118,20 +118,20 @@ namespace askap
         itsWProject.reset(new WProjectVisGridder(10000.0, 9, 1e-3, 1, 128, 0, ""));
         itsWStack.reset(new WStackVisGridder(10000.0, 9));
 
-        double cellSize=10*casa::C::arcsec;
+        double cellSize=10*casacore::C::arcsec;
 
-        casa::Matrix<double> xform(2,2,0.);
+        casacore::Matrix<double> xform(2,2,0.);
         xform.diagonal().set(1.);
                
         itsAxes.reset(new Axes());
-        itsAxes->addDirectionAxis(casa::DirectionCoordinate(casa::MDirection::J2000, 
-                     casa::Projection(casa::Projection::SIN), 0.,0.,cellSize,cellSize,xform,256.,256.));
+        itsAxes->addDirectionAxis(casacore::DirectionCoordinate(casacore::MDirection::J2000, 
+                     casacore::Projection(casacore::Projection::SIN), 0.,0.,cellSize,cellSize,xform,256.,256.));
         
-        itsModel.reset(new casa::Array<double>(casa::IPosition(4,512,512,1,1)));
+        itsModel.reset(new casacore::Array<double>(casacore::IPosition(4,512,512,1,1)));
         itsModel->set(0.0);
-        itsModelPSF.reset(new casa::Array<double>(casa::IPosition(4,512,512,1,1)));
+        itsModelPSF.reset(new casacore::Array<double>(casacore::IPosition(4,512,512,1,1)));
         itsModelPSF->set(0.0);
-        itsModelWeights.reset(new casa::Array<double>(casa::IPosition(4,512,512,1,1)));
+        itsModelWeights.reset(new casacore::Array<double>(casacore::IPosition(4,512,512,1,1)));
         itsModelWeights->set(0.0);
       }
 

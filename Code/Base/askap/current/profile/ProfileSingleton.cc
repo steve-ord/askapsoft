@@ -35,9 +35,9 @@
 
 #include <profile/ProfileSingleton.h>
 #include <profile/ProfileData.h>
-#include <askap/AskapError.h>
-#include <askap/AskapLogging.h>
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapUtil.h>
 
 #include <string>
 #include <fstream>

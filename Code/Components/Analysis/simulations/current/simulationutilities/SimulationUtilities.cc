@@ -31,8 +31,8 @@
 #include <simulationutilities/SimulationUtilities.h>
 #include <simulationutilities/FluxGenerator.h>
 #include <mathsutils/MathsUtils.h>
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 
 #include <casacore/scimath/Functionals/Gaussian1D.h>
 #include <casacore/scimath/Functionals/Gaussian2D.h>
@@ -187,7 +187,7 @@ struct wcsprm *parsetToWCS(const LOFAR::ParameterSet& theParset,
 }
 
 
-bool doAddGaussian(std::vector<unsigned int> axes, casa::Gaussian2D<casa::Double> gauss)
+bool doAddGaussian(std::vector<unsigned int> axes, casacore::Gaussian2D<casacore::Double> gauss)
 {
     float majorSigma = FWHMtoSIGMA(gauss.majorAxis());
     float zeroPoint = majorSigma * sqrt(-2.*log(1. / (MAXFLOAT * gauss.height())));
@@ -223,8 +223,8 @@ bool doAddDisc(std::vector<unsigned int> axes, Disc &disc)
 
 
 
-// bool addGaussian(std::vector<float>array, std::vector<unsigned int> axes, casa::Gaussian2D<casa::Double> gauss, FluxGenerator &fluxGen, bool integrate, bool verbose)
-bool addGaussian(boost::shared_ptr<float[]>array, std::vector<unsigned int> axes, casa::Gaussian2D<casa::Double> gauss, FluxGenerator &fluxGen, bool integrate, bool verbose)
+// bool addGaussian(std::vector<float>array, std::vector<unsigned int> axes, casacore::Gaussian2D<casacore::Double> gauss, FluxGenerator &fluxGen, bool integrate, bool verbose)
+bool addGaussian(boost::shared_ptr<float[]>array, std::vector<unsigned int> axes, casacore::Gaussian2D<casacore::Double> gauss, FluxGenerator &fluxGen, bool integrate, bool verbose)
 {
 
     float majorSigma = FWHMtoSIGMA(gauss.majorAxis()) ;
@@ -436,12 +436,12 @@ bool addGaussian(boost::shared_ptr<float[]>array, std::vector<unsigned int> axes
 
 // void add1DGaussian(std::vector<float>array,
 //                    std::vector<unsigned int> axes,
-//                    casa::Gaussian2D<casa::Double> gauss,
+//                    casacore::Gaussian2D<casacore::Double> gauss,
 //                    FluxGenerator &fluxGen,
 //                    bool verbose)
 void add1DGaussian(boost::shared_ptr<float[]>array,
                    std::vector<unsigned int> axes,
-                   casa::Gaussian2D<casa::Double> gauss,
+                   casacore::Gaussian2D<casacore::Double> gauss,
                    FluxGenerator &fluxGen,
                    bool verbose)
 {

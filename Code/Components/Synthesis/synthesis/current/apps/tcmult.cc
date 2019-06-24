@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void tout( const std::string tag, const casa::Timer &timer ) {
+void tout( const std::string tag, const casacore::Timer &timer ) {
     cout << setw(24) << tag
          << "  user: "   << setw(4) << timer.user()
          << "  system: " << setw(4) << timer.system()
@@ -21,7 +21,7 @@ int main(int argc, const char** argv)
 {
 
     const int N = int(2e8);
-    casa::Timer timer;
+    casacore::Timer timer;
     cout << left;
 
     timer.mark();
@@ -104,11 +104,11 @@ int main(int argc, const char** argv)
     }
 */
 
-    cout << "casa::Complex:" << endl;
-    casa::Complex z1 = 0;
+    cout << "casacore::Complex:" << endl;
+    casacore::Complex z1 = 0;
     {
         timer.mark();
-        casa::Complex x = 0;
+        casacore::Complex x = 0;
         for ( int i=0; i<N; i++ ) {
             x = x + a[i]*b[i];
         }
@@ -117,7 +117,7 @@ int main(int argc, const char** argv)
     }
     {
         timer.mark();
-        casa::Complex x = 0;
+        casacore::Complex x = 0;
         for ( int i=0; i<N; i++ ) {
             x += a[i]*b[i];
         }
@@ -125,12 +125,12 @@ int main(int argc, const char** argv)
         tout( "x += a*b", timer );
     }
 
-    casa::Complex z2 = 0;
+    casacore::Complex z2 = 0;
     {
         timer.mark();
-        casa::Complex x = 0;
+        casacore::Complex x = 0;
         for ( int i=0; i<N; i++ ) {
-            x = x + casa::Complex( a[i].real()*b[i].real() - a[i].imag()*b[i].imag(),
+            x = x + casacore::Complex( a[i].real()*b[i].real() - a[i].imag()*b[i].imag(),
                                    a[i].real()*b[i].imag() + a[i].imag()*b[i].real() );
         }
         z2 += x;
@@ -138,9 +138,9 @@ int main(int argc, const char** argv)
     }
     {
         timer.mark();
-        casa::Complex x = 0;
+        casacore::Complex x = 0;
         for ( int i=0; i<N; i++ ) {
-            x += casa::Complex( a[i].real()*b[i].real() - a[i].imag()*b[i].imag(),
+            x += casacore::Complex( a[i].real()*b[i].real() - a[i].imag()*b[i].imag(),
                                 a[i].real()*b[i].imag() + a[i].imag()*b[i].real() );
         }
         z2 += x;

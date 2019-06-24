@@ -35,7 +35,7 @@
 // own includes
 #include <calibaccess/ICalSolutionConstSource.h>
 #include <calibaccess/ICalSolutionConstAccessor.h>
-#include <utils/ChangeMonitor.h>
+#include <askap/scimath/utils/ChangeMonitor.h>
 
 // boost includes
 #include <boost/shared_ptr.hpp>

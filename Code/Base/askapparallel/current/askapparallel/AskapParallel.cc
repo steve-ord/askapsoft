@@ -32,7 +32,7 @@
 ///
 
 // Include own header file first
-#include "askapparallel/AskapParallel.h"
+#include "askap/askapparallel/AskapParallel.h"
 
 // Package level header file
 #include "askap_askapparallel.h"
@@ -44,13 +44,13 @@
 #include <libgen.h>
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 #include "casacore/casa/Utilities/Regex.h"
 #include "casacore/casa/BasicSL/String.h"
 
 // Local package includes
-#include "askapparallel/MPIComms.h"
+#include "askap/askapparallel/MPIComms.h"
 
 namespace askap {
 namespace askapparallel {

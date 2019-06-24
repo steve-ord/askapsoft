@@ -34,7 +34,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <opcal/GenericCalInfo.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 namespace askap
 {
@@ -55,7 +55,7 @@ namespace askap
          CPPUNIT_ASSERT(!info1.gainDefined());
          CPPUNIT_ASSERT(!info1.delayDefined());
          
-         GenericCalInfo info2(casa::Complex(-1.,2.),3.);
+         GenericCalInfo info2(casacore::Complex(-1.,2.),3.);
          CPPUNIT_ASSERT(info2.gainDefined());
          CPPUNIT_ASSERT(info2.delayDefined());
          CPPUNIT_ASSERT_DOUBLES_EQUAL(-1., static_cast<double>(real(info2.gain())), 1e-6);
@@ -73,7 +73,7 @@ namespace askap
          CPPUNIT_ASSERT(!info3.gainDefined());
          CPPUNIT_ASSERT(!info3.delayDefined());
 
-         info3.setGain(casa::Complex(2., -1.));
+         info3.setGain(casacore::Complex(2., -1.));
          CPPUNIT_ASSERT(info3.gainDefined());
          CPPUNIT_ASSERT(!info3.delayDefined());
          CPPUNIT_ASSERT_DOUBLES_EQUAL(2., static_cast<double>(real(info3.gain())), 1e-6);
@@ -98,7 +98,7 @@ namespace askap
       
       void testAccessUninitialised1() {
          GenericCalInfo info1;
-         info1.setGain(casa::Complex(-1.,2.));
+         info1.setGain(casacore::Complex(-1.,2.));
          CPPUNIT_ASSERT(info1.gainDefined());
          CPPUNIT_ASSERT(!info1.delayDefined());
          CPPUNIT_ASSERT_DOUBLES_EQUAL(-1., static_cast<double>(real(info1.gain())), 1e-6);

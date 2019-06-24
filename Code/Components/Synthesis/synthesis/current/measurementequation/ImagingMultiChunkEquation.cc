@@ -37,7 +37,7 @@
 
 // own includes
 #include <measurementequation/ImagingMultiChunkEquation.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <measurementequation/NormalEquationsTypeError.h>
 
 // std includes

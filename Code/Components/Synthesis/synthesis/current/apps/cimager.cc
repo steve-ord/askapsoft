@@ -43,12 +43,12 @@
 #include <csignal>
 
 // ASKAPsoft includes
-#include "askap/Application.h"
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
-#include "askap/SignalManagerSingleton.h"
-#include "askap/SignalCounter.h"
-#include "askap/StatReporter.h"
+#include "askap/askap/Application.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/SignalManagerSingleton.h"
+#include "askap/askap/SignalCounter.h"
+#include "askap/askap/StatReporter.h"
 #include "boost/scoped_ptr.hpp"
 #include <parallel/ImagerParallel.h>
 #include <measurementequation/MEParsetInterface.h>

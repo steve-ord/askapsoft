@@ -46,7 +46,7 @@
 #include <linmos/LinmosAccumulator.h>
 
 
-using namespace casa;
+using namespace casacore;
 using namespace askap;
 using namespace askap::synthesis;
 /// @brief helper method to load beam offsets from the parset file

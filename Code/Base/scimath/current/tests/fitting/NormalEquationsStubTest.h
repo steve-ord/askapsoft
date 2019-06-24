@@ -42,7 +42,7 @@
 #include <Blob/BlobIStream.h>
 
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <boost/shared_ptr.hpp>
 
@@ -97,11 +97,11 @@ namespace askap
         void testMergeError()
         {
           boost::shared_ptr<GenericNormalEquations> bufNE(new GenericNormalEquations);
-          const casa::uInt nData = 10;
+          const casacore::uInt nData = 10;
           DesignMatrix dm;
-          dm.addDerivative("Value0", casa::Matrix<casa::Double>(nData, 1, 1.0));
-          dm.addDerivative("Value1", casa::Matrix<casa::Double>(nData, 1, 2.0));
-          dm.addResidual(casa::Vector<casa::Double>(nData, -1.0), casa::Vector<double>(nData, 1.0));
+          dm.addDerivative("Value0", casacore::Matrix<casacore::Double>(nData, 1, 1.0));
+          dm.addDerivative("Value1", casacore::Matrix<casacore::Double>(nData, 1, 2.0));
+          dm.addResidual(casacore::Vector<casacore::Double>(nData, -1.0), casacore::Vector<double>(nData, 1.0));
           CPPUNIT_ASSERT(dm.nData() == nData);
           CPPUNIT_ASSERT(bufNE);
           bufNE->add(dm);
@@ -112,14 +112,14 @@ namespace askap
         void testDataVectorError()
         {
           CPPUNIT_ASSERT(itsNE);
-          const casa::Vector<double>& vec = itsNE->dataVector("Value0"); 
+          const casacore::Vector<double>& vec = itsNE->dataVector("Value0"); 
           CPPUNIT_ASSERT(vec.size() == 0);
         }
 
         void testNormalMatrixError()
         {
           CPPUNIT_ASSERT(itsNE);
-          const casa::Matrix<double>& nm = itsNE->normalMatrix("Value0","Value1"); 
+          const casacore::Matrix<double>& nm = itsNE->normalMatrix("Value0","Value1"); 
           CPPUNIT_ASSERT(nm.nelements() == 0);
         }
         

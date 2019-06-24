@@ -34,7 +34,7 @@
 // ASKAPsoft includes
 #include <casacore/casa/Arrays/IPosition.h>
 #include <CommandLineParser.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/coordinates/Coordinates/CoordinateSystem.h>
 #include <casacore/coordinates/Coordinates/Coordinate.h>
 #include <casacore/coordinates/Coordinates/LinearCoordinate.h>
@@ -73,21 +73,21 @@ int main(int argc, const char** argv) {
         ASKAPCHECK(inputFiles.size()>0, "At least one input image should be defined");
 
         accessors::CasaImageAccess ia;
-        const casa::IPosition shape = ia.shape(inputFiles[0]);
+        const casacore::IPosition shape = ia.shape(inputFiles[0]);
         ASKAPCHECK(shape.nelements()>=2,"Work with at least 2D images!");
 
-        casa::IPosition newShape(shape.nelements()+1);
+        casacore::IPosition newShape(shape.nelements()+1);
         for (int i = 0; i<int(shape.nelements()); ++i) {
             newShape[i] = shape[i];
         }
         newShape[shape.nelements()] = int(inputFiles.size());
 
-        casa::CoordinateSystem csys = ia.coordSys(inputFiles[0]);     
-        csys.addCoordinate(casa::LinearCoordinate(1));
+        casacore::CoordinateSystem csys = ia.coordSys(inputFiles[0]);     
+        csys.addCoordinate(casacore::LinearCoordinate(1));
 
-        casa::PagedImage<float> outimg(casa::TiledShape(newShape), csys, outfile.getValue());
+        casacore::PagedImage<float> outimg(casacore::TiledShape(newShape), csys, outfile.getValue());
         for (size_t i=0; i<inputFiles.size(); ++i) {
-            const casa::Array<float> buf = ia.read(inputFiles[i]);
+            const casacore::Array<float> buf = ia.read(inputFiles[i]);
             ASKAPCHECK(buf.shape().nonDegenerate() == shape.nonDegenerate(), "Image "<<inputFiles[i]<<
                     " has "<<buf.shape()<<" shape which is different from the shape of the first image "<<shape);
 
@@ -97,8 +97,8 @@ int main(int argc, const char** argv) {
                 #pragma omp section
 #endif
                 {
-                    const float peak = casa::abs(casa::max(buf));
-                    const float sum = casa::abs(casa::sum(buf));
+                    const float peak = casacore::abs(casacore::max(buf));
+                    const float sum = casacore::abs(casacore::sum(buf));
                     std::cout<<"Image "<<inputFiles[i]<<" has a peak of "<<peak<<", sum of "<<sum << std::endl;
                 }
 
@@ -106,7 +106,7 @@ int main(int argc, const char** argv) {
                 #pragma omp section
 #endif
                 { 
-                    casa::IPosition where(newShape.nelements(),0);
+                    casacore::IPosition where(newShape.nelements(),0);
                     where[shape.nelements()] = int(i);
                     outimg.putSlice(buf, where);
                 }

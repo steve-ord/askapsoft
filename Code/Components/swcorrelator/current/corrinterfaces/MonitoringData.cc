@@ -34,7 +34,7 @@
 /// @author Max Voronkov <maxim.voronkov@csiro.au>
 
 #include <corrinterfaces/MonitoringData.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/casa/Quanta/MVEpoch.h>
 
 #include <sstream>
@@ -52,7 +52,7 @@ MonitoringData::MonitoringData(const int beam) : itsBeam(beam), itsAmplitudes(3,
 /// @return the date/time corresponding to itsTime as a string (to simplify reporting)
 std::string MonitoringData::timeString() const
 {
-  const casa::MVEpoch epoch(itsTime);
+  const casacore::MVEpoch epoch(itsTime);
   std::ostringstream os;
   epoch.print(os);
   return os.str();

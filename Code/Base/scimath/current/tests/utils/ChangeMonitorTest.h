@@ -30,7 +30,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <utils/ChangeMonitor.h>
+#include <askap/scimath/utils/ChangeMonitor.h>
 
 
 namespace askap {

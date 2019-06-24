@@ -35,7 +35,7 @@
 #include "Blob/BlobOBuffer.h"
 
 // Local package includes
-#include "askapparallel/AskapParallel.h"
+#include "askap/askapparallel/AskapParallel.h"
 
 namespace askap {
 namespace askapparallel {

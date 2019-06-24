@@ -38,10 +38,10 @@
 #include <iterator>
 
 // ASKAPsoft includes
-#include "askap/AskapError.h"
-#include "askap/AskapLogging.h"
-#include "askap/StatReporter.h"
-#include "askap/Log4cxxLogSink.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/StatReporter.h"
+#include "askap/askap/Log4cxxLogSink.h"
 #include "boost/shared_ptr.hpp"
 #include "CommandLineParser.h"
 #include "casacore/casa/OS/File.h"
@@ -62,11 +62,11 @@
 ASKAP_LOGGER(logger, ".msconcat");
 
 using namespace askap;
-using namespace casa;
+using namespace casacore;
 
 void concat(const std::vector<std::string>& inFiles, const std::string& outFile)
 {
-    ASKAPCHECK(!casa::File(outFile).exists(),
+    ASKAPCHECK(!casacore::File(outFile).exists(),
             "File or table " << outFile << " already exists!");
 
     ASKAPCHECK(!inFiles.empty(), "No input measurement sets!");
@@ -124,8 +124,8 @@ int main(int argc, const char** argv)
     }
 
     // Ensure that CASA log messages are captured
-    casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-    casa::LogSink::globalSink(globalSink);
+    casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+    casacore::LogSink::globalSink(globalSink);
 
     try {
         StatReporter stats;

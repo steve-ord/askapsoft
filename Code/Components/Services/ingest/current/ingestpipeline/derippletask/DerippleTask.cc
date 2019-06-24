@@ -31,9 +31,9 @@
 #include "askap_cpingest.h"
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
-#include "askap/AskapUtil.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapUtil.h"
 
 ASKAP_LOGGER(logger, ".DerippleTask");
 
@@ -77,9 +77,9 @@ void DerippleTask::process(askap::cp::common::VisChunk::ShPtr& chunk)
                "Support only chunks with complete coarse channels, e.g. 16416 fine channels, you have "
                << chunk->nChannel());
 
-    for (casa::uInt chan = 0; chan < chunk->nChannel(); ++chan) {
-        casa::Matrix<casa::Complex> slice = chunk->visibility().xzPlane(chan);
-        slice *= static_cast<casa::Float>(theirCoeffs[chan % 54]);
+    for (casacore::uInt chan = 0; chan < chunk->nChannel(); ++chan) {
+        casacore::Matrix<casacore::Complex> slice = chunk->visibility().xzPlane(chan);
+        slice *= static_cast<casacore::Float>(theirCoeffs[chan % 54]);
     }
 }
 

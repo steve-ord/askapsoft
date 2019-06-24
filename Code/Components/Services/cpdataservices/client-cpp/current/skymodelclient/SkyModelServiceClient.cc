@@ -35,7 +35,7 @@
 #include <vector>
 
 // ASKAPsoft includes
-#include "askap/AskapError.h"
+#include "askap/askap/AskapError.h"
 #include "Ice/Ice.h"
 #include "iceutils/CommunicatorConfig.h"
 #include "iceutils/CommunicatorFactory.h"
@@ -103,9 +103,9 @@ std::vector<ComponentId> SkyModelServiceClient::addComponents(const std::vector<
     */
 }
 
-ComponentResultSet SkyModelServiceClient::coneSearch(const casa::Quantity& ra, 
-        const casa::Quantity& dec, const casa::Quantity& searchRadius,
-        const casa::Quantity& fluxLimit)
+ComponentResultSet SkyModelServiceClient::coneSearch(const casacore::Quantity& ra, 
+        const casacore::Quantity& dec, const casacore::Quantity& searchRadius,
+        const casacore::Quantity& fluxLimit)
 {
     ASKAPTHROW(AskapError, "Deprecated Method");
     /*

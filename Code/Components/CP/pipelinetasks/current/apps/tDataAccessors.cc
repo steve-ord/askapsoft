@@ -29,9 +29,9 @@
 #include <string>
 
 // ASKAPsoft includes
-#include "askap/Application.h"
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/Application.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 #include "boost/shared_ptr.hpp"
 
 // Local package includes
@@ -46,7 +46,7 @@
 using namespace askap;
 using namespace askap::cp::pipelinetasks;
 using namespace askap::cp::sms::client;
-using namespace casa;
+using namespace casacore;
 
 ASKAP_LOGGER(logger, ".tDataAccessors");
 
@@ -89,14 +89,14 @@ class TestDataAccessorsApp : public askap::Application
                 //<< std::endl;
 
             // common search params
-            casa::Quantity ra(79.8, "deg");
-            casa::Quantity dec(-71.8, "deg");
-            casa::Quantity radius(2.0, "deg");
-            casa::Quantity minFlux(80, "mJy");
-            casa::Unit deg("deg");
-            casa::Unit rad("rad");
-            casa::Unit arcsec("arcsec");
-            casa::Unit Jy("Jy");
+            casacore::Quantity ra(79.8, "deg");
+            casacore::Quantity dec(-71.8, "deg");
+            casacore::Quantity radius(2.0, "deg");
+            casacore::Quantity minFlux(80, "mJy");
+            casacore::Unit deg("deg");
+            casacore::Unit rad("rad");
+            casacore::Unit arcsec("arcsec");
+            casacore::Unit Jy("Jy");
             const MVDirection searchVector(ra, dec);
 
             // create the VOTableAccessor and query for some components
@@ -163,10 +163,10 @@ class TestDataAccessorsApp : public askap::Application
 
         //ComponentListPtr coneSearch(
                 //IGlobalSkyModel* pGSM,
-                //const casa::Quantity& ra,
-                //const casa::Quantity& dec,
-                //const casa::Quantity& searchRadius,
-                //const casa::Quantity& fluxLimit)
+                //const casacore::Quantity& ra,
+                //const casacore::Quantity& dec,
+                //const casacore::Quantity& searchRadius,
+                //const casacore::Quantity& fluxLimit)
 };
 
 int main(int argc, char *argv[])

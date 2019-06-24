@@ -37,8 +37,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <utils/MultiDimArrayPlaneIter.h>
-#include <askap/AskapUtil.h>
+#include <askap/scimath/utils/MultiDimArrayPlaneIter.h>
+#include <askap/askap/AskapUtil.h>
 
 namespace askap {
 
@@ -51,41 +51,41 @@ namespace scimath {
            CPPUNIT_TEST_SUITE_END();
        public:
            void setUp() {
-               itsArray.resize(casa::IPosition(5,2,2,4,3,1));
+               itsArray.resize(casacore::IPosition(5,2,2,4,3,1));
                double value = 0.;
                itsTags.resize(12);
-               for (casa::uInt chan = 0; chan<3; ++chan) {
-                    for (casa::uInt pol = 0; pol<4; ++pol) {
-                         casa::Matrix<double> mtr(itsArray(casa::IPosition(5,0,0,pol,chan,0),
-                                  casa::IPosition(5,1,1,pol,chan,0)).nonDegenerate());
+               for (casacore::uInt chan = 0; chan<3; ++chan) {
+                    for (casacore::uInt pol = 0; pol<4; ++pol) {
+                         casacore::Matrix<double> mtr(itsArray(casacore::IPosition(5,0,0,pol,chan,0),
+                                  casacore::IPosition(5,1,1,pol,chan,0)).nonDegenerate());
                          mtr.set(value);
                          value += 1.;
-                         itsTags[chan*4+pol] = std::string(".pol")+utility::toString<casa::uInt>(pol)+
-                                     ".chan"+utility::toString<casa::uInt>(chan);
+                         itsTags[chan*4+pol] = std::string(".pol")+utility::toString<casacore::uInt>(pol)+
+                                     ".chan"+utility::toString<casacore::uInt>(chan);
                     }
                }
            }
            
            void testIteration() {
-              casa::uInt counter = 0;
+              casacore::uInt counter = 0;
               for (MultiDimArrayPlaneIter iter(itsArray.shape()); iter.hasMore(); iter.next(),++counter) {
                    CPPUNIT_ASSERT(counter<12);
                    CPPUNIT_ASSERT( iter.tag() == itsTags[counter]);
-                   CPPUNIT_ASSERT( iter.planeShape() == casa::IPosition(5,2,2,1,1,1));
-                   CPPUNIT_ASSERT( iter.shape() == casa::IPosition(5,2,2,4,3,1));
-                   CPPUNIT_ASSERT( iter.position() == casa::IPosition(5,0,0,counter % 4, counter/4,0));
+                   CPPUNIT_ASSERT( iter.planeShape() == casacore::IPosition(5,2,2,1,1,1));
+                   CPPUNIT_ASSERT( iter.shape() == casacore::IPosition(5,2,2,4,3,1));
+                   CPPUNIT_ASSERT( iter.position() == casacore::IPosition(5,0,0,counter % 4, counter/4,0));
                    CPPUNIT_ASSERT( iter.sequenceNumber() == counter);
-                   casa::Array<double> plane = iter.getPlane(itsArray);
+                   casacore::Array<double> plane = iter.getPlane(itsArray);
                    CPPUNIT_ASSERT( plane.shape().nonDegenerate().nelements() == 2 );
-                   casa::Matrix<double> mtr(plane.nonDegenerate());
-                   casa::Vector<double> flattened = itsArray.reform(casa::IPosition(1,itsArray.nelements()));
-                   casa::Array<double> plane2 = iter.getPlane(flattened);
+                   casacore::Matrix<double> mtr(plane.nonDegenerate());
+                   casacore::Vector<double> flattened = itsArray.reform(casacore::IPosition(1,itsArray.nelements()));
+                   casacore::Array<double> plane2 = iter.getPlane(flattened);
                    CPPUNIT_ASSERT( plane2.shape() == iter.planeShape() );
                    CPPUNIT_ASSERT( plane2.shape().nonDegenerate().nelements() == 2 );
-                   casa::Matrix<double> mtr2(plane2.nonDegenerate());
+                   casacore::Matrix<double> mtr2(plane2.nonDegenerate());
                    
-                   for (casa::uInt row = 0; row<mtr.nrow(); ++row) {
-                        for (casa::uInt col = 0; col<mtr.ncolumn(); ++col) {
+                   for (casacore::uInt row = 0; row<mtr.nrow(); ++row) {
+                        for (casacore::uInt col = 0; col<mtr.ncolumn(); ++col) {
                              CPPUNIT_ASSERT(row<mtr2.nrow());
                              CPPUNIT_ASSERT(col<mtr2.ncolumn());
                              CPPUNIT_ASSERT(fabs(mtr(row,col)-double(counter))<1e-6);
@@ -93,12 +93,12 @@ namespace scimath {
                         }
                    }     
                    
-                   casa::Vector<double> flattenedPlane = iter.getPlaneVector(flattened);
+                   casacore::Vector<double> flattenedPlane = iter.getPlaneVector(flattened);
                    CPPUNIT_ASSERT(flattenedPlane.nelements() == mtr.nelements());
-                   casa::Vector<double> flattenedPlane2 = iter.getPlaneVector(itsArray);
+                   casacore::Vector<double> flattenedPlane2 = iter.getPlaneVector(itsArray);
                    CPPUNIT_ASSERT(flattenedPlane2.nelements() == mtr.nelements());
                    
-                   for (casa::uInt index = 0; index<flattenedPlane.nelements(); ++index) {
+                   for (casacore::uInt index = 0; index<flattenedPlane.nelements(); ++index) {
                         CPPUNIT_ASSERT(fabs(flattenedPlane[index]-double(counter))<1e-6);
                         CPPUNIT_ASSERT(fabs(flattenedPlane2[index]-double(counter))<1e-6);
                    }                   
@@ -107,7 +107,7 @@ namespace scimath {
               
            }
        private:
-           casa::Array<double> itsArray;
+           casacore::Array<double> itsArray;
            std::vector<string> itsTags;
      };
      

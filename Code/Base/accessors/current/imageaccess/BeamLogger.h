@@ -34,7 +34,7 @@
 #include <vector>
 
 // ASKAPsoft includes
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 #include <casacore/casa/Arrays/Vector.h>
 #include <casacore/casa/Quanta/Quantum.h>
 #include <Common/ParameterSet.h>
@@ -99,24 +99,24 @@ class BeamLogger {
 
 
         /// @brief Return the beam information
-        std::map<unsigned int, casa::Vector<casa::Quantum<double> > > beamlist() const {return itsBeamList;};
+        std::map<unsigned int, casacore::Vector<casacore::Quantum<double> > > beamlist() const {return itsBeamList;};
 
         /// @brief Return the beam information
-        std::map<unsigned int, casa::Vector<casa::Quantum<double> > > &beamlist() {return itsBeamList;};
+        std::map<unsigned int, casacore::Vector<casacore::Quantum<double> > > &beamlist() {return itsBeamList;};
 
     /// @brief Return the beam for a given channel.
     /// @details Returns the beam stored for the requested channel. If
     /// the beam list does not have an entry for that channel, a
     /// zero-size beam is returned (BMAJ=BMIN=BPA=0).
-    casa::Vector<casa::Quantum<double> > beam(const unsigned int channel);
+    casacore::Vector<casacore::Quantum<double> > beam(const unsigned int channel);
 
     protected:
         /// @brief The disk file to be read from / written to
         std::string itsFilename;
 
-        /// @brief The list of beam information. Each element of the map is a 3-point casa::Vector containing the major axis,
+        /// @brief The list of beam information. Each element of the map is a 3-point casacore::Vector containing the major axis,
         /// minor axis and position angle of a beam, referenced by the channel number.
-        std::map<unsigned int, casa::Vector<casa::Quantum<double> > > itsBeamList;
+        std::map<unsigned int, casacore::Vector<casacore::Quantum<double> > > itsBeamList;
 
 };
 

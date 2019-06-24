@@ -31,8 +31,8 @@
 #include "askap_accessors.h"
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 #include "boost/scoped_ptr.hpp"
 #include "boost/algorithm/string/trim.hpp"
 #include "xercesc/dom/DOM.hpp" // Includes all DOM

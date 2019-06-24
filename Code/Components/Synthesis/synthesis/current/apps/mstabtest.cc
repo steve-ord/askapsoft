@@ -36,7 +36,7 @@
 #include <casacore/casa/Arrays/ArrayMath.h>
 
 // own includes
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 // std
 #include <stdexcept>
@@ -47,16 +47,16 @@
 using namespace askap;
 
 template<typename T>
-void copyArrayColumn(casa::Table &tab, const std::string &name, const casa::uInt nOrigRows)
+void copyArrayColumn(casacore::Table &tab, const std::string &name, const casacore::uInt nOrigRows)
 {
-  const casa::TableDesc td = tab.actualTableDesc();
+  const casacore::TableDesc td = tab.actualTableDesc();
   ASKAPASSERT(tab.nrow() == 2*nOrigRows);
-  const casa::ColumnDesc cd = td[name];
+  const casacore::ColumnDesc cd = td[name];
   ASKAPASSERT(cd.isArray());
-  casa::ArrayColumn<T> col(tab, name);
-  casa::Array<T> buf;
-  for (casa::uInt row=0; row<nOrigRows; ++row) {       
-       col.get(row,buf,casa::True);
+  casacore::ArrayColumn<T> col(tab, name);
+  casacore::Array<T> buf;
+  for (casacore::uInt row=0; row<nOrigRows; ++row) {       
+       col.get(row,buf,casacore::True);
        col.put(nOrigRows + row, buf);
   }  
 }
@@ -70,11 +70,11 @@ try {
   if (argc!=2) {
       throw std::runtime_error("usage mstabtest ms");
   }
-  casa::Table mytab(argv[1],casa::Table::Update);
-  casa::TableDesc td = mytab.actualTableDesc();
-  const casa::uInt nOrigRows = mytab.nrow();
+  casacore::Table mytab(argv[1],casacore::Table::Update);
+  casacore::TableDesc td = mytab.actualTableDesc();
+  const casacore::uInt nOrigRows = mytab.nrow();
   std::cout<<"Table has "<<nOrigRows<<" rows and "<<td.ncolumn()<<" columns"<<std::endl;
-  casa::Vector<casa::String> colList = td.columnNames();
+  casacore::Vector<casacore::String> colList = td.columnNames();
   mytab.addRow(nOrigRows);
   {
     std::list<std::string> floatColumns;
@@ -90,39 +90,39 @@ try {
     skipColumns.push_back("FLAG_CATEGORY");
     
   
-    casa::TableColumn outcol;
-    casa::ROTableColumn incol;
-    for (casa::uInt col = 0; col<colList.nelements(); ++col) {
+    casacore::TableColumn outcol;
+    casacore::ROTableColumn incol;
+    for (casacore::uInt col = 0; col<colList.nelements(); ++col) {
          const std::string colName = colList[col];
          std::cout<<"col = "<<col<<": "<<colName<<std::endl;       
          if (has(skipColumns, colName)) {
              std::cout<<"skipping..."<<std::endl;
          } else if (has(floatColumns,colName)) {
              std::cout<<"copy as array of floats..."<<std::endl;             
-             copyArrayColumn<casa::Float>(mytab,colName, nOrigRows);
+             copyArrayColumn<casacore::Float>(mytab,colName, nOrigRows);
          } else if (has(boolColumns,colName)) {
              std::cout<<"copy as array of bool..."<<std::endl;             
-             copyArrayColumn<casa::Bool>(mytab,colName, nOrigRows);
+             copyArrayColumn<casacore::Bool>(mytab,colName, nOrigRows);
          } else {
             std::cout<<"default processing..."<<std::endl;
             incol.attach(mytab,col);
             outcol.attach(mytab,col);
-            for (casa::uInt row = 0; row<nOrigRows; ++row) {
+            for (casacore::uInt row = 0; row<nOrigRows; ++row) {
                 outcol.put(nOrigRows + row, incol, row);
             }       
          }
     }
   }
   std::cout<<"processing UVW and DATA columns"<<std::endl;
-  casa::ArrayColumn<double> uvwCol(mytab,"UVW");
-  casa::ArrayColumn<casa::Complex> dataCol(mytab,"DATA");
-  casa::Array<double> dBuf;
-  casa::Array<casa::Complex> cBuf;
-  for (casa::uInt row=0; row<nOrigRows; ++row) {       
-       uvwCol.get(row,dBuf,casa::True);
+  casacore::ArrayColumn<double> uvwCol(mytab,"UVW");
+  casacore::ArrayColumn<casacore::Complex> dataCol(mytab,"DATA");
+  casacore::Array<double> dBuf;
+  casacore::Array<casacore::Complex> cBuf;
+  for (casacore::uInt row=0; row<nOrigRows; ++row) {       
+       uvwCol.get(row,dBuf,casacore::True);
        uvwCol.put(nOrigRows + row, -1.*dBuf);
-       dataCol.get(row,cBuf,casa::True);
-       dataCol.put(nOrigRows + row, casa::conj(cBuf));   
+       dataCol.get(row,cBuf,casacore::True);
+       dataCol.put(nOrigRows + row, casacore::conj(cBuf));   
   }
 }  
 catch (const std::exception &ex) {

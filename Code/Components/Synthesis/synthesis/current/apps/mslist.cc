@@ -34,7 +34,7 @@
 #include <casacore/ms/MeasurementSets/MeasurementSet.h>
 #include <casacore/ms/MSOper/MSSummary.h>
 #include <casacore/ms/MSOper/MSLister.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 void usage(void) {
   std::cerr << "Usage: " << "mslist [--verbose] MS_filename" << std::endl <<
@@ -65,7 +65,7 @@ void usage(void) {
                std::endl;
 }
 
-casa::String passMsParameter(int argc, const char** argv)
+casacore::String passMsParameter(int argc, const char** argv)
 {
   for(int i=1; i<argc; i++) {
       std::string arg = argv[i];
@@ -76,12 +76,12 @@ casa::String passMsParameter(int argc, const char** argv)
   return "";
 }
 
-casa::Bool passFlagParameter(int argc, const char** argv, const char* par)
+casacore::Bool passFlagParameter(int argc, const char** argv, const char* par)
 {
   for(int i=1; i<argc; i++) {
-      if(!std::strcmp(argv[i], par)) return casa::True;
+      if(!std::strcmp(argv[i], par)) return casacore::True;
   }
-  return casa::False;
+  return casacore::False;
 }
 
 template <typename T>
@@ -91,7 +91,7 @@ T passFlaggedParameter(int argc, const char** argv, const char* par, T def)
   for(int i=1; i<argc; i++) {
       std::string arg = argv[i];
       if(arg.find(par)==0) {
-          casa::Int pos = arg.find("=")+1;
+          casacore::Int pos = arg.find("=")+1;
           val = arg.substr(pos,arg.size()-pos);
           break;
       }
@@ -100,13 +100,13 @@ T passFlaggedParameter(int argc, const char** argv, const char* par, T def)
 }
 
 template<>
-casa::Long passFlaggedParameter(int argc, const char** argv, const char* par, casa::Long def)
+casacore::Long passFlaggedParameter(int argc, const char** argv, const char* par, casacore::Long def)
 {
-  casa::Long val = def;
+  casacore::Long val = def;
   for(int i=1; i<argc; i++) {
       std::string arg = argv[i];
       if(arg.find(par)==0) {
-          casa::Int pos = arg.find("=")+1;
+          casacore::Int pos = arg.find("=")+1;
           val = atoi(arg.substr(pos,arg.size()-pos).c_str());
           break;
       }
@@ -115,20 +115,20 @@ casa::Long passFlaggedParameter(int argc, const char** argv, const char* par, ca
 }
 
 template<>
-casa::Bool passFlaggedParameter(int argc, const char** argv, const char* par, casa::Bool def)
+casacore::Bool passFlaggedParameter(int argc, const char** argv, const char* par, casacore::Bool def)
 {
-  casa::Bool val = def;
+  casacore::Bool val = def;
   for(int i=1; i<argc; i++) {
       std::string arg = argv[i];
       if(arg.find(par)==0) {
-          casa::Int pos = arg.find("=")+1;
-          casa::Int val = atoi(arg.substr(pos,arg.size()-pos).c_str());
+          casacore::Int pos = arg.find("=")+1;
+          casacore::Int val = atoi(arg.substr(pos,arg.size()-pos).c_str());
           switch(val) {
             case 0:
-              return casa::False;
+              return casacore::False;
               break;
             case 1:
-              return casa::True;
+              return casacore::True;
               break;
             default:
               ASKAPTHROW(askap::AskapError, "Unknown bool (use 0 or 1): " << arg);
@@ -150,53 +150,53 @@ int main(int argc, const char* argv[])
     }
 
     // pass command line parameters
-    casa::Bool brief = passFlagParameter(argc, argv, "--brief");
-    casa::Bool full = passFlagParameter(argc, argv, "--full");
-    casa::Bool what = passFlagParameter(argc, argv, "--what");
-    casa::Bool how = passFlagParameter(argc, argv, "--how");
-    casa::Bool tables = passFlagParameter(argc, argv, "--tables");
-    casa::Bool data = passFlagParameter(argc, argv, "--data");
-    casa::Bool verbose = passFlagParameter(argc, argv, "--verbose");
+    casacore::Bool brief = passFlagParameter(argc, argv, "--brief");
+    casacore::Bool full = passFlagParameter(argc, argv, "--full");
+    casacore::Bool what = passFlagParameter(argc, argv, "--what");
+    casacore::Bool how = passFlagParameter(argc, argv, "--how");
+    casacore::Bool tables = passFlagParameter(argc, argv, "--tables");
+    casacore::Bool data = passFlagParameter(argc, argv, "--data");
+    casacore::Bool verbose = passFlagParameter(argc, argv, "--verbose");
     // pass parameters for MSLister
-    casa::String datacolumn  = passFlaggedParameter<casa::String>(argc, argv, "--datacolumn=","");
-    casa::String field       = passFlaggedParameter<casa::String>(argc, argv, "--field=","");
-    casa::String spw         = passFlaggedParameter<casa::String>(argc, argv, "--spw=","");
-    casa::String antenna     = passFlaggedParameter<casa::String>(argc, argv, "--antenna=","");
-    casa::String timerange   = passFlaggedParameter<casa::String>(argc, argv, "--timerange=","");
-    casa::String correlation = passFlaggedParameter<casa::String>(argc, argv, "--correlation=","");
-    casa::String scan        = passFlaggedParameter<casa::String>(argc, argv, "--scan=","");
-    //casa::String feed        = passFlaggedParameter<casa::String>(argc, argv, "--feed=","");
-    //casa::String array       = passFlaggedParameter<casa::String>(argc, argv, "--array=","");
-    casa::String uvrange     = passFlaggedParameter<casa::String>(argc, argv, "--uvrange=","");
-    //casa::String average     = passFlaggedParameter<casa::String>(argc, argv, "--average=","");
-    //casa::Bool   showflags   = passFlaggedParameter<casa::Bool>(argc, argv, "--showflags=",casa::True);
-    //casa::String msselect    = passFlaggedParameter<casa::String>(argc, argv, "--msselect=","");
-    casa::Long   pagerows    = passFlaggedParameter<casa::Long>(argc, argv, "--pagerows=",50);
-    casa::String listfile    = passFlaggedParameter<casa::String>(argc, argv, "--listfile=","");
+    casacore::String datacolumn  = passFlaggedParameter<casacore::String>(argc, argv, "--datacolumn=","");
+    casacore::String field       = passFlaggedParameter<casacore::String>(argc, argv, "--field=","");
+    casacore::String spw         = passFlaggedParameter<casacore::String>(argc, argv, "--spw=","");
+    casacore::String antenna     = passFlaggedParameter<casacore::String>(argc, argv, "--antenna=","");
+    casacore::String timerange   = passFlaggedParameter<casacore::String>(argc, argv, "--timerange=","");
+    casacore::String correlation = passFlaggedParameter<casacore::String>(argc, argv, "--correlation=","");
+    casacore::String scan        = passFlaggedParameter<casacore::String>(argc, argv, "--scan=","");
+    //casacore::String feed        = passFlaggedParameter<casacore::String>(argc, argv, "--feed=","");
+    //casacore::String array       = passFlaggedParameter<casacore::String>(argc, argv, "--array=","");
+    casacore::String uvrange     = passFlaggedParameter<casacore::String>(argc, argv, "--uvrange=","");
+    //casacore::String average     = passFlaggedParameter<casacore::String>(argc, argv, "--average=","");
+    //casacore::Bool   showflags   = passFlaggedParameter<casacore::Bool>(argc, argv, "--showflags=",casacore::True);
+    //casacore::String msselect    = passFlaggedParameter<casacore::String>(argc, argv, "--msselect=","");
+    casacore::Long   pagerows    = passFlaggedParameter<casacore::Long>(argc, argv, "--pagerows=",50);
+    casacore::String listfile    = passFlaggedParameter<casacore::String>(argc, argv, "--listfile=","");
 
-    casa::String msfile = passMsParameter(argc, argv);
+    casacore::String msfile = passMsParameter(argc, argv);
 
     // these parameters do not seem to make a difference, so leave them out
-    casa::String feed        = "";
-    casa::String array       = "";
-    casa::String average     = "";
-    casa::Bool showflags     = casa::False;
-    casa::String msselect    = "";
+    casacore::String feed        = "";
+    casacore::String array       = "";
+    casacore::String average     = "";
+    casacore::Bool showflags     = casacore::False;
+    casacore::String msselect    = "";
 
     // This now needed as the interface to list has changed
-    casa::String observation = "";
+    casacore::String observation = "";
 
     // set default behaviour to brief
     if (!brief && !full && !what && !how && !tables && !data) {
-        brief = casa::True;
-        verbose = casa::True;
+        brief = casacore::True;
+        verbose = casacore::True;
     }
 
-    casa::LogSink globalSink(casa::LogMessage::NORMAL);
-    casa::LogIO os(globalSink);
+    casacore::LogSink globalSink(casacore::LogMessage::NORMAL);
+    casacore::LogIO os(globalSink);
 
-    casa::MeasurementSet ms(msfile, casa::Table::Old);
-    casa::MSSummary mss(ms);
+    casacore::MeasurementSet ms(msfile, casacore::Table::Old);
+    casacore::MSSummary mss(ms);
 
     if (full || verbose) {
         if (verbose) mss.listTitle(os);
@@ -236,7 +236,7 @@ int main(int argc, const char* argv[])
 
     if (data) {
 
-        casa::MSLister msl(ms, os);
+        casacore::MSLister msl(ms, os);
 
         std::cout << std::endl;
 
@@ -246,7 +246,7 @@ int main(int argc, const char* argv[])
 
         //use !verbose to restrict some data output? miriad: "a maximum of 6 channels is printed"
 
-        casa::String options = "";
+        casacore::String options = "";
 
         msl.list(options, datacolumn, field, spw,
                  antenna, timerange, correlation,

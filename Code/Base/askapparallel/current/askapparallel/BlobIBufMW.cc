@@ -32,11 +32,11 @@
 #include <algorithm>
 
 // ASKAPSoft includes
-#include "askap/AskapError.h"
+#include "askap/askap/AskapError.h"
 #include "Common/LofarTypes.h"
 
 // Local package includes
-#include "askapparallel/AskapParallel.h"
+#include "askap/askapparallel/AskapParallel.h"
 
 using namespace askap::askapparallel;
 

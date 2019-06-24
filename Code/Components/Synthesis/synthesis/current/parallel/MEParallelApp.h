@@ -34,7 +34,7 @@
 #define ME_PARALLEL_APP_H
 
 // ASKAPsoft includes
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 #include <Common/ParameterSet.h>
 #include <parallel/MEParallel.h>
 #include <gridding/IVisGridder.h>

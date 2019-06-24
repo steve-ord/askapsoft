@@ -37,11 +37,11 @@
 #include <stdint.h>
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
-#include "askap/AskapUtil.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapUtil.h"
 #include "Common/ParameterSet.h"
-#include "askap/StatReporter.h"
+#include "askap/askap/StatReporter.h"
 #include <zmq.hpp>
 #include <boost/asio.hpp>
 #include <casacore/casa/OS/Timer.h>
@@ -68,7 +68,7 @@ void PublisherApp::receiveAndPublishLoop(boost::asio::ip::tcp::socket &socket)
     ASKAPASSERT(itsVisMsgPublisher);
     ASKAPASSERT(itsSpdMsgPublisher);
     ASKAPASSERT(itsVisCtrlPort);
-    casa::Timer timer;
+    casacore::Timer timer;
     const uint32_t N_POLS = 4;
 
     while (socket.is_open()) {
@@ -204,7 +204,7 @@ int PublisherApp::run(int argc, char* argv[])
     }
 
     //tcp::socket socket(io_service);
-    casa::Timer timer;
+    casacore::Timer timer;
     while (true) {
         boost::shared_ptr<tcp::socket> socket(new tcp::socket(io_service));
         ASKAPASSERT(socket);

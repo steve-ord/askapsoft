@@ -34,7 +34,7 @@
 #include <lsqr_solver/SparseMatrix.h>
 #include <lsqr_solver/ModelDamping.h>
 
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 
 using namespace askap;
 

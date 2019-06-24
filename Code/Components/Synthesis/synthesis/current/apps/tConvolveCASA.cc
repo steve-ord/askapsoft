@@ -55,9 +55,9 @@ using std::abs;
 // Typedefs for easy testing
 // Cost of using double for Coord is low, cost for
 // double for Real is also low
-typedef casa::Double Coord;
-typedef casa::Float Real;
-typedef casa::Complex Value;
+typedef casacore::Double Coord;
+typedef casacore::Float Real;
+typedef casacore::Complex Value;
 
 // Perform standard data independent gridding
 //
@@ -72,15 +72,15 @@ typedef casa::Complex Value;
 // grid - Output grid
 //
 
-int generic(const casa::Vector<casa::RigidVector<casa::Double, 3> >& uvw,
-casa::Cube<casa::Complex>& data,
-const casa::Vector<casa::Double>& freq,
+int generic(const casacore::Vector<casacore::RigidVector<casacore::Double, 3> >& uvw,
+casacore::Cube<casacore::Complex>& data,
+const casacore::Vector<casacore::Double>& freq,
 const Coord cellSize,
-const casa::Cube<Real>& C,
+const casacore::Cube<Real>& C,
 const int support,
 const int overSample,
-const casa::Matrix<casa::uInt>& cOffset,
-casa::Cube<Value>& grid)
+const casacore::Matrix<casacore::uInt>& cOffset,
+casacore::Cube<Value>& grid)
 {
 
   const int gSize = grid.ncolumn();
@@ -127,10 +127,10 @@ casa::Cube<Value>& grid)
         int fracv=int(overSample*(vScaled-Coord(iv)));
         iv+=gSize/2;
 
-        casa::Complex& d=data(i,chan,pol);
+        casacore::Complex& d=data(i,chan,pol);
 //#define USEPOINTERS 1
 #ifdef USEPOINTERS
-        casa::Complex *gptr;
+        casacore::Complex *gptr;
         const Real *cptr;
         for (int suppu=-support;suppu<+support;suppu++)
         {
@@ -196,9 +196,9 @@ casa::Cube<Value>& grid)
         iv+=gSize/2;
 
         double sumviswt=0.0;
-        casa::Complex& d=data(i,chan,pol);
+        casacore::Complex& d=data(i,chan,pol);
 #ifdef USEPOINTERS
-        casa::Complex *gptr;
+        casacore::Complex *gptr;
         const Real *cptr;
         for (int suppu=-support;suppu<+support;suppu++)
         {
@@ -223,7 +223,7 @@ casa::Cube<Value>& grid)
           }
         }
 #endif
-        data(i,chan,pol)=data(i,chan,pol)/casa::Complex(sumviswt);
+        data(i,chan,pol)=data(i,chan,pol)/casacore::Complex(sumviswt);
       }
     }
   }
@@ -243,11 +243,11 @@ casa::Cube<Value>& grid)
 }
 
 
-int standard(const casa::Vector<casa::RigidVector<casa::Double, 3> >& uvw,
-casa::Cube<casa::Complex>& data,
-const casa::Vector<casa::Double>& freq,
+int standard(const casacore::Vector<casacore::RigidVector<casacore::Double, 3> >& uvw,
+casacore::Cube<casacore::Complex>& data,
+const casacore::Vector<casacore::Double>& freq,
 const Coord cellSize,
-casa::Cube<Value>& grid)
+casacore::Cube<Value>& grid)
 
 {
   cout << "*************************** Standard gridding ***********************" << endl;
@@ -260,7 +260,7 @@ casa::Cube<Value>& grid)
 // is the product of two prolate spheroidal wave functions
   int cSize=2*(support+1)*overSample+1;
 
-  casa::Cube<Real> C(cSize,cSize,1);
+  casacore::Cube<Real> C(cSize,cSize,1);
 
   int cCenter=(cSize-1)/2;
 
@@ -278,7 +278,7 @@ casa::Cube<Value>& grid)
   const int nSamples = uvw.size();
   const int nChan = freq.size();
 
-  casa::Matrix<uint> cOffset(nSamples, nChan);
+  casacore::Matrix<uint> cOffset(nSamples, nChan);
   cOffset.set(0);
 
   return generic(uvw, data, freq, cellSize, C, support, overSample, cOffset, grid);
@@ -296,13 +296,13 @@ casa::Cube<Value>& grid)
 // support - Total width of convolution function=2*support+1
 // wCellSize - size of one w grid cell in wavelengths
 // wSize - Size of lookup table in w
-int wprojection(const casa::Vector<casa::RigidVector<casa::Double, 3> >& uvw,
-casa::Cube<casa::Complex>& data,
-const casa::Vector<casa::Double>& freq,
+int wprojection(const casacore::Vector<casacore::RigidVector<casacore::Double, 3> >& uvw,
+casacore::Cube<casacore::Complex>& data,
+const casacore::Vector<casacore::Double>& freq,
 const Coord cellSize,
 const Coord baseline,
 const int wSize,
-casa::Cube<Value>& grid)
+casacore::Cube<Value>& grid)
 {
 
   const int nSamples = uvw.size();
@@ -325,7 +325,7 @@ casa::Cube<Value>& grid)
 
   int cCenter=(cSize-1)/2;
 
-  casa::Cube<Real> C(cSize, cSize, wSize);
+  casacore::Cube<Real> C(cSize, cSize, wSize);
 
   for (int k=0;k<wSize;k++)
   {
@@ -357,7 +357,7 @@ casa::Cube<Value>& grid)
     }
   }
 
-  casa::Matrix<uint> cOffset(nSamples, nChan);
+  casacore::Matrix<uint> cOffset(nSamples, nChan);
   for (int i=0;i<nSamples;i++)
   {
     for (int chan=0;chan<nChan;chan++)
@@ -383,8 +383,8 @@ int main()
   const int nPol=1;                               // Number of polarizations
 
 // Initialize the data to be gridded
-  casa::Vector<casa::RigidVector<casa::Double, 3> > uvw(nSamples);
-  casa::Cube<casa::Complex> data(nSamples, nChan, nPol);
+  casacore::Vector<casacore::RigidVector<casacore::Double, 3> > uvw(nSamples);
+  casacore::Cube<casacore::Complex> data(nSamples, nChan, nPol);
 
   for (int i=0;i<nSamples;i++)
   {
@@ -396,19 +396,19 @@ int main()
     {
       for (int pol=0;pol<nPol;pol++)
       {
-        data(i,chan,pol)=casa::Complex(rand()/float(RAND_MAX), rand()/float(RAND_MAX));
+        data(i,chan,pol)=casacore::Complex(rand()/float(RAND_MAX), rand()/float(RAND_MAX));
       }
     }
   }
 
 // Measure frequency in inverse wavelengths
-  casa::Vector<casa::Double> freq(nChan);
+  casacore::Vector<casacore::Double> freq(nChan);
   for (int i=0;i<nChan;i++)
   {
     freq(i)=(1.4e9-2.0e5*Coord(i)/Coord(nChan))/2.998e8;
   }
 
-  casa::Cube<Value> grid(gSize, gSize, nPol);
+  casacore::Cube<Value> grid(gSize, gSize, nPol);
 
   standard(uvw, data, freq, cellSize, grid);
 

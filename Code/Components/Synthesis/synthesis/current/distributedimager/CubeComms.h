@@ -34,7 +34,7 @@
 #include <map>
 #include <list>
 ///ASKAP includes ...
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 #include "messages/IMessage.h"
 
 namespace askap {

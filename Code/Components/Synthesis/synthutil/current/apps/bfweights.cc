@@ -36,11 +36,11 @@
 #include <calweightsolver/EigenSolve.h>
 
 #include <calweightsolver/IlluminationUtils.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <fstream>
 
-using namespace casa;
+using namespace casacore;
 using namespace std;
 using namespace askap;
 
