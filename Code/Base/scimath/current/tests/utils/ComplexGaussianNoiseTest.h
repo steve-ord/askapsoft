@@ -28,7 +28,7 @@
 /// @author Max Voronkov <maxim.voronkov@csiro.au>
 
 #include <cppunit/extensions/HelperMacros.h>
-#include <utils/ComplexGaussianNoise.h>
+#include <askap/scimath/utils/ComplexGaussianNoise.h>
 
 namespace askap {
 
@@ -44,21 +44,21 @@ public:
    {
      ComplexGaussianNoise cgn(2.);
      const size_t nTests = 10000;
-     casa::Complex mean(0.,0.);
+     casacore::Complex mean(0.,0.);
      float reSumSq = 0., imSumSq = 0.;
      for (size_t test = 0; test<nTests; ++test) {
-          const casa::Complex val = cgn();
+          const casacore::Complex val = cgn();
           mean += val;
-          reSumSq += casa::square(casa::real(val));
-          imSumSq += casa::square(casa::imag(val));
+          reSumSq += casacore::square(casacore::real(val));
+          imSumSq += casacore::square(casacore::imag(val));
      }
      mean /= float(nTests);
      reSumSq /= float(nTests);
      imSumSq /= float(nTests);
-     reSumSq -= casa::square(casa::real(mean));
-     imSumSq -= casa::square(casa::imag(mean));
-     CPPUNIT_ASSERT_DOUBLES_EQUAL(0., casa::real(mean), 0.02);
-     CPPUNIT_ASSERT_DOUBLES_EQUAL(0., casa::imag(mean), 0.02);
+     reSumSq -= casacore::square(casacore::real(mean));
+     imSumSq -= casacore::square(casacore::imag(mean));
+     CPPUNIT_ASSERT_DOUBLES_EQUAL(0., casacore::real(mean), 0.02);
+     CPPUNIT_ASSERT_DOUBLES_EQUAL(0., casacore::imag(mean), 0.02);
      CPPUNIT_ASSERT_DOUBLES_EQUAL(2., reSumSq, 0.01);
      CPPUNIT_ASSERT_DOUBLES_EQUAL(2., imSumSq, 0.01);
    }

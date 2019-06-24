@@ -48,63 +48,63 @@ class CachedCalSolutionTest : public CppUnit::TestFixture
    CPPUNIT_TEST_SUITE_END();
 protected:
    static void createDummyParams(ICalSolutionAccessor &acc) {
-       for (casa::uInt ant=0; ant<5; ++ant) {
-            for (casa::uInt beam=0; beam<4; ++beam) { 
+       for (casacore::uInt ant=0; ant<5; ++ant) {
+            for (casacore::uInt beam=0; beam<4; ++beam) { 
                  const float tag = float(ant)/100. + float(beam)/1000.;
-                 acc.setJonesElement(ant,beam,casa::Stokes::XX,casa::Complex(1.1+tag,0.1));
-                 acc.setJonesElement(ant,beam,casa::Stokes::YY,casa::Complex(1.1,-0.1-tag));
-                 acc.setJonesElement(ant,beam,casa::Stokes::XY,casa::Complex(0.1+tag,-0.1));
-                 acc.setJonesElement(ant,beam,casa::Stokes::YX,casa::Complex(-0.1,0.1+tag));
+                 acc.setJonesElement(ant,beam,casacore::Stokes::XX,casacore::Complex(1.1+tag,0.1));
+                 acc.setJonesElement(ant,beam,casacore::Stokes::YY,casacore::Complex(1.1,-0.1-tag));
+                 acc.setJonesElement(ant,beam,casacore::Stokes::XY,casacore::Complex(0.1+tag,-0.1));
+                 acc.setJonesElement(ant,beam,casacore::Stokes::YX,casacore::Complex(-0.1,0.1+tag));
 
-                 for (casa::uInt chan=0; chan<20; ++chan) {
-                     acc.setBandpassElement(ant,beam,casa::Stokes::XX,chan,casa::Complex(1.,0.));
-                     acc.setBandpassElement(ant,beam,casa::Stokes::YY,chan,casa::Complex(1.,0.));
+                 for (casacore::uInt chan=0; chan<20; ++chan) {
+                     acc.setBandpassElement(ant,beam,casacore::Stokes::XX,chan,casacore::Complex(1.,0.));
+                     acc.setBandpassElement(ant,beam,casacore::Stokes::YY,chan,casacore::Complex(1.,0.));
                  }
             }
        }
    }
 
-   static void testComplex(const casa::Complex &expected, const casa::Complex &obtained, const float tol = 1e-5) {
+   static void testComplex(const casacore::Complex &expected, const casacore::Complex &obtained, const float tol = 1e-5) {
       CPPUNIT_ASSERT_DOUBLES_EQUAL(real(expected),real(obtained),tol);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(imag(expected),imag(obtained),tol);
    }
 
    static void testDummyParams(const ICalSolutionConstAccessor &acc) {
-        for (casa::uInt ant=0; ant<5; ++ant) {
-            for (casa::uInt beam=0; beam<4; ++beam) {
+        for (casacore::uInt ant=0; ant<5; ++ant) {
+            for (casacore::uInt beam=0; beam<4; ++beam) {
                  CPPUNIT_ASSERT(acc.jonesValid(ant,beam,0));
-                 const casa::SquareMatrix<casa::Complex, 2> jones = acc.jones(ant,beam,0);
+                 const casacore::SquareMatrix<casacore::Complex, 2> jones = acc.jones(ant,beam,0);
                  const float tag = float(ant)/100. + float(beam)/1000.;
-                 testComplex(casa::Complex(1.1+tag,0.1), jones(0,0));
-                 testComplex(casa::Complex(1.1,-0.1-tag), jones(1,1));
-                 testComplex(casa::Complex(0.1+tag,-0.1) * casa::Complex(1.1+tag,0.1), jones(0,1));
-                 testComplex(casa::Complex(-0.1,0.1+tag) * casa::Complex(1.1,-0.1-tag), -jones(1,0));
+                 testComplex(casacore::Complex(1.1+tag,0.1), jones(0,0));
+                 testComplex(casacore::Complex(1.1,-0.1-tag), jones(1,1));
+                 testComplex(casacore::Complex(0.1+tag,-0.1) * casacore::Complex(1.1+tag,0.1), jones(0,1));
+                 testComplex(casacore::Complex(-0.1,0.1+tag) * casacore::Complex(1.1,-0.1-tag), -jones(1,0));
 
                  const JonesIndex index(ant,beam);
-                 CPPUNIT_ASSERT(index.antenna() == casa::Short(ant));
-                 CPPUNIT_ASSERT(index.beam() == casa::Short(beam));
+                 CPPUNIT_ASSERT(index.antenna() == casacore::Short(ant));
+                 CPPUNIT_ASSERT(index.beam() == casacore::Short(beam));
 
-                 const casa::SquareMatrix<casa::Complex, 2> jones2 = acc.jones(index,10);
-                 testComplex(casa::Complex(1.1+tag,0.1), jones2(0,0));
-                 testComplex(casa::Complex(1.1,-0.1-tag), jones2(1,1));
-                 testComplex(casa::Complex(0.1+tag,-0.1) * casa::Complex(1.1+tag,0.1), jones2(0,1));
-                 testComplex(casa::Complex(-0.1,0.1+tag) * casa::Complex(1.1,-0.1-tag), -jones2(1,0));
+                 const casacore::SquareMatrix<casacore::Complex, 2> jones2 = acc.jones(index,10);
+                 testComplex(casacore::Complex(1.1+tag,0.1), jones2(0,0));
+                 testComplex(casacore::Complex(1.1,-0.1-tag), jones2(1,1));
+                 testComplex(casacore::Complex(0.1+tag,-0.1) * casacore::Complex(1.1+tag,0.1), jones2(0,1));
+                 testComplex(casacore::Complex(-0.1,0.1+tag) * casacore::Complex(1.1,-0.1-tag), -jones2(1,0));
 
                  const JonesJTerm jTerm = acc.gain(index);
                  CPPUNIT_ASSERT(jTerm.g1IsValid() && jTerm.g2IsValid());
-                 testComplex(casa::Complex(1.1+tag,0.1), jTerm.g1());
-                 testComplex(casa::Complex(1.1,-0.1-tag), jTerm.g2());
+                 testComplex(casacore::Complex(1.1+tag,0.1), jTerm.g1());
+                 testComplex(casacore::Complex(1.1,-0.1-tag), jTerm.g2());
 
                  const JonesDTerm dTerm = acc.leakage(index);
                  CPPUNIT_ASSERT(dTerm.d12IsValid() && dTerm.d21IsValid());
-                 testComplex(casa::Complex(0.1+tag,-0.1), dTerm.d12());
-                 testComplex(casa::Complex(-0.1,0.1+tag), dTerm.d21()); 
+                 testComplex(casacore::Complex(0.1+tag,-0.1), dTerm.d12());
+                 testComplex(casacore::Complex(-0.1,0.1+tag), dTerm.d21()); 
 
-                 for (casa::uInt chan=0; chan<20; ++chan) {
+                 for (casacore::uInt chan=0; chan<20; ++chan) {
                       const JonesJTerm bpTerm = acc.bandpass(index, chan);
                       CPPUNIT_ASSERT(bpTerm.g1IsValid() && bpTerm.g2IsValid());
-                      testComplex(casa::Complex(1.,0.), bpTerm.g1());
-                      testComplex(casa::Complex(1.,0.), bpTerm.g2());
+                      testComplex(casacore::Complex(1.,0.), bpTerm.g1());
+                      testComplex(casacore::Complex(1.,0.), bpTerm.g2());
                  }
             }
         }
@@ -135,29 +135,29 @@ public:
    void testPartiallyUndefined() {
         const JonesIndex index(0u,0u); 
         CachedCalSolutionAccessor acc;
-        const JonesJTerm gains(casa::Complex(1.1,0.1), true, casa::Complex(1.05,-0.1), false);
+        const JonesJTerm gains(casacore::Complex(1.1,0.1), true, casacore::Complex(1.05,-0.1), false);
         CPPUNIT_ASSERT_EQUAL(0u, acc.cache().size());
         acc.setGain(index, gains);
         CPPUNIT_ASSERT_EQUAL(1u, acc.cache().size());        
-        const JonesDTerm leakages(casa::Complex(0.13,-0.12),false, casa::Complex(-0.14,0.11), true);        
+        const JonesDTerm leakages(casacore::Complex(0.13,-0.12),false, casacore::Complex(-0.14,0.11), true);        
         acc.setLeakage(index, leakages);
         CPPUNIT_ASSERT_EQUAL(2u, acc.cache().size());        
         
         // now read and check
         CPPUNIT_ASSERT_EQUAL(false, acc.jonesAllValid(index,0));
         CPPUNIT_ASSERT_EQUAL(false, acc.jonesValid(index,0));
-        const casa::SquareMatrix<casa::Complex, 2> jones = acc.jones(index,0);
+        const casacore::SquareMatrix<casacore::Complex, 2> jones = acc.jones(index,0);
         
-        testComplex(casa::Complex(1.1,0.1), jones(0,0));
+        testComplex(casacore::Complex(1.1,0.1), jones(0,0));
         // undefined gain is one
-        testComplex(casa::Complex(1.0,0.), jones(1,1));
+        testComplex(casacore::Complex(1.0,0.), jones(1,1));
         // undefined leakage is zero
-        testComplex(casa::Complex(0.,0.), jones(0,1));
-        testComplex(casa::Complex(-0.14,0.11), -jones(1,0));     
+        testComplex(casacore::Complex(0.,0.), jones(0,1));
+        testComplex(casacore::Complex(-0.14,0.11), -jones(1,0));     
         
         // remove the parameters manually
-        const std::string par1 = CalParamNameHelper::paramName(index.antenna(),index.beam(),casa::Stokes::XX);
-        const std::string par2 = CalParamNameHelper::paramName(index.antenna(),index.beam(),casa::Stokes::YX);        
+        const std::string par1 = CalParamNameHelper::paramName(index.antenna(),index.beam(),casacore::Stokes::XX);
+        const std::string par2 = CalParamNameHelper::paramName(index.antenna(),index.beam(),casacore::Stokes::YX);        
         CPPUNIT_ASSERT(acc.cache().has(par1));
         CPPUNIT_ASSERT(acc.cache().has(par2));
         acc.cache().remove(par1);
@@ -166,11 +166,11 @@ public:
         // now read again and check
         CPPUNIT_ASSERT_EQUAL(false, acc.jonesAllValid(index,0));
         CPPUNIT_ASSERT_EQUAL(false, acc.jonesValid(index,0));
-        const casa::SquareMatrix<casa::Complex, 2> jones2 = acc.jones(index,0);
-        testComplex(casa::Complex(1.0,0.), jones2(0,0));
-        testComplex(casa::Complex(1.0,0.), jones2(1,1));
-        testComplex(casa::Complex(0.,0.), jones2(0,1));
-        testComplex(casa::Complex(0.,0.), -jones2(1,0));
+        const casacore::SquareMatrix<casacore::Complex, 2> jones2 = acc.jones(index,0);
+        testComplex(casacore::Complex(1.0,0.), jones2(0,0));
+        testComplex(casacore::Complex(1.0,0.), jones2(1,1));
+        testComplex(casacore::Complex(0.,0.), jones2(0,1));
+        testComplex(casacore::Complex(0.,0.), -jones2(1,0));
    }
  
    /*  

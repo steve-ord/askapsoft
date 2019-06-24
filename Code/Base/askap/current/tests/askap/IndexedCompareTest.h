@@ -30,9 +30,9 @@
 #ifndef INDEXED_COMPARE_TEST_H
 #define INDEXED_COMPARE_TEST_H
 
-#include <askap/AskapError.h>
-#include <askap/AskapUtil.h>
-#include <askap/IndexedCompare.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapUtil.h>
+#include <askap/askap/IndexedCompare.h>
 
 #include <cppunit/extensions/HelperMacros.h>
 

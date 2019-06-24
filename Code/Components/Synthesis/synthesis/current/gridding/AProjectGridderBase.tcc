@@ -35,7 +35,7 @@
 #ifndef A_PROJECT_GRIDDER_BASE_TCC
 #define A_PROJECT_GRIDDER_BASE_TCC
 
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 
 namespace askap {
 
@@ -92,8 +92,8 @@ boost::shared_ptr<GridderType> AProjectGridderBase::createAProjectGridder(const 
   } else {
       ASKAPLOG_INFO_STR(logger,	"Antenna illumination independent of frequency");
   }
-  ASKAPLOG_INFO_STR(logger, "Parallactic angle tolerance = "<<paTol/casa::C::pi*180.<<" deg");
-  ASKAPLOG_INFO_STR(logger, "Fields offset by more than "<<pointingTol/casa::C::pi*180.*3600.<<
+  ASKAPLOG_INFO_STR(logger, "Parallactic angle tolerance = "<<paTol/casacore::C::pi*180.<<" deg");
+  ASKAPLOG_INFO_STR(logger, "Fields offset by more than "<<pointingTol/casacore::C::pi*180.*3600.<<
                              " arcsec will be considered separate fields");
   if (freqTol<0) {
 	  ASKAPLOG_INFO_STR(logger,"Frequency axis is assumed constant"); 

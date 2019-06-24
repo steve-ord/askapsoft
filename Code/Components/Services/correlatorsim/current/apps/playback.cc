@@ -35,10 +35,10 @@
 #include <mpi.h>
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 #include "cpcommon/ParallelCPApplication.h"
-//#include "askap/Application.h"
+//#include "askap/askap/Application.h"
 #include "Common/ParameterSet.h"
 
 // Local package includes

@@ -27,16 +27,16 @@
 /// @author Max Voronkov <maxim.voronkov@csiro.au>
 
 // own includes
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <askap_swcorrelator.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 #include <corrinterfaces/CorrRunner.h>
 
 // casa includes
 #include <casacore/casa/OS/Timer.h>
 
 // other 3rd party
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 #include <Common/ParameterSet.h>
 
 #include <boost/thread/thread.hpp>
@@ -50,7 +50,7 @@ int main(int argc, const char** argv)
     askap::askapparallel::AskapParallel comms(argc, argv);
     
     try {
-       casa::Timer timer;
+       casacore::Timer timer;
        timer.mark();
                    
        askap::swcorrelator::CorrRunner runner;

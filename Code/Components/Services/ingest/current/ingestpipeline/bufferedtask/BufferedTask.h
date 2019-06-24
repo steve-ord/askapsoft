@@ -30,8 +30,8 @@
 // ASKAPsoft includes
 #include "Common/ParameterSet.h"
 #include "cpcommon/VisChunk.h"
-#include "utils/DelayEstimator.h"
-#include "askap/CircularBuffer.h"
+#include "askap/scimath/utils/DelayEstimator.h"
+#include "askap/askap/CircularBuffer.h"
 
 // casa includes
 #include <casacore/casa/Arrays/Matrix.h>
@@ -126,7 +126,7 @@ class BufferedTask : public askap::cp::ingest::ITask {
         /// @brief maximum waiting time in seconds for the child task to complete
         /// @details If not complete in time, and the buffer is full - either
         /// exception is raised or the new data chunk is skipped
-        casa::uInt itsMaxWait;
+        casacore::uInt itsMaxWait;
 
         /// @brief service thread
         boost::shared_ptr<boost::thread> itsThread;

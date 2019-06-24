@@ -4,7 +4,7 @@
 #include <casacore/casa/Quanta/Quantum.h>
 #include <casacore/casa/Quanta/MVDirection.h>
 
-#include <utils/ImagemathUtils.h>
+#include <askap/scimath/utils/ImagemathUtils.h>
 
 casacore::MVDirection convertDir(const std::string &ra, const std::string &dec) {
     casacore::Quantity tmpra,tmpdec;

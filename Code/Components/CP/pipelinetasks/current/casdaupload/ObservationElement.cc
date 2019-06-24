@@ -33,7 +33,7 @@
 // System includes
 
 // ASKAPsoft includes
-#include "askap/AskapUtil.h"
+#include "askap/askap/AskapUtil.h"
 #include "casacore/measures/Measures/MEpoch.h"
 #include "casacore/casa/Quanta/MVTime.h"
 #include "xercesc/dom/DOM.hpp" // Includes all DOM
@@ -45,7 +45,7 @@
 // Using
 using namespace std;
 using namespace askap;
-using namespace casa;
+using namespace casacore;
 using namespace askap::cp::pipelinetasks;
 using namespace xercesc;
 using askap::accessors::XercescString;
@@ -65,7 +65,7 @@ xercesc::DOMElement* ObservationElement::toXmlElement(xercesc::DOMDocument& doc)
     return e;
 }
 
-void ObservationElement::setObsTimeRange(const casa::MEpoch& start, const casa::MEpoch& end)
+void ObservationElement::setObsTimeRange(const casacore::MEpoch& start, const casacore::MEpoch& end)
 {
     itsObsStart = start;
     itsObsEnd = end;

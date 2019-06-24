@@ -36,8 +36,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "askap/SignalManagerSingleton.h"
-#include "askap/SignalCounter.h"
+#include "askap/askap/SignalManagerSingleton.h"
+#include "askap/askap/SignalCounter.h"
 
 namespace askap
 {

@@ -29,7 +29,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <casacore/casa/Arrays/Vector.h>
-#include <utils/DelayEstimator.h>
+#include <askap/scimath/utils/DelayEstimator.h>
 #include <casacore/casa/BasicSL/Complex.h>
 #include <casacore/casa/BasicSL/Constants.h>
 #include <casacore/casa/BasicMath/Random.h>
@@ -52,7 +52,7 @@ public:
    void testZeroDelay() {
       DelayEstimator de(1e6);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0., de.quality(), 1e-6);
-      casa::Vector<casa::Complex> buf(1024,casa::Complex(0.,0.));
+      casacore::Vector<casacore::Complex> buf(1024,casacore::Complex(0.,0.));
       const double delay = de.getDelay(buf);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0., delay, 1e-6);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1., de.quality(), 1e-6);      
@@ -61,7 +61,7 @@ public:
    void testEstimation() {
       DelayEstimator de(1.); // resolution 1 Hz
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0., de.quality(), 1e-6);
-      casa::Vector<casa::Complex> buf(1024);
+      casacore::Vector<casacore::Complex> buf(1024);
       // fill the spectrum with a period of 50 channels -> delay of 1/50. seconds
       fillTestSpectrum(buf);
       const double delay = de.getDelay(buf);
@@ -72,7 +72,7 @@ public:
    void testFFTBasedEstimation() {
       DelayEstimator de(1.); // resolution 1 Hz
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0., de.quality(), 1e-6);
-      casa::Vector<casa::Complex> buf(1024);
+      casacore::Vector<casacore::Complex> buf(1024);
       // fill the spectrum with a period of 50 channels -> delay of 1/50. seconds
       fillTestSpectrum(buf);
       const double delay = de.getDelayWithFFT(buf);
@@ -84,7 +84,7 @@ public:
    void testFFTBasedEstimation2() {
       DelayEstimator de(1e3); // resolution 1 kHz
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0., de.quality(), 1e-6);
-      casa::Vector<casa::Complex> buf(2048);
+      casacore::Vector<casacore::Complex> buf(2048);
       // fill the spectrum with a period of 50 channels -> delay of 20 microseconds
       fillTestSpectrum(buf);
       const double delay = de.getDelayWithFFT(buf);
@@ -95,7 +95,7 @@ public:
    
    void testQuality() {
       // real phase bandpass from Virgo observation
-      const casa::uInt nChan = 304;
+      const casacore::uInt nChan = 304;
       const float phases[nChan] = {-103.264, -103.034, -102.63, -102.851, -102.961, -102.191, -102.52, 
                                  -102.01, -101.29, -101.139, -100.68, -100.365, -99.5515, -99.5903, -100.05, 
                                  -99.7936, -100.167, -99.1796, -98.97, -99.3743, -98.5759, -98.587, -98.5989, 
@@ -134,9 +134,9 @@ public:
                                  -99.8199, -98.9538, -100.015, -100.522, -101.252, -102.447, -103.244, -101.148, 
                                  -103.056, -104.98, -104.336, -106.17, -105.576, -107.557, -107.217, -109.346, 
                                  -110.007, -110.45, -111.59, -112.429, -114.32, -115.441, -114.045, -115.565, -116.393};
-      casa::Vector<casa::Complex> buf(nChan);
-      for (casa::uInt ch = 0; ch<nChan; ++ch) {
-           buf[ch] = casa::polar(1., phases[ch] * casa::C::pi / 180.);
+      casacore::Vector<casacore::Complex> buf(nChan);
+      for (casacore::uInt ch = 0; ch<nChan; ++ch) {
+           buf[ch] = casacore::polar(1., phases[ch] * casacore::C::pi / 180.);
       }
       DelayEstimator de(-1e6); // resolution 1 MHz
       double delay = de.getDelay(buf);
@@ -144,10 +144,10 @@ public:
       CPPUNIT_ASSERT(fabs(delay) < 1e-11);             
       CPPUNIT_ASSERT_DOUBLES_EQUAL(1., de.quality(), 6e-3);
       // zero signal to noise ratio -  random phase with the fixed seed to ensure deterministic result
-      casa::MLCG generator(0,10);
-      casa::Uniform phaseGen(&generator,0., casa::C::_2pi);
-      for (casa::uInt ch = 0; ch<nChan; ++ch) {
-           buf[ch] = casa::polar(1., phaseGen()); 
+      casacore::MLCG generator(0,10);
+      casacore::Uniform phaseGen(&generator,0., casacore::C::_2pi);
+      for (casacore::uInt ch = 0; ch<nChan; ++ch) {
+           buf[ch] = casacore::polar(1., phaseGen()); 
       }
       delay = de.getDelay(buf);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(0., de.quality(), 0.1);      
@@ -155,10 +155,10 @@ public:
    
 private:
    // generate the test spectrum with the phase wrap period of 50 channels
-   static void fillTestSpectrum(casa::Vector<casa::Complex> &buf) {
-      for (casa::uInt ch=0; ch<buf.nelements(); ++ch) {
-           const float phase = 2.*casa::C::pi*float(ch)/50.;
-           const casa::Complex phasor(cos(phase),sin(phase));
+   static void fillTestSpectrum(casacore::Vector<casacore::Complex> &buf) {
+      for (casacore::uInt ch=0; ch<buf.nelements(); ++ch) {
+           const float phase = 2.*casacore::C::pi*float(ch)/50.;
+           const casacore::Complex phasor(cos(phase),sin(phase));
            buf[ch] = phasor;
       }
    }   

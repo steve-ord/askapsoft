@@ -42,7 +42,7 @@
 #include <string>
 
 // askap includes
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 // casa includes
 #include <casacore/tables/Tables/Table.h>
@@ -82,15 +82,15 @@ TableTestRunner::TableTestRunner(const std::string& name)
   theirTestMSName="./.test.ms";
 
   std::string path2TestMS="./testdataset.ms";
-  if (casa::EnvironmentVariable::isDefined("ASKAP_ROOT")) {
-      path2TestMS=casa::EnvironmentVariable::get("ASKAP_ROOT")+
+  if (casacore::EnvironmentVariable::isDefined("ASKAP_ROOT")) {
+      path2TestMS=casacore::EnvironmentVariable::get("ASKAP_ROOT")+
                 "/Code/Base/accessors/current/testdataset.ms";
   }
   try {
-    casa::Table originalMS(path2TestMS);
-    originalMS.deepCopy(theirTestMSName,casa::Table::New);
+    casacore::Table originalMS(path2TestMS);
+    originalMS.deepCopy(theirTestMSName,casacore::Table::New);
   }
-  catch (const casa::AipsError &ae) {
+  catch (const casacore::AipsError &ae) {
       ASKAPTHROW(AskapError, "Problems in making a copy of the test measurement set. "<<
                   "Either the current directory is not writable, or the test measurement set "<<
                   "doesn't exist. AipsError: "<<ae.what());
@@ -101,10 +101,10 @@ TableTestRunner::TableTestRunner(const std::string& name)
 TableTestRunner::~TableTestRunner()
 {
   try {
-    casa::Table copiedMS(theirTestMSName,casa::Table::Update);
+    casacore::Table copiedMS(theirTestMSName,casacore::Table::Update);
     copiedMS.markForDelete();
   }
-  catch (const casa::AipsError &ae) {
+  catch (const casacore::AipsError &ae) {
       ASKAPTHROW(AskapError, "Problems deleting the scratch table");
   }
 }

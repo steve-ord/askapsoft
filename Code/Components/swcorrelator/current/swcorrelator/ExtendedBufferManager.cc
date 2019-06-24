@@ -31,11 +31,11 @@
 /// @author Max Voronkov <maxim.voronkov@csiro.au>
 
 #include <swcorrelator/ExtendedBufferManager.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <swcorrelator/CorrProducts.h>
 #include <boost/thread/thread.hpp>
 #include <askap_swcorrelator.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 
 #include <set>
 
@@ -232,7 +232,7 @@ void ExtendedBufferManager::releaseBuffers(const BufferSet &ids) const
 /// @note It is assumed that the lock had been aquired
 bool ExtendedBufferManager::notAllReleased() const
 { 
-  for (casa::uInt index = 0; index < itsReleaseFlags.nelements(); ++index) {
+  for (casacore::uInt index = 0; index < itsReleaseFlags.nelements(); ++index) {
        if (itsReleaseFlags[index]) {
            return true;
        }

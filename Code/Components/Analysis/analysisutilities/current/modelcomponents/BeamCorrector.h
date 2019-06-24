@@ -30,8 +30,8 @@
 #ifndef ASKAP_SIMS_SELAVY_IMAGE_H_
 #define ASKAP_SIMS_SELAVY_IMAGE_H_
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 
 #include <modelcomponents/ContinuumSelavy.h>
 
@@ -114,7 +114,7 @@ class BeamCorrector {
         /// @brief The pixel scale in the image
         float itsPixelScale;
         /// @brief The units of the spatial axes
-        casa::String itsDirUnits;
+        casacore::String itsDirUnits;
 
 };
 

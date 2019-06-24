@@ -34,8 +34,8 @@
 #include <vector>
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 #include "Common/ParameterSet.h"
 #include "boost/shared_ptr.hpp"
 #include "casacore/ms/MeasurementSets/MeasurementSet.h"
@@ -60,7 +60,7 @@ void FlaggerFactory::appendFlaggers(vector< boost::shared_ptr<IFlagger> >& v1,
 }
 
 std::vector< boost::shared_ptr<IFlagger> > FlaggerFactory::build(
-    const LOFAR::ParameterSet& parset, const casa::MeasurementSet& ms)
+    const LOFAR::ParameterSet& parset, const casacore::MeasurementSet& ms)
 {
     vector< boost::shared_ptr<IFlagger> > flaggers;
 

@@ -36,9 +36,9 @@
 #include <map>
 
 // ASKAPsoft includes
-#include "askap/Application.h"
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/Application.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 #include "boost/shared_ptr.hpp"
 #include "frtmetadata/FrtMetadataOutputPort.h"
 

@@ -27,10 +27,10 @@
 #include <iostream>
 #include <stdexcept>
 #include <askap_synthesis.h>
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/casa/Logging/LogIO.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 #include <casacore/casa/OS/Timer.h>
 #include <casacore/casa/Arrays/Vector.h>
 #include <casacore/casa/Arrays/Array.h>
@@ -41,9 +41,9 @@
 #include <measurementequation/WienerPreconditioner.h>
 #include <measurementequation/RobustPreconditioner.h>
 #include <measurementequation/GaussianNoiseME.h>
-#include <utils/ImageUtils.h>
+#include <askap/scimath/utils/ImageUtils.h>
 
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 
 ASKAP_LOGGER(logger, ".tpreconditioner");
 
@@ -56,22 +56,22 @@ using namespace askap::synthesis;
 struct RandomGenerator : public GaussianNoiseME 
 {
   explicit RandomGenerator(double variance, askap::askapparallel::AskapParallel& comms) :
-      GaussianNoiseME(variance, casa::Int(time(0)), 
-           casa::Int(comms.rank())) {}
+      GaussianNoiseME(variance, casacore::Int(time(0)), 
+           casacore::Int(comms.rank())) {}
   using GaussianNoiseME::getRandomComplexNumber;
-  float operator()() const { return casa::real(getRandomComplexNumber());}
+  float operator()() const { return casacore::real(getRandomComplexNumber());}
 };
 
 /// @brief fill given array with some rather arbitrary values
-void fillArray(casa::Array<float> &in, const RandomGenerator &rg)
+void fillArray(casacore::Array<float> &in, const RandomGenerator &rg)
 {
   // first fill array with the noise
-  casa::Vector<float> flattened(in.reform(casa::IPosition(1,in.nelements())));
+  casacore::Vector<float> flattened(in.reform(casacore::IPosition(1,in.nelements())));
   for (size_t i=0; i<flattened.nelements(); ++i) {
        flattened[i] = rg();
   }
   // add some pattern
-  casa::IPosition index(in.shape().nelements(),0);
+  casacore::IPosition index(in.shape().nelements(),0);
   ASKAPASSERT(index.nelements()>=2);
   ASKAPASSERT(in.shape()[0]>1);
   ASKAPASSERT(in.shape()[1]>1);
@@ -83,7 +83,7 @@ void fillArray(casa::Array<float> &in, const RandomGenerator &rg)
   // a ring
   const float radius = 30.;
   for (size_t i=0; i<1000; ++i) {
-     const float angle = float(i)/500.*casa::C::pi;
+     const float angle = float(i)/500.*casacore::C::pi;
      const float dx = radius*cos(angle);
      const float dy = -radius*sin(angle);
      index[0] = in.shape()[0]/2 + int(dx);
@@ -97,28 +97,28 @@ void fillArray(casa::Array<float> &in, const RandomGenerator &rg)
 
 int main(int argc, char **argv) {
   try {
-     casa::Timer timer;
+     casacore::Timer timer;
 
      timer.mark();
      // Initialize MPI (also succeeds if no MPI available).
      askap::askapparallel::AskapParallel ap(argc, (const char **&)argv);
 
      // Ensure that CASA log messages are captured
-     casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-     casa::LogSink::globalSink(globalSink);
+     casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+     casacore::LogSink::globalSink(globalSink);
 
      RandomGenerator rg(0.01, ap);
      // hard coded parameters of the test
-     const casa::Int size = 1024;
+     const casacore::Int size = 1024;
      const size_t numberOfRuns = 5;
      //
-     const casa::IPosition shape(2,size,size);
+     const casacore::IPosition shape(2,size,size);
      
-     casa::Array<float> psf(shape);
+     casacore::Array<float> psf(shape);
      fillArray(psf,rg);
-     casa::Array<float> img(shape);
+     casacore::Array<float> img(shape);
      fillArray(img,rg);
-     casa::Array<float> pcf;
+     casacore::Array<float> pcf;
           
      std::cerr<<"Image initialization: "<<timer.real()<<std::endl;
      timer.mark();

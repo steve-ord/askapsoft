@@ -47,7 +47,7 @@ public:
 
    /// @brief construct the object with the given tolerance
    /// @param[in] tolerance optional tolerance in radians
-   explicit PhaseUnwrapper(const T tolerance = static_cast<T>(3 * casa::C::pi / 2)) : itsTolerance(tolerance), 
+   explicit PhaseUnwrapper(const T tolerance = static_cast<T>(3 * casacore::C::pi / 2)) : itsTolerance(tolerance), 
             itsWrapCompensation(static_cast<T>(0.)), itsDataSighted(false), itsPrevOrigPhase(static_cast<T>(0)) {}
             
    /// @brief process phase
@@ -75,7 +75,7 @@ private:
 
 } // namespace askap
 
-#include "utils/PhaseUnwrapper.tcc"
+#include "askap/scimath/utils/PhaseUnwrapper.tcc"
 
 #endif // #ifndef ASKAP_SCIMATH_UTILS_PHASE_UNWRAPPER_H
 

@@ -35,11 +35,11 @@
 #include <stdlib.h>
 
 // ASKAPsoft includes
-#include "askap/Application.h"
-#include "askap/AskapError.h"
-#include "askap/AskapUtil.h"
-#include "askap/AskapLogging.h"
-#include "askap/StatReporter.h"
+#include "askap/askap/Application.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapUtil.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/StatReporter.h"
 #include "dataaccess/TableDataSource.h"
 #include "dataaccess/IConstDataSource.h"
 #include "dataaccess/IFlagDataAccessor.h"
@@ -55,7 +55,7 @@
 #endif
 
 #include "dataaccess/OnDemandNoiseAndFlagDA.h"
-#include "askap/RangePartition.h"
+#include "askap/askap/RangePartition.h"
 #include "boost/shared_ptr.hpp"
 
 // Local packages includes
@@ -107,7 +107,7 @@ class CcalApplyApp : public askap::Application
                     ASKAPDEBUGASSERT(it);
                     ASKAPDEBUGASSERT(calME);
 
-                    casa::Timer timer;
+                    casacore::Timer timer;
 
                     // Apply calibration
                     uint64_t count = 1;
@@ -170,25 +170,25 @@ class CcalApplyApp : public askap::Application
         /// It's ignored in the serial mode.
         bool itsDistribute;
 
-        static casa::MFrequency::Ref getFreqRefFrame(const LOFAR::ParameterSet& parset)
+        static casacore::MFrequency::Ref getFreqRefFrame(const LOFAR::ParameterSet& parset)
         {
             const string freqFrame = parset.getString("freqframe", "topo");
             if (freqFrame == "topo") {
                 ASKAPLOG_INFO_STR(logger, "Parset frequencies will be treated as topocentric");
-                return casa::MFrequency::Ref(casa::MFrequency::TOPO);
+                return casacore::MFrequency::Ref(casacore::MFrequency::TOPO);
             } else if (freqFrame == "lsrk") {
                 ASKAPLOG_INFO_STR(logger, "Parset frequencies will be treated as lsrk");
-                return casa::MFrequency::Ref(casa::MFrequency::LSRK);
+                return casacore::MFrequency::Ref(casacore::MFrequency::LSRK);
             } else if (freqFrame == "bary") {
                 ASKAPLOG_INFO_STR(logger, "Parset frequencies will be treated as barycentric");
-                return casa::MFrequency::Ref(casa::MFrequency::BARY);
+                return casacore::MFrequency::Ref(casacore::MFrequency::BARY);
             } else {
                 ASKAPTHROW(AskapError, "Unsupported frequency frame " << freqFrame);
             }
         }
 
         boost::shared_ptr<ICalibrationApplicator> buildCalApplicator(
-                const LOFAR::ParameterSet& parset, const casa::uInt chanOffset = 0u)
+                const LOFAR::ParameterSet& parset, const casacore::uInt chanOffset = 0u)
         {
             // Create solution source
             ICalSolutionConstSource::ShPtr solutionSource =
@@ -242,12 +242,12 @@ class CcalApplyApp : public askap::Application
             sel << parset;
             IDataConverterPtr conv=ds.createConverter();
             conv->setFrequencyFrame(getFreqRefFrame(parset), "Hz");
-            conv->setDirectionFrame(casa::MDirection::Ref(casa::MDirection::J2000));
+            conv->setDirectionFrame(casacore::MDirection::Ref(casacore::MDirection::J2000));
             // ensure that time is counted in seconds since 0 MJD
             conv->setEpochFrame();
 
             if (parset.isDefined("maxchunkrows")) {
-                const casa::uInt maxChunkSize = parset.getUint32("maxchunkrows");
+                const casacore::uInt maxChunkSize = parset.getUint32("maxchunkrows");
                 ASKAPCHECK(maxChunkSize > 0, "maxchunkrows parameter should be positive");
                 ASKAPLOG_INFO_STR(logger, "Restricting the chunk size to at most "<<maxChunkSize<<" rows for each iteration");
                 ds.configureMaxChunkSize(maxChunkSize);

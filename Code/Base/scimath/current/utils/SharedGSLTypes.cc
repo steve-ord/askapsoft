@@ -29,7 +29,7 @@
 /// @author Max Voronkov <maxim.voronkov@csiro.au>
 
 // own includes
-#include "utils/SharedGSLTypes.h"
+#include "askap/scimath/utils/SharedGSLTypes.h"
 
 namespace askap {
 

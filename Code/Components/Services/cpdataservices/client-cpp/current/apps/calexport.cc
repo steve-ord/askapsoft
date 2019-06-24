@@ -38,7 +38,7 @@
 
 // ASKAPsoft includes
 #include "boost/program_options.hpp"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapError.h"
 #include "casacore/casa/aipstype.h"
 #include "Common/ParameterSet.h"
 

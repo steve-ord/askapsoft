@@ -35,10 +35,10 @@
 #include <askap_accessors.h>
 
 // logging is not yet used in this file
-//#include <askap/AskapLogging.h>
+//#include <askap/askap/AskapLogging.h>
 //ASKAP_LOGGER(logger, "");
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 using namespace askap;
 using namespace askap::accessors;
@@ -62,13 +62,13 @@ TableInfoAccessor::TableInfoAccessor(const
 /// instead of the disk-based buffers
 /// @param[in] dataColumn a name of the data column used by default
 ///                       (default is DATA)
-TableInfoAccessor::TableInfoAccessor(const casa::Table &tab, 
+TableInfoAccessor::TableInfoAccessor(const casacore::Table &tab, 
                   bool useMemBuffer, const std::string &dataColumn) :
         itsTableManager(new TableManager(tab,useMemBuffer,dataColumn)) {}
 
 
 /// @return a non-const reference to Table held by this object
-casa::Table& TableInfoAccessor::table() const throw()
+casacore::Table& TableInfoAccessor::table() const throw()
 {
   ASKAPDEBUGASSERT(itsTableManager);
   return itsTableManager->table();

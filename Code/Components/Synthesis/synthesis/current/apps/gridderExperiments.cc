@@ -30,8 +30,8 @@
 // System includes
 #include <stdexcept>
 #include <iostream>
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 #include <CommandLineParser.h>
 
 #include <gridding/SphFuncVisGridder.h>
@@ -51,8 +51,8 @@ using namespace askap::synthesis;
 #include <gsl/gsl_sf.h>
 
 
-inline casa::DComplex getComplex(const gsl_complex gc) {
-     return casa::DComplex(GSL_REAL(gc), GSL_IMAG(gc));
+inline casacore::DComplex getComplex(const gsl_complex gc) {
+     return casacore::DComplex(GSL_REAL(gc), GSL_IMAG(gc));
 }
 
 
@@ -61,17 +61,17 @@ class testGridder : public SphFuncVisGridder
 public:
       testGridder() {
           std::cout<<"Test gridder, used for debugging"<<std::endl;
-          casa::Matrix<casa::DComplex> B(5,5);
-          const double c = casa::C::pi*6./2.;
+          casacore::Matrix<casacore::DComplex> B(5,5);
+          const double c = casacore::C::pi*6./2.;
           /*
           fillMatrixB(B,c,15);
           std::cout<<B<<std::endl;
           
-          casa::Vector<casa::DComplex> V(B.nrow());
-          casa::DComplex eVal = optimumEigenVector(B,V);
+          casacore::Vector<casacore::DComplex> V(B.nrow());
+          casacore::DComplex eVal = optimumEigenVector(B,V);
           std::cout<<"eigen value "<<eVal<<" vector: "<<V<<std::endl;
           
-          casa::Vector<casa::DComplex> P(V.nelements(),casa::DComplex(0.,0.));
+          casacore::Vector<casacore::DComplex> P(V.nelements(),casacore::DComplex(0.,0.));
           for (size_t i = 0; i<P.nelements(); ++i) {
                P[i] = -eVal*V[i];
                for (size_t k = 0; k<V.nelements(); ++k) {
@@ -82,7 +82,7 @@ public:
           std::cout<<P<<std::endl;
           
           
-          casa::Vector<casa::DComplex> vals(6.);
+          casacore::Vector<casacore::DComplex> vals(6.);
           calcValsAtRegularGrid(vals, V, eVal, false);
                     
           std::cout<<vals<<std::endl;
@@ -109,7 +109,7 @@ public:
       /// @param[in] l order of the derivative
       /// @param[in] k order of the polynomial
       /// @return value of the derivative at 1.0
-      static double derivativeOfLegendrePolynomial(casa::uInt l, casa::uInt k) {
+      static double derivativeOfLegendrePolynomial(casacore::uInt l, casacore::uInt k) {
          if (l > k) {
              return 0.;
          }
@@ -130,12 +130,12 @@ public:
       /// @param[in] eVec eigen vector in Legendre space
       /// @param[in] eVal eigen value corresponding to eVec
       /// @param[in] isOdd if true, the calculated function is assumed to be of the odd order
-      static void calcValsAtRegularGrid(casa::Vector<casa::DComplex> &vals, 
-             const casa::Vector<casa::DComplex> &eVec, const casa::DComplex &eVal, const bool isOdd) 
+      static void calcValsAtRegularGrid(casacore::Vector<casacore::DComplex> &vals, 
+             const casacore::Vector<casacore::DComplex> &eVec, const casacore::DComplex &eVal, const bool isOdd) 
       {
          ASKAPASSERT(vals.nelements()>1);
          ASKAPASSERT(eVec.nelements()>1);
-         ASKAPASSERT(casa::abs(eVal) != 0.);
+         ASKAPASSERT(casacore::abs(eVal) != 0.);
          // the value at 0 is calculated through direct series expansion
          vals.set(0.);
          // all odd Legendre polynomials are anti-symmetric, so will be the spheroidal function
@@ -156,15 +156,15 @@ public:
                    double Ink = 0;
                    for (size_t l=1; l < k/2; ++l) {
                         if (isOdd) {
-                            Ink += negateForOdd(l+1)/pow(casa::C::pi*double(N),2*l+1)*
+                            Ink += negateForOdd(l+1)/pow(casacore::C::pi*double(N),2*l+1)*
                                    derivativeOfLegendrePolynomial(2*l,k);
                         } else {
-                            Ink += negateForOdd(l+1)/pow(casa::C::pi*double(N),2*l)*
+                            Ink += negateForOdd(l+1)/pow(casacore::C::pi*double(N),2*l)*
                                    derivativeOfLegendrePolynomial(2*l-1,k);
                         }
                    }
                    Ink *= 2*negateForOdd(N);
-                   vals[N] += eVec[k] * Ink * (isOdd ? casa::DComplex(0.,1.) : casa::DComplex(1.,0.));
+                   vals[N] += eVec[k] * Ink * (isOdd ? casacore::DComplex(0.,1.) : casacore::DComplex(1.,0.));
               }
               // all function values for N>0 should be divided by the eigenvalue
               vals[N] /= eVal;
@@ -177,14 +177,14 @@ public:
       /// @param[in] x abcissa 
       /// @param[in] m parameter m of the Legendre function (corresponding to resulting Smn(c,eta))
       /// @param[in] rEven true, if series starts from r=0, false if from r=1 (n-m of Smn is even or odd)
-      static double sumLegendreSeries(const casa::Vector<double> &coeffs, double x, int m, bool rEven) {
+      static double sumLegendreSeries(const casacore::Vector<double> &coeffs, double x, int m, bool rEven) {
            ASKAPASSERT(m>=0);
            const int nOrders = int(coeffs.nelements())*2 + (rEven ? 0 : 1);
            double *vals = new double[nOrders+1];
            
            int status = gsl_sf_legendre_sphPlm_array(nOrders + m, m, x, vals);
            double result = 0.;
-           for (casa::uInt elem = 0; elem<coeffs.nelements(); ++elem) {
+           for (casacore::uInt elem = 0; elem<coeffs.nelements(); ++elem) {
                 const int r = 2*elem + (rEven ? 0 : 1);
                 //const int l = r + m;
                 ASKAPASSERT(r < nOrders + 1);
@@ -203,16 +203,16 @@ public:
       /// @param[in] alpha parameter alpha of the spheroidal function (weighting exponent in our case)
       /// @param[in] eta argument of the function
       /// @param[in] nterms number of terms in the decomposition
-      static double sphFunc(const double c, const double alpha, const double eta, const casa::uInt nterms)
+      static double sphFunc(const double c, const double alpha, const double eta, const casacore::uInt nterms)
       {
         if (fabs(double(eta))>=1) {
             return 0.;
         }
-        casa::Matrix<double> hlp(nterms,nterms,0.);
+        casacore::Matrix<double> hlp(nterms,nterms,0.);
         const bool rEven = true;      
         fillHelperMatrix(hlp,c,int(alpha),rEven);
         
-        casa::Vector<double> coeffs;
+        casacore::Vector<double> coeffs;
         legendreCoeffs(hlp,coeffs);
         
         // force normalisation to 1. at eta=0., functions corresponding to n=0 are even, so such normalisation
@@ -229,15 +229,15 @@ public:
       /// @param[in] nterms number of terms in the decomposition
       /// @param[in] mSize optional matrix size for the dependent eigenproblem, 0 means the miminal size 
       ///                  sufficient to produce nterms in the decomposition
-      static double sphFunc1(const double c, const double alpha, const double eta, const casa::uInt nterms, 
-                     const casa::uInt mSize = 0)
+      static double sphFunc1(const double c, const double alpha, const double eta, const casacore::uInt nterms, 
+                     const casacore::uInt mSize = 0)
       {
         ASKAPCHECK(alpha>-0.5, "The case of alpha<=-0.5 has not been tested (although might work), you have alpha="<<alpha);
         ASKAPASSERT(nterms>1);
         if (eta == 0.) {
             return 1.;
         }
-        casa::Vector<double> coeffs(nterms, 0.);
+        casacore::Vector<double> coeffs(nterms, 0.);
         calcBesselCoeffs(c, alpha, coeffs, mSize);
         ASKAPDEBUGASSERT(coeffs.nelements() == nterms);
         
@@ -250,12 +250,12 @@ public:
         ASKAPASSERT(nBesselVals > 0);
         ASKAPASSERT(int(nBesselVals) >= 2*int(nterms)+int(alpha+0.5));
 
-        casa::Vector<double> besselVals(nBesselVals,0.);
+        casacore::Vector<double> besselVals(nBesselVals,0.);
         // calculate series of Bessel function values, orders go from startOrder to startOrder+nBesselVals-1
         bessel(startOrder,c*std::abs(eta),besselVals);
         
         double sum = 0.;
-        for (casa::uInt i = 0; i<nterms; ++i) {
+        for (casacore::uInt i = 0; i<nterms; ++i) {
              const int index = 2*int(i) + int(alpha+0.5);
              ASKAPCHECK((index>=0) && (index<nBesselVals), "Invalid index = "<<index<<", alpha="<<alpha<<" term="<<i);
              sum += coeffs[i] * besselVals[index];
@@ -271,12 +271,12 @@ public:
       /// @param[in] alpha parameter alpha of the spheroidal function (weighting exponent in our case)
       /// @param[in] coeffs vector with the coefficients
       /// @return value of the function
-      static double sphFuncAt0_0(const double alpha, const casa::Vector<double> &coeffs) {
+      static double sphFuncAt0_0(const double alpha, const casacore::Vector<double> &coeffs) {
           double res = 0.;
-          for (casa::uInt i=0; i<coeffs.nelements(); ++i) {
+          for (casacore::uInt i=0; i<coeffs.nelements(); ++i) {
                res += gamma(0.5+double(i))/gamma(alpha+double(i+1))*coeffs[i];
           }
-          res *= casa::C::_1_sqrtpi / pow(2.,alpha);
+          res *= casacore::C::_1_sqrtpi / pow(2.,alpha);
           return res;
       }
       
@@ -318,9 +318,9 @@ public:
       /// @param[in] vals vector to be filled with values corresponding to orders nu,nu+1,...nu+vals.nelements()-1
       /// @note an exception is thrown if there is an error. Vector vals must have non-zero size to indicate the number
       /// of orders required
-      static void bessel(const double nu, const double x, casa::Vector<double> &vals) {
+      static void bessel(const double nu, const double x, casacore::Vector<double> &vals) {
          ASKAPASSERT(vals.nelements()>=1);
-         for (casa::uInt k = 0; k<vals.nelements(); ++k) {
+         for (casacore::uInt k = 0; k<vals.nelements(); ++k) {
               vals[k] = bessel(nu+double(k),x);
          } 
       }
@@ -334,26 +334,26 @@ public:
       ///                   required number of coefficients)
       /// @param[in] mSize optional matrix size for the dependent eigenproblem, 0 means the miminal size sufficient to
       ///            produce coeffs.nelements() coefficient. Positive number should not be below coeffs.nelements().
-      static void calcBesselCoeffs(const double c, const double alpha, casa::Vector<double> &coeffs,
-                                   const casa::uInt mSize = 0)
+      static void calcBesselCoeffs(const double c, const double alpha, casacore::Vector<double> &coeffs,
+                                   const casacore::uInt mSize = 0)
       {
         ASKAPASSERT(coeffs.nelements()>1);
-        const casa::uInt matrSize = (mSize == 0 ? coeffs.nelements() : mSize);
+        const casacore::uInt matrSize = (mSize == 0 ? coeffs.nelements() : mSize);
         ASKAPCHECK(matrSize >= coeffs.nelements(), "Requested matrix size of "<<matrSize<<
                    " should not be less than the number of requested coefficients ("<<coeffs.nelements()<<")");
         ASKAPCHECK(2*alpha != -3.,"Implemented formulas don't work for alpha = -1.5");
         const double cSquared = c*c;
         // buffers
-        casa::Vector<double> bufA(2*matrSize+1,0.);                   
-        casa::Vector<double> bufB(2*matrSize+1,0.);
-        casa::Vector<double> bufC(2*matrSize+1,0.);
-        casa::Vector<double> diag(matrSize,0.);
-        casa::Vector<double> sdiag2(matrSize-1,0.);
+        casacore::Vector<double> bufA(2*matrSize+1,0.);                   
+        casacore::Vector<double> bufB(2*matrSize+1,0.);
+        casacore::Vector<double> bufC(2*matrSize+1,0.);
+        casacore::Vector<double> diag(matrSize,0.);
+        casacore::Vector<double> sdiag2(matrSize-1,0.);
         
         // fill the buffers
         bufB[0] = cSquared / (2*alpha+3);
         bufC[0] = cSquared * (2*alpha+2) / (2*alpha+3);
-        for (casa::uInt k = 2; k <= 2*matrSize; k+=2) {
+        for (casacore::uInt k = 2; k <= 2*matrSize; k+=2) {
              // k is a 1-based index into buffers
              bufA[k] = cSquared * double(k*(k-1))/(2*alpha+2*k-1)/(2*alpha+2*k+1);
              bufB[k] = cSquared * (double(k)*(2*alpha+k+1)+(2*alpha-1+2*k*k+2*k*(2*alpha+1)))/
@@ -370,7 +370,7 @@ public:
         const double eVal = smallestEigenValue(diag,sdiag2);
         coeffs[0] = 1.; // arbitrary scaling factor which will be normalised later when we sum the series
         // now calculate the ratios of adjacent coefficients
-        for (casa::uInt elem = coeffs.nelements() - 1; elem>0; --elem) {
+        for (casacore::uInt elem = coeffs.nelements() - 1; elem>0; --elem) {
              double factor = eVal - bufB[2*elem];
              if (elem + 1 < coeffs.nelements()) {
                  factor += bufA[2*elem+2]*coeffs[elem+1];
@@ -383,7 +383,7 @@ public:
         }  
         std::cout<<coeffs<<std::endl;
         // and bootstrap all coefficients using the ratios and the first arbitrary defined element
-        for (casa::uInt elem = 1; elem<coeffs.nelements(); ++elem) {
+        for (casacore::uInt elem = 1; elem<coeffs.nelements(); ++elem) {
              coeffs[elem] *= coeffs[elem-1];
         }
       }
@@ -394,11 +394,11 @@ public:
       /// @param[in] c bandwidth of the prolate spheroidal function
       /// @param[in] m parameter m of the prolate spheroidal function Smn(c,eta)
       /// @param[in] rEven true, if series starts from r=0, false if from r=1 (n-m of Smn is even or odd)
-      static void fillHelperMatrix(casa::Matrix<double> &B, const double c,int m, bool rEven) {
+      static void fillHelperMatrix(casacore::Matrix<double> &B, const double c,int m, bool rEven) {
           ASKAPASSERT(B.nrow() == B.ncolumn());
           ASKAPASSERT(B.nrow() > 1);
           const double cSquared = c*c;
-          for (casa::uInt row = 0; row<B.nrow(); ++row) {
+          for (casacore::uInt row = 0; row<B.nrow(); ++row) {
                const int r = int(row)*2 + (rEven ? 0 : 1);
                const int l = r + m; // order of Legendre function P_l^m
                B(row,row) = double(l*(l+1)) + cSquared*(double(2*l+3)*(l+m)*(l-m)+double(2*l-1)*(l+m+1)*(l-m+1)) /
@@ -422,7 +422,7 @@ public:
       /// @param[in] coeffs output coefficients for Legendre series (to be resized to match the size of B)
       /// @return eigenvalue
       /// @note an exception is thrown if there is an error solving eigensystem
-      static double legendreCoeffs(const casa::Matrix<double> &B, casa::Vector<double> &coeffs) 
+      static double legendreCoeffs(const casacore::Matrix<double> &B, casacore::Vector<double> &coeffs) 
       {
          ASKAPASSERT(B.nrow() == B.ncolumn());
          coeffs.resize(B.nrow());
@@ -435,17 +435,17 @@ public:
 
          // fill the matrix (a bit of an overkill, but it is faster to reuse existing code
          // than to write something for tridiagonal matrix)
-         for (casa::uInt row = 0; row<B.nrow(); ++row) {
-              for (casa::uInt col = 0; col<B.ncolumn(); ++col) {
+         for (casacore::uInt row = 0; row<B.nrow(); ++row) {
+              for (casacore::uInt col = 0; col<B.ncolumn(); ++col) {
                    gsl_matrix_set(A, row, col, B(row,col));
               }
          }
          
          const int status = gsl_eigen_symmv(A,eVal,eVec,work);
          double result = -1.;
-         casa::uInt optIndex = 0;
+         casacore::uInt optIndex = 0;
          if (status == GSL_SUCCESS) {
-             for (casa::uInt elem = 0; elem<coeffs.nelements(); ++elem) {
+             for (casacore::uInt elem = 0; elem<coeffs.nelements(); ++elem) {
                   const double val = gsl_vector_get(eVal,elem);
                   if ((elem == 0) || (val<result)) {
                       result = val;
@@ -468,7 +468,7 @@ public:
          
          /*
          // consistency check
-         casa::Vector<double> test(coeffs.nelements(),0);
+         casacore::Vector<double> test(coeffs.nelements(),0);
          for (size_t i=0;i<coeffs.nelements(); ++i) {
               for (size_t k=0;k<coeffs.nelements(); ++k) {
                    test[i]+=B(i,k)*coeffs[k];
@@ -488,7 +488,7 @@ public:
       /// @param[in] diag main diagonal of the matrix
       /// @param[in] sdiag2 squares of the subdiagonal of the matrix
       /// @return smallest eigenvalue
-      static double smallestEigenValue(const casa::Vector<double> &diag, const casa::Vector<double> &sdiag2) 
+      static double smallestEigenValue(const casacore::Vector<double> &diag, const casacore::Vector<double> &sdiag2) 
       {
          ASKAPASSERT(diag.nelements() == sdiag2.nelements() + 1);
          ASKAPASSERT(diag.nelements() > 1);
@@ -500,7 +500,7 @@ public:
          
          // fill the matrix (a bit of an overkill, but it is faster to reuse existing code
          // than to write something for tridiagonal matrix)
-         for (casa::uInt elem = 0; elem<diag.nelements(); ++elem) {
+         for (casacore::uInt elem = 0; elem<diag.nelements(); ++elem) {
               gsl_matrix_set(A, elem, elem, diag[elem]);
               if ((elem + 1 < diag.nelements()) != 0) {
                   ASKAPASSERT(sdiag2[elem]>=0.);
@@ -511,7 +511,7 @@ public:
          const int status = gsl_eigen_symm(A,eVal, work);
          double result = -1.;
          if (status == GSL_SUCCESS) {
-             for (casa::uInt elem = 0; elem<diag.nelements(); ++elem) {
+             for (casacore::uInt elem = 0; elem<diag.nelements(); ++elem) {
                   const double val = gsl_vector_get(eVal,elem);
                   if ((elem == 0) || (val<result)) {
                       result = val;
@@ -533,7 +533,7 @@ public:
       /// @param[in] B matrix to decompose      
       /// @param[out] V optimum eigenvector (will be resized to B.nrow())
       /// @return largest eigenvalue (by absolute value)
-      static casa::DComplex optimumEigenVector(const casa::Matrix<casa::DComplex> &B, casa::Vector<casa::DComplex> &V)
+      static casacore::DComplex optimumEigenVector(const casacore::Matrix<casacore::DComplex> &B, casacore::Vector<casacore::DComplex> &V)
       {
          ASKAPASSERT(B.nrow() == B.ncolumn());
          ASKAPASSERT(B.nrow() > 1);
@@ -544,8 +544,8 @@ public:
          
          for (size_t row=0; row<B.nrow(); ++row) {
               for (size_t col=0; col<B.ncolumn(); ++col) {
-                   const double reB = casa::real(B(row,col));
-                   const double imB = casa::imag(B(row,col));
+                   const double reB = casacore::real(B(row,col));
+                   const double imB = casacore::imag(B(row,col));
                    gsl_matrix_set(A, row*2, col*2, reB);
                    gsl_matrix_set(A, row*2+1, col*2+1, reB);
                    gsl_matrix_set(A, row*2, col*2+1, -imB);
@@ -554,16 +554,16 @@ public:
          }
          const int status = gsl_eigen_nonsymmv(A,eVal,eVec, work);
          
-         casa::Complex peakVal(0.,0.);
+         casacore::Complex peakVal(0.,0.);
          if (status == 0) {
              // eigenproblem solved successfully
              size_t peakIndex = 0;
              
              // search for peak eigenvalue
              for (size_t el=0; el<B.nrow()*2; ++el) {
-                  casa::DComplex val = getComplex(gsl_vector_complex_get(eVal,el));              
+                  casacore::DComplex val = getComplex(gsl_vector_complex_get(eVal,el));              
                   std::cout<<"el="<<el<<" "<<val<<std::endl;
-                  if ((el == 0) || (casa::abs(val) > casa::abs(peakVal))) {
+                  if ((el == 0) || (casacore::abs(val) > casacore::abs(peakVal))) {
                       peakIndex = el;
                       peakVal = val;
                   }
@@ -578,7 +578,7 @@ public:
              // extract the appropriate eigenvector
              V.resize(B.nrow());
              for (size_t i=0; i<B.nrow(); ++i) {
-                  V[i] = getComplex(gsl_matrix_complex_get(eVec,  2*i,peakIndex))+casa::DComplex(0.,1.)*
+                  V[i] = getComplex(gsl_matrix_complex_get(eVec,  2*i,peakIndex))+casacore::DComplex(0.,1.)*
                              getComplex(gsl_matrix_complex_get(eVec, 2*i+1,peakIndex));                             
              }
          }
@@ -593,14 +593,14 @@ public:
       /// @brief helper method to evaluate (-1)^l
       /// @param[in] l integer power index
       /// @return 1 if l is even, -1 otherwise
-      static inline int negateForOdd(const casa::uInt l) { return (l%2 == 0) ? 1 : -1; } 
+      static inline int negateForOdd(const casacore::uInt l) { return (l%2 == 0) ? 1 : -1; } 
       
       /// @brief fill matrix B which has the same eigenvalues as the original problem
       /// @details See equation (8) in Karoui & Moumni (2008)
       /// @param[in] B matrix to fill (should already be sized)
       /// @param[in] c bandwidth of the prolate spheroidal function
       /// @param[in] nterms number of terms in the series expansion
-      static void fillMatrixB(casa::Matrix<casa::DComplex> &B, const double c, const int nterms = 15) {
+      static void fillMatrixB(casacore::Matrix<casacore::DComplex> &B, const double c, const int nterms = 15) {
           ASKAPASSERT(B.nrow() == B.ncolumn());
           ASKAPASSERT(B.nrow() > 1);
           ASKAPASSERT(nterms>1);
@@ -609,16 +609,16 @@ public:
           // Note, the matrix is rectangular. The last row is not used to fill
           // the matrix B, but is required to construct other elements of this supplementary matrix through
           // the recursion formula.
-          casa::Matrix<double> moments(nterms+1,B.nrow(),0.);
+          casacore::Matrix<double> moments(nterms+1,B.nrow(),0.);
           ASKAPASSERT(moments.ncolumn() >= 2);
           // fill the first two columns
-          for (casa::uInt l=0; l<moments.nrow(); ++l) {
+          for (casacore::uInt l=0; l<moments.nrow(); ++l) {
                moments(l,0) = (1. + negateForOdd(l))/(sqrt(2.)*(l + 1));
                moments(l,1) = sqrt(1.5)*(1. + negateForOdd(l+1))/(l + 2);               
           }
           // now fill other columns, if any
-          for (casa::uInt k=1; k + 1 < moments.ncolumn(); ++k) {
-               for (casa::uInt l=0; l + 1 < moments.nrow(); ++l) {
+          for (casacore::uInt k=1; k + 1 < moments.ncolumn(); ++k) {
+               for (casacore::uInt l=0; l + 1 < moments.nrow(); ++l) {
                     moments(l,k+1) = sqrt(double((2*k+1)*(2*k+3))/(k+1)/(k+1)) * moments(l+1,k) -
                           double(k)/(k+1)*sqrt(double(2*k+3)/(2*int(k)-1)) * moments(l, k-1);
                } 
@@ -627,17 +627,17 @@ public:
           // now fill the matrix B (approximation of the matrix for the Helmoltz equation operator in the 
           // Legendre basis)
           double coeff = 1.; // (c^l / l!)
-          B.set(casa::DComplex(0.,0.));
+          B.set(casacore::DComplex(0.,0.));
           for (int l = 0; l<nterms; ++l) {
                if (l != 0) {
                    coeff *= c / l;
                }
                // i^l goes in sequence 1,i,-1,-i,1,...
-               const casa::DComplex iPwrl = casa::DComplex((l % 4 > 1) ? -1. : 1.) * 
-                             ((l % 2 == 1) ? casa::DComplex(0.,1.) : casa::DComplex(1.,0.));
+               const casacore::DComplex iPwrl = casacore::DComplex((l % 4 > 1) ? -1. : 1.) * 
+                             ((l % 2 == 1) ? casacore::DComplex(0.,1.) : casacore::DComplex(1.,0.));
                // fill the actual elements of the matrix              
-               for (casa::uInt row = 0; row<B.nrow(); ++row) {
-                    for (casa::uInt col = 0; col<B.ncolumn(); ++col) {
+               for (casacore::uInt row = 0; row<B.nrow(); ++row) {
+                    for (casacore::uInt col = 0; col<B.ncolumn(); ++col) {
                          B(row,col) += iPwrl * coeff * moments(l,row) * moments(l, col); 
                     }
                }
@@ -657,21 +657,21 @@ int main(int argc, const char** argv)
             cmdlineparser::Parser parser; // a command line parser
             testGridder gridder;
             
-            const double cellSize=10*casa::C::arcsec;
+            const double cellSize=10*casacore::C::arcsec;
 
-            casa::Matrix<double> xform(2,2,0.);
+            casacore::Matrix<double> xform(2,2,0.);
             xform.diagonal().set(1.);
                
             scimath::Axes axes;
-            axes.addDirectionAxis(casa::DirectionCoordinate(casa::MDirection::J2000, 
-                      casa::Projection(casa::Projection::SIN), 0.,0.,cellSize,cellSize,xform,256.,256.));
+            axes.addDirectionAxis(casacore::DirectionCoordinate(casacore::MDirection::J2000, 
+                      casacore::Projection(casacore::Projection::SIN), 0.,0.,cellSize,cellSize,xform,256.,256.));
         
             accessors::DataAccessorStub acc(true);
             
-            const casa::IPosition shape(4,256,256,1,1);
+            const casacore::IPosition shape(4,256,256,1,1);
             gridder.initialiseGrid(axes,shape,false);
             gridder.grid(acc);
-            casa::Array<double> grid;
+            casacore::Array<double> grid;
             gridder.finaliseGrid(grid);        
         }
     } catch (const cmdlineparser::XParser &ex) {

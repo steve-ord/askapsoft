@@ -38,8 +38,8 @@
 #include <fitting/LinearSolver.h>
 #include <fitting/GenericNormalEquations.h>
 
-#include <askap/AskapError.h>
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapUtil.h>
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -65,10 +65,10 @@ namespace scimath
   public:
      void setUp() {
         itsNAnt = 6;
-        const casa::uInt nBaselines = itsNAnt*(itsNAnt-1)/2;
+        const casacore::uInt nBaselines = itsNAnt*(itsNAnt-1)/2;
         itsBaselines.resize(nBaselines);
-        for (casa::uInt ant1=0,baseline=0;ant1<itsNAnt;++ant1) {
-             for (casa::uInt ant2=ant1+1;ant2<itsNAnt;++ant2,++baseline) {
+        for (casacore::uInt ant1=0,baseline=0;ant1<itsNAnt;++ant1) {
+             for (casacore::uInt ant2=ant1+1;ant2<itsNAnt;++ant2,++baseline) {
                   ASKAPASSERT(baseline<nBaselines);
                   itsBaselines[baseline].first=ant1;
                   itsBaselines[baseline].second=ant2;
@@ -109,8 +109,8 @@ namespace scimath
          
          /// @brief read-only access method (enough for now)
          /// @return a reference to current element
-         casa::Complex operator*() const {
-             return casa::Complex(*itsRealIter,*itsImagIter);
+         casacore::Complex operator*() const {
+             return casacore::Complex(*itsRealIter,*itsImagIter);
          }
          
          /// @brief advance operator
@@ -153,7 +153,7 @@ namespace scimath
      void createParams(const Iter &iter, Params &params) const {
           params.reset();
           Iter cIter(iter);
-          for (casa::uInt ant=0; ant<itsNAnt; ++ant,++cIter) {
+          for (casacore::uInt ant=0; ant<itsNAnt; ++ant,++cIter) {
                params.add(parName(ant),*cIter);
           }
      }
@@ -162,7 +162,7 @@ namespace scimath
      /// @details
      /// @param[in] ant antenna number
      /// @return string with parameter name
-     std::string parName(casa::uInt ant) const {
+     std::string parName(casacore::uInt ant) const {
          ASKAPASSERT(ant<itsNAnt);
          return std::string("gain.")+utility::toString(ant);
      }
@@ -171,9 +171,9 @@ namespace scimath
      /// @details Exception is thrown, if parameter name is incompatible
      /// @param[in] par parameter name
      /// @return antenna number [0..itsNAnt-1]
-     casa::uInt antNumber(const std::string &par) const {
+     casacore::uInt antNumber(const std::string &par) const {
          ASKAPASSERT(par.find("gain.") == 0 && par.size()>5);
-         casa::uInt ant = utility::fromString<casa::uInt>(par.substr(5));
+         casacore::uInt ant = utility::fromString<casacore::uInt>(par.substr(5));
          ASKAPASSERT(ant<itsNAnt);
          return ant;
      }
@@ -196,7 +196,7 @@ namespace scimath
      /// @param[in] ne a reference to normal equations object
      void calcEquationsReal(GenericNormalEquations &ne) {
          ASKAPASSERT(itsBaselines.size() == itsRealMeasuredValues.size());
-         casa::Matrix<double> derivatives(itsBaselines.size(),itsNAnt,0.);
+         casacore::Matrix<double> derivatives(itsBaselines.size(),itsNAnt,0.);
          for (size_t baseline=0; baseline<itsBaselines.size(); ++baseline) {
               ASKAPASSERT(itsBaselines[baseline].first<itsNAnt);
               ASKAPASSERT(itsBaselines[baseline].second<itsNAnt);
@@ -206,16 +206,16 @@ namespace scimath
                     itsGuessedGains.scalarValue(parName(itsBaselines[baseline].first));
          }
          DesignMatrix designMatrix; // params: itsGuessedGaussian
-         for (casa::uInt ant=0; ant<itsNAnt; ++ant) {
+         for (casacore::uInt ant=0; ant<itsNAnt; ++ant) {
               designMatrix.addDerivative(parName(ant),derivatives.column(ant));
          }
-         casa::Vector<double> residual(itsRealMeasuredValues.copy());
+         casacore::Vector<double> residual(itsRealMeasuredValues.copy());
          for (size_t baseline=0; baseline<itsBaselines.size(); ++baseline) {
               residual[baseline] -= 
                  itsGuessedGains.scalarValue(parName(itsBaselines[baseline].first))*
                  itsGuessedGains.scalarValue(parName(itsBaselines[baseline].second)); 
          }
-         designMatrix.addResidual(residual,casa::Vector<double>(residual.size(),1.));
+         designMatrix.addResidual(residual,casacore::Vector<double>(residual.size(),1.));
          ne.add(designMatrix);
      }
        
@@ -243,14 +243,14 @@ namespace scimath
          // gradient. The second axis distinguishes between derivatives by
          // real part and derivatives by imaginary part of the appropriate 
          // gain coefficient.
-         casa::Cube<double> derivatives(itsBaselines.size()*2+1,2,itsNAnt,0.);
-         casa::Vector<double> residual(itsBaselines.size()*2+1);
+         casacore::Cube<double> derivatives(itsBaselines.size()*2+1,2,itsNAnt,0.);
+         casacore::Vector<double> residual(itsBaselines.size()*2+1);
          for (size_t baseline=0; baseline<itsBaselines.size(); ++baseline) {
               ASKAPASSERT(itsBaselines[baseline].first<itsNAnt);
               ASKAPASSERT(itsBaselines[baseline].second<itsNAnt);
-              casa::Complex g2 = itsGuessedGains.complexValue(parName(
+              casacore::Complex g2 = itsGuessedGains.complexValue(parName(
                                         itsBaselines[baseline].second));
-              casa::Complex g1 = itsGuessedGains.complexValue(parName(
+              casacore::Complex g1 = itsGuessedGains.complexValue(parName(
                                         itsBaselines[baseline].first));
               // d/dRe(g1)=conj(g2)
               derivatives(baseline*2,0,itsBaselines[baseline].first) = real(g2);
@@ -265,7 +265,7 @@ namespace scimath
               derivatives(baseline*2,1,itsBaselines[baseline].second) = imag(g1);
               derivatives(baseline*2+1,1,itsBaselines[baseline].second) = -real(g1);
  
-              const casa::Complex resBuf = itsComplexMeasuredValues[baseline] - 
+              const casacore::Complex resBuf = itsComplexMeasuredValues[baseline] - 
                                              g1*conj(g2);
               residual[baseline*2] = real(resBuf);
               residual[baseline*2+1] = imag(resBuf);
@@ -275,16 +275,16 @@ namespace scimath
                                                  parName(0)));
          derivatives(itsBaselines.size()*2,1,0) = 1.;
          */
-         const casa::Complex refGain = itsGuessedGains.complexValue(parName(0));
+         const casacore::Complex refGain = itsGuessedGains.complexValue(parName(0));
          residual[itsBaselines.size()*2] = -imag(refGain*itsRefPhase);
          derivatives(itsBaselines.size()*2,0,0) = imag(itsRefPhase);
          derivatives(itsBaselines.size()*2,1,0) = real(itsRefPhase);
          
          DesignMatrix designMatrix; // params: itsGuessedGains;
-         for (casa::uInt ant=0; ant<itsNAnt; ++ant) {
+         for (casacore::uInt ant=0; ant<itsNAnt; ++ant) {
               designMatrix.addDerivative(parName(ant),derivatives.xyPlane(ant));
          }
-         designMatrix.addResidual(residual,casa::Vector<double>(residual.size(),1.));
+         designMatrix.addResidual(residual,casacore::Vector<double>(residual.size(),1.));
          ne.add(designMatrix);
      }
 
@@ -301,7 +301,7 @@ namespace scimath
          solver.addNormalEquations(ne);
          solver.setAlgorithm(solverType);
          solver.solveNormalEquations(itsGuessedGains,q);
-         for (casa::uInt ant=0;ant<itsNAnt;++ant) {
+         for (casacore::uInt ant=0;ant<itsNAnt;++ant) {
               CPPUNIT_ASSERT(abs(itsGuessedGains.scalarValue(parName(ant))-
                                  trueGains[ant])<0.05);
          }
@@ -316,8 +316,8 @@ namespace scimath
          // correction factor to apply a phase shift to get a correct
          // absolute phase, which we can't determine in the calibration solution.
          // Antenna 0 is a reference.
-         itsRefPhase = casa::polar(casa::Float(1.),
-                             -casa::arg(itsTrueGains.complexValue(parName(0))));
+         itsRefPhase = casacore::polar(casacore::Float(1.),
+                             -casacore::arg(itsTrueGains.complexValue(parName(0))));
 
          predictComplex();
          const double guessedGainsReal[] = {1.,1.,1.,1.,1.,1.};
@@ -333,7 +333,7 @@ namespace scimath
               solver.setAlgorithm(solverType);
               solver.solveNormalEquations(itsGuessedGains,q);
          }
-         for (casa::uInt ant=0;ant<itsNAnt;++ant) {
+         for (casacore::uInt ant=0;ant<itsNAnt;++ant) {
              const std::string name = parName(ant);
              CPPUNIT_ASSERT(abs(itsTrueGains.complexValue(name)-
                       itsGuessedGains.complexValue(name))<1e-6);
@@ -349,15 +349,15 @@ namespace scimath
      /// @detail A complex number with amplitude of 1 and the phase
      /// equivalent to the phase of the gain of a reference antenna
      /// (we can't determine absolute phase and have to adopt something)
-     casa::Complex itsRefPhase;
+     casacore::Complex itsRefPhase;
      /// @brief data sample playing a role of measured real data
-     casa::Vector<double> itsRealMeasuredValues;
+     casacore::Vector<double> itsRealMeasuredValues;
      /// @brief data sample playing a role of measured complex data
-     casa::Vector<casa::Complex> itsComplexMeasuredValues;
+     casacore::Vector<casacore::Complex> itsComplexMeasuredValues;
      /// @brief first and second "antenna" corresponding to a baseline
-     std::vector<std::pair<casa::uInt, casa::uInt> > itsBaselines;
+     std::vector<std::pair<casacore::uInt, casacore::uInt> > itsBaselines;
      /// @brief number of antennae
-     casa::uInt itsNAnt;
+     casacore::uInt itsNAnt;
 };
 
 } // namespace scimath

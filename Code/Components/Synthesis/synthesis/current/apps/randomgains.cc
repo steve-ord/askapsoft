@@ -31,8 +31,8 @@
 #include <casacore/casa/BasicSL/Complex.h>
 
 // own includes
-#include <askap/AskapUtil.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapUtil.h>
+#include <askap/askap/AskapError.h>
 
 // command line parser
 #include <CommandLineParser.h>
@@ -58,7 +58,7 @@ struct ComplexRandomGainGenerator {
   /// can be read, the inital seed will be set to these numbers. The seed values 
   /// are written back to the file in the destructor. Therefore, the default
   /// behavior is to generate a different set of values for each run of the code
-  ComplexRandomGainGenerator(casa::Double minAmp, casa::Double maxAmp, 
+  ComplexRandomGainGenerator(casacore::Double minAmp, casacore::Double maxAmp, 
                              bool reseed = true);
   
   /// @brief descructor
@@ -67,13 +67,13 @@ struct ComplexRandomGainGenerator {
   
   /// @brief main operator 
   /// @return a random complex number with the amplitude in the given bounds
-  casa::Complex operator()() const 
-    {return casa::polar(casa::Float(itsAmp()),casa::Float(itsPhase()));}
+  casacore::Complex operator()() const 
+    {return casacore::polar(casacore::Float(itsAmp()),casacore::Float(itsPhase()));}
     
 private:
-  mutable casa::MLCG itsGen;
-  mutable casa::Uniform itsPhase;
-  mutable casa::Uniform itsAmp;
+  mutable casacore::MLCG itsGen;
+  mutable casacore::Uniform itsPhase;
+  mutable casacore::Uniform itsAmp;
 };
 
 /// initialize generator, it generates a random phase and the amplitude
@@ -86,8 +86,8 @@ private:
 /// can be read, the inital seed will be set to these numbers. The seed values 
 /// are written back to the file in the destructor. Therefore, the default
 /// behavior is to generate a different set of values for each run of the code
-ComplexRandomGainGenerator::ComplexRandomGainGenerator(casa::Double minAmp, 
-                      casa::Double maxAmp, bool reseed) : itsGen(0,10),
+ComplexRandomGainGenerator::ComplexRandomGainGenerator(casacore::Double minAmp, 
+                      casacore::Double maxAmp, bool reseed) : itsGen(0,10),
         itsPhase(&itsGen,0.,2.*M_PI), itsAmp(&itsGen,minAmp,maxAmp) 
 {
   if (reseed) {
@@ -125,8 +125,8 @@ ComplexRandomGainGenerator::~ComplexRandomGainGenerator()
 /// @param[in] ant antenna number
 /// @param[in] pol polarisation (0 or 1 - translated to g11 and g22)
 /// @param[in] feed feed number (-1 means feed-independent)
-std::string gainParameterName(casa::uInt ant, casa::uInt pol,
-                              casa::Int feed = -1)
+std::string gainParameterName(casacore::uInt ant, casacore::uInt pol,
+                              casacore::Int feed = -1)
 {
   std::string res("gain.");
   if (!pol) {
@@ -137,9 +137,9 @@ std::string gainParameterName(casa::uInt ant, casa::uInt pol,
      ASKAPTHROW(askap::AskapError, 
                  "Only parallel hand polarisations are allowed here");
   }
-  res+=askap::utility::toString<casa::uInt>(ant);
+  res+=askap::utility::toString<casacore::uInt>(ant);
   if (feed>=0) {
-      res+="."+askap::utility::toString<casa::uInt>(casa::uInt(feed));
+      res+="."+askap::utility::toString<casacore::uInt>(casacore::uInt(feed));
   }
   return res;
 }
@@ -150,8 +150,8 @@ std::string gainParameterName(casa::uInt ant, casa::uInt pol,
 /// @param[in] ant antenna number
 /// @param[in] pol polarisation (0 or 1 - translated to d12 and d21)
 /// @param[in] beam beam number (-1 for beam-independent case)
-std::string leakageParameterName(casa::uInt ant, casa::uInt pol,
-                              casa::Int beam = -1)
+std::string leakageParameterName(casacore::uInt ant, casacore::uInt pol,
+                              casacore::Int beam = -1)
 {
   std::string res("leakage.");
   if (!pol) {
@@ -162,9 +162,9 @@ std::string leakageParameterName(casa::uInt ant, casa::uInt pol,
      ASKAPTHROW(askap::AskapError, 
                  "Only d12 or d21 are allowed here");
   }
-  res+=askap::utility::toString<casa::uInt>(ant);
+  res+=askap::utility::toString<casacore::uInt>(ant);
   if (beam >= 0) {
-      res+="."+askap::utility::toString<casa::uInt>(casa::uInt(beam));
+      res+="."+askap::utility::toString<casacore::uInt>(casacore::uInt(beam));
   }
   return res;
 }
@@ -218,13 +218,13 @@ int main(int argc, char **argv)
            for (size_t pol = 0; pol<nPol; ++pol) {
                 for (int feed = 0; feed<(nFeed<0 ? 1 : nFeed); ++feed) { 
                      if (pol < 2) {
-                         //casa::Complex value = 1.;//gen();
-                         casa::Complex value = gen();
+                         //casacore::Complex value = 1.;//gen();
+                         casacore::Complex value = gen();
                          const std::string parName = gainParameterName(ant,pol, nFeed<0 ? nFeed : feed);
                          os<<parName<<" = ["<<real(value)<<","<<imag(value)<<"]"<<std::endl;
                      } else {
                          //if (pol==3) continue;
-                         casa::Complex value = leakageGen();
+                         casacore::Complex value = leakageGen();
                          const std::string parName = leakageParameterName(ant, pol - 2, nFeed<0 ? nFeed : feed);
                          os<<parName<<" = ["<<real(value)<<","<<imag(value)<<"]"<<std::endl;
                          /*

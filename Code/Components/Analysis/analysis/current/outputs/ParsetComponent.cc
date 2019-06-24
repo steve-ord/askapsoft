@@ -28,8 +28,8 @@
 ///
 #include <outputs/ParsetComponent.h>
 #include <askap_analysis.h>
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 #include <outputs/CataloguePreparation.h>
 
 #include <sourcefitting/RadioSource.h>
@@ -56,7 +56,7 @@ void ParsetComponent::defineComponent(sourcefitting::RadioSource *src,
 {
     ASKAPCHECK(itsHead != 0, "Have not set the FITS header for the parset component");
 
-    casa::Gaussian2D<Double> gauss = src->gaussFitSet(fitType).at(fitNum);
+    casacore::Gaussian2D<Double> gauss = src->gaussFitSet(fitType).at(fitNum);
 
     double srcRA, srcDec, zworld;
     itsHead->pixToWCS(gauss.xCenter(), gauss.yCenter(), src->getZcentre(),

@@ -32,10 +32,10 @@
 #include <askap_accessors.h>
 
 // enable logging when it is actually used
-//#include <askap/AskapLogging.h>
+//#include <askap/askap/AskapLogging.h>
 //ASKAP_LOGGER(logger, "");
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <casacore/tables/Tables/ScalarColumn.h>
 #include <casacore/tables/Tables/TableRecord.h>
@@ -43,13 +43,13 @@
 using namespace askap;
 using namespace askap::accessors;
 using namespace std;
-using namespace casa;
+using namespace casacore;
 
 
 /// read all required information from the DATA_DESCRIPTION subtable
 /// @param ms an input measurement set (a table which has a
 /// DATA_DESCRIPTION subtable defined)
-MemTableDataDescHolder::MemTableDataDescHolder(const casa::Table &ms)
+MemTableDataDescHolder::MemTableDataDescHolder(const casacore::Table &ms)
 {
   Table dataDescrSubtable=ms.keywordSet().asTable("DATA_DESCRIPTION");
   ROScalarColumn<Int> polID(dataDescrSubtable,"POLARIZATION_ID");

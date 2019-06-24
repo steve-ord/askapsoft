@@ -42,7 +42,7 @@
 // own includes
 #include <profile/ProfileNode.h>
 #include <profile/ProfileData.h>
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapUtil.h>
 
 // boost includes
 #include <boost/shared_ptr.hpp>

@@ -32,7 +32,7 @@
 #include <casacore/images/Images/SubImage.h>
 #include <casacore/images/Images/ImageStatistics.h>
 #include <CommandLineParser.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/coordinates/Coordinates/DirectionCoordinate.h>
 #include <casacore/coordinates/Coordinates/CoordinateSystem.h>
 #include <casacore/coordinates/Coordinates/Coordinate.h>
@@ -47,12 +47,12 @@
 
 using namespace askap;
 
-void printDirection(std::ostream &os,const casa::MDirection &dir)  {
+void printDirection(std::ostream &os,const casacore::MDirection &dir)  {
     double lngbuf=dir.getValue().getLong("deg").getValue();
     if (lngbuf<0) lngbuf+=360.;
-    os<<(dir.getRefString()!="GALACTIC"?casa::MVAngle::Format(casa::MVAngle::TIME):
-          casa::MVAngle::Format(casa::MVAngle::ANGLE))<<casa::MVAngle(casa::Quantity(lngbuf,"deg"))<<" "<<
-          casa::MVAngle(dir.getValue().getLat("deg"))<<
+    os<<(dir.getRefString()!="GALACTIC"?casacore::MVAngle::Format(casacore::MVAngle::TIME):
+          casacore::MVAngle::Format(casacore::MVAngle::ANGLE))<<casacore::MVAngle(casacore::Quantity(lngbuf,"deg"))<<" "<<
+          casacore::MVAngle(dir.getValue().getLat("deg"))<<
           " ("<<dir.getRefString()<<")";
 }
 
@@ -69,20 +69,20 @@ int main(int argc, const char** argv) {
 
 	 // I hope const_cast is temporary here
 	 parser.process(argc, const_cast<char**> (argv));
-     casa::PagedImage<casa::Float> img(imgfile.getValue());
-     casa::ImageStatistics<casa::Float> imstat(img, casa::False);
+     casacore::PagedImage<casacore::Float> img(imgfile.getValue());
+     casacore::ImageStatistics<casacore::Float> imstat(img, casacore::False);
      float tmin,tmax;
      imstat.getFullMinMax(tmin,tmax);
-     casa::IPosition minPos,maxPos;
+     casacore::IPosition minPos,maxPos;
      imstat.getMinMaxPos(minPos,maxPos);
-     casa::Int direction_coordinate = img.coordinates().findCoordinate(casa::Coordinate::DIRECTION);
+     casacore::Int direction_coordinate = img.coordinates().findCoordinate(casacore::Coordinate::DIRECTION);
      ASKAPASSERT(direction_coordinate>=0);
      ASKAPASSERT(maxPos.nelements()>=2);
-     const casa::DirectionCoordinate &dc = img.coordinates().directionCoordinate(direction_coordinate);
-     casa::Vector<casa::Double> pixel(2);
-     pixel(0)=casa::Double(maxPos[0]);
-     pixel(1)=casa::Double(maxPos[1]);
-     casa::MDirection res;
+     const casacore::DirectionCoordinate &dc = img.coordinates().directionCoordinate(direction_coordinate);
+     casacore::Vector<casacore::Double> pixel(2);
+     pixel(0)=casacore::Double(maxPos[0]);
+     pixel(1)=casacore::Double(maxPos[1]);
+     casacore::MDirection res;
      ASKAPASSERT(dc.toWorld(res,pixel));
      
      // print peak in the image and position of the peak 
@@ -93,23 +93,23 @@ int main(int argc, const char** argv) {
      std::cout<<std::setprecision(15)<<res.getValue().getLong("deg").getValue()<<" "<<
                 res.getValue().getLat("deg").getValue()<<" # RA DEC"<<std::endl;
      
-     casa::Array<float> statBuf;
-     if (imstat.getConvertedStatistic(statBuf,casa::LatticeStatsBase::RMS)) {
-         casa::Vector<float> statVec(statBuf.reform(casa::IPosition(1,statBuf.nelements())));
+     casacore::Array<float> statBuf;
+     if (imstat.getConvertedStatistic(statBuf,casacore::LatticeStatsBase::RMS)) {
+         casacore::Vector<float> statVec(statBuf.reform(casacore::IPosition(1,statBuf.nelements())));
          ASKAPCHECK(statVec.nelements() == 1, "Expect exactly one element in the array returned by getConvertedStatistics; you have: "<<statVec);         
          std::cout<<statVec[0]<<" ";
      }
-     if (imstat.getConvertedStatistic(statBuf,casa::LatticeStatsBase::MEDIAN)) {
-         casa::Vector<float> statVec(statBuf.reform(casa::IPosition(1,statBuf.nelements())));
+     if (imstat.getConvertedStatistic(statBuf,casacore::LatticeStatsBase::MEDIAN)) {
+         casacore::Vector<float> statVec(statBuf.reform(casacore::IPosition(1,statBuf.nelements())));
          ASKAPCHECK(statVec.nelements() == 1, "Expect exactly one element in the array returned by getConvertedStatistics; you have: "<<statVec);         
          std::cout<<statVec[0]<<" # RMS MEDIAN"<<std::endl;
      }
      if (doWtStats.defined()) {
          // making a slice to get inner quarter
-         const casa::IPosition shape = img.shape();
+         const casacore::IPosition shape = img.shape();
          ASKAPCHECK(shape.nelements() >= 2, "Need 2D images for the '-w' option");
-         casa::IPosition blc(shape.nelements(),0);
-         casa::IPosition trc(shape);
+         casacore::IPosition blc(shape.nelements(),0);
+         casacore::IPosition trc(shape);
          for (size_t dim = 0; dim<trc.nelements(); ++dim) {
               --trc[dim];
               if (dim>=2) {
@@ -122,9 +122,9 @@ int main(int argc, const char** argv) {
          trc[1] = 3*blc[1];
          ASKAPCHECK(blc[0]>=0 && blc[1]>=0, "BLC is negative: "<<blc<<", shape="<<shape);
          ASKAPCHECK(trc[1]<shape[1] && trc[0]<shape[0], "TRC extends beyond the edge: "<<trc<<", shape="<<shape<<" blc="<<blc);
-         casa::Slicer slc(blc,trc,casa::IPosition(shape.nelements(),1),casa::Slicer::endIsLast);
-         casa::SubImage<casa::Float> si(img,slc,casa::AxesSpecifier(casa::True));
-         casa::ImageStatistics<casa::Float> imStatWt(si, casa::False);
+         casacore::Slicer slc(blc,trc,casacore::IPosition(shape.nelements(),1),casacore::Slicer::endIsLast);
+         casacore::SubImage<casacore::Float> si(img,slc,casacore::AxesSpecifier(casacore::True));
+         casacore::ImageStatistics<casacore::Float> imStatWt(si, casacore::False);
          imStatWt.getFullMinMax(tmin,tmax);
          std::cout<<tmax<<" "<<tmin<<" # MAX MIN in the inner quarter"<<std::endl; 
      }     

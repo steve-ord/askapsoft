@@ -34,9 +34,9 @@
 
 #include <corrinterfaces/CorrRunner.h>
 #include <corrinterfaces/CorrRunnerThread.h>
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapUtil.h>
 #include <askap_swcorrelator.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 #include <swcorrelator/MonitorFactory.h>
 #include <corrinterfaces/CallBackMonitor.h>
 
@@ -68,9 +68,9 @@ CorrRunner::CorrRunner() : itsIsRunning(false), itsStatus("UNINITIALISED")
   MonitorFactory::addPreDefinedMonitor<CallBackMonitor>();
   // a work-around for casacore's lack of thread-safety
   // trigger a dummy measures calculation to get measures set up their caches in the main thread and avoid race condition
-  const casa::MVEpoch junk(55e9);
-  casa::MEpoch::Convert(casa::MEpoch(junk, casa::MEpoch::Ref(casa::MEpoch::TAI)), 
-                             casa::MEpoch::Ref(casa::MEpoch::UTC))();
+  const casacore::MVEpoch junk(55e9);
+  casacore::MEpoch::Convert(casacore::MEpoch(junk, casacore::MEpoch::Ref(casacore::MEpoch::TAI)), 
+                             casacore::MEpoch::Ref(casacore::MEpoch::UTC))();
 }
 
 /// @brief setup call back function

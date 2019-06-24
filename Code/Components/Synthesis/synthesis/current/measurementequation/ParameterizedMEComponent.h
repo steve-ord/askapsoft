@@ -39,7 +39,7 @@
 #include <fitting/Params.h>
 #include <measurementequation/MEComponent.h>
 #include <fitting/ComplexDiff.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 
 namespace askap {

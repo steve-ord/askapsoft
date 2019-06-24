@@ -31,8 +31,8 @@
 #include "askap_pipelinetasks.h"
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 #include "boost/scoped_ptr.hpp"
 #include "Common/ParameterSet.h"
 
@@ -50,7 +50,7 @@
 using namespace askap;
 using namespace askap::cp::pipelinetasks;
 using namespace askap::cp::sms::client;
-using namespace casa;
+using namespace casacore;
 
 ASKAP_LOGGER(logger, ".CModelWorker");
 
@@ -72,7 +72,7 @@ void CModelWorker::run(void)
 
     for (unsigned int term = 0; term < nterms; ++term) {
         // Create a TempImage and the component imager
-        casa::TempImage<casa::Float> image = ImageFactory::createTempImage(parset);
+        casacore::TempImage<casacore::Float> image = ImageFactory::createTempImage(parset);
         ComponentImagerWrapper imager(parset);
 
         // Signal master ready, receive and image components until the master

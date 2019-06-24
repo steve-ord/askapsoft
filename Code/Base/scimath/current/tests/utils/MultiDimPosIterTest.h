@@ -34,8 +34,8 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <utils/MultiDimPosIter.h>
-#include <askap/AskapUtil.h>
+#include <askap/scimath/utils/MultiDimPosIter.h>
+#include <askap/askap/AskapUtil.h>
 
 #include <vector>
 
@@ -57,26 +57,26 @@ namespace scimath {
            CPPUNIT_TEST_SUITE_END();
        public:
            void testFullDim() {
-               MultiDimPosIter it(casa::IPosition(2,3,5));
+               MultiDimPosIter it(casacore::IPosition(2,3,5));
                doTestFullDim(it);
                MultiDimPosIter it2;
-               it2.init(casa::IPosition(2,3,5));
+               it2.init(casacore::IPosition(2,3,5));
                doTestFullDim(it2);               
            }
            
            void doTestFullDim(MultiDimPosIter &it) {    
                CPPUNIT_ASSERT(it.hasMore());
-               CPPUNIT_ASSERT(it.cursor().isEqual(casa::IPosition(2,0)));
+               CPPUNIT_ASSERT(it.cursor().isEqual(casacore::IPosition(2,0)));
                for (int y = 0; y < 5; ++y) {
                     // first index is the fastest to change
                     for (int x = 0; x < 3; ++x, it.next()) {
-                         CPPUNIT_ASSERT(it.cursor().isEqual(casa::IPosition(2,x,y)));                        
+                         CPPUNIT_ASSERT(it.cursor().isEqual(casacore::IPosition(2,x,y)));                        
                          CPPUNIT_ASSERT(it.hasMore());               
                     }
                }
                CPPUNIT_ASSERT(!it.hasMore());
                it.origin();
-               CPPUNIT_ASSERT(it.cursor().isEqual(casa::IPosition(2,0)));
+               CPPUNIT_ASSERT(it.cursor().isEqual(casacore::IPosition(2,0)));
                CPPUNIT_ASSERT(it.hasMore());                                             
            }
            
@@ -88,56 +88,56 @@ namespace scimath {
            }
 
            void testRange() {
-               MultiDimPosIter it(casa::IPosition(2,4,6), casa::IPosition(2,1,2), casa::IPosition(2,3,5));
+               MultiDimPosIter it(casacore::IPosition(2,4,6), casacore::IPosition(2,1,2), casacore::IPosition(2,3,5));
                doTestRange(it);
                MultiDimPosIter it2;
-               it2.init(casa::IPosition(2,4,6), casa::IPosition(2,1,2), casa::IPosition(2,3,5));
+               it2.init(casacore::IPosition(2,4,6), casacore::IPosition(2,1,2), casacore::IPosition(2,3,5));
                doTestRange(it2);                      
            }
            
            void doTestRange(MultiDimPosIter &it) {
                CPPUNIT_ASSERT(it.hasMore());
-               CPPUNIT_ASSERT(it.cursor().isEqual(casa::IPosition(2,1,2)));
+               CPPUNIT_ASSERT(it.cursor().isEqual(casacore::IPosition(2,1,2)));
                for (int y = 2; y <= 5; ++y) {
                     // first index is the fastest to change
                     for (int x = (y == 2 ? 1 : 0); x <= 3; ++x, it.next()) {
-                         CPPUNIT_ASSERT(it.cursor().isEqual(casa::IPosition(2,x,y)));                        
+                         CPPUNIT_ASSERT(it.cursor().isEqual(casacore::IPosition(2,x,y)));                        
                          CPPUNIT_ASSERT(it.hasMore());               
                     }
                }
                CPPUNIT_ASSERT(!it.hasMore());
                it.origin();
-               CPPUNIT_ASSERT(it.cursor().isEqual(casa::IPosition(2,1,2)));
+               CPPUNIT_ASSERT(it.cursor().isEqual(casacore::IPosition(2,1,2)));
                CPPUNIT_ASSERT(it.hasMore());                  
            }
            
            void testIncompleteRange() {
-              MultiDimPosIter it(casa::IPosition(2,3,5), casa::IPosition(2,1,0), casa::IPosition(2,0,1));
+              MultiDimPosIter it(casacore::IPosition(2,3,5), casacore::IPosition(2,1,0), casacore::IPosition(2,0,1));
               CPPUNIT_ASSERT(it.hasMore());
-              CPPUNIT_ASSERT(it.cursor().isEqual(casa::IPosition(2,1,0)));
+              CPPUNIT_ASSERT(it.cursor().isEqual(casacore::IPosition(2,1,0)));
               it.next();
               CPPUNIT_ASSERT(it.hasMore());
-              CPPUNIT_ASSERT(it.cursor().isEqual(casa::IPosition(2,2,0)));
+              CPPUNIT_ASSERT(it.cursor().isEqual(casacore::IPosition(2,2,0)));
               it.next();
               CPPUNIT_ASSERT(it.hasMore());
-              CPPUNIT_ASSERT(it.cursor().isEqual(casa::IPosition(2,0,1)));
+              CPPUNIT_ASSERT(it.cursor().isEqual(casacore::IPosition(2,0,1)));
               it.next();
               CPPUNIT_ASSERT(!it.hasMore());               
            }
            
-           void doTestSplit(casa::uInt nX, casa::uInt nY, casa::uInt nChunks) {
-               std::vector<casa::IPosition> results;
+           void doTestSplit(casacore::uInt nX, casacore::uInt nY, casacore::uInt nChunks) {
+               std::vector<casacore::IPosition> results;
                results.reserve(nX * nY);
                for (int y = 0; y < static_cast<int>(nY); ++y) {
                     // first index is the fastest to change
                     for (int x = 0; x < static_cast<int>(nX); ++x) {
-                         results.push_back(casa::IPosition(2,x,y));
+                         results.push_back(casacore::IPosition(2,x,y));
                     }
                }
-               casa::uInt count = 0;
-               for (casa::uInt chunk = 0; chunk < nChunks; ++chunk) {
+               casacore::uInt count = 0;
+               for (casacore::uInt chunk = 0; chunk < nChunks; ++chunk) {
                     MultiDimPosIter it;
-                    for (it.init(casa::IPosition(2,static_cast<int>(nX),static_cast<int>(nY)),nChunks,chunk); it.hasMore(); it.next(),++count) {
+                    for (it.init(casacore::IPosition(2,static_cast<int>(nX),static_cast<int>(nY)),nChunks,chunk); it.hasMore(); it.next(),++count) {
                          CPPUNIT_ASSERT(count < results.size());
                          CPPUNIT_ASSERT(it.cursor().isEqual(results[count]));                                                 
                     }
@@ -157,14 +157,14 @@ namespace scimath {
            
            void testStartAfterEnd() {
                // the following should throw AskapError because start is beyond end
-               MultiDimPosIter it(casa::IPosition(2,3,5), casa::IPosition(2,0,2), casa::IPosition(2,2,0));               
+               MultiDimPosIter it(casacore::IPosition(2,3,5), casacore::IPosition(2,0,2), casacore::IPosition(2,2,0));               
            }
            
            void testStartAfterEnd1() {
                // the following should throw AskapError because start is beyond end
                MultiDimPosIter it;
                // the following should throw AskapError because start is beyond end
-               it.init(casa::IPosition(2,3,5), casa::IPosition(2,0,2), casa::IPosition(2,2,0));               
+               it.init(casacore::IPosition(2,3,5), casacore::IPosition(2,0,2), casacore::IPosition(2,2,0));               
            }
     };
     

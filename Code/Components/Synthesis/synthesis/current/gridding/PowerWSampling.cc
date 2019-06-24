@@ -36,7 +36,7 @@
 ///
 
 #include <gridding/PowerWSampling.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <cmath>
 
 using namespace askap;

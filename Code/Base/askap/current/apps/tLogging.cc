@@ -26,7 +26,7 @@
 
 // ASKAPsoft includes
 #include <askap_askap.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 
 using namespace askap;
 

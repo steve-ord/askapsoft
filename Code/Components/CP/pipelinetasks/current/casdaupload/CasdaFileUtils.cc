@@ -36,9 +36,9 @@
 #include <fstream>
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
-#include "askap/AskapUtil.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapUtil.h"
 #include "casacore/casa/Quanta/MVTime.h"
 #include "boost/filesystem.hpp"
 
@@ -149,9 +149,9 @@ void CasdaFileUtils::copyAndChecksum(const boost::filesystem::path& infile,
 void CasdaFileUtils::writeReadyFile(const boost::filesystem::path& outfile)
 {
     ofstream fs(outfile.c_str());
-    casa::Quantity today;
-    casa::MVTime::read(today, "today");
-    fs << casa::MVTime(today).string(casa::MVTime::FITS) << endl;
+    casacore::Quantity today;
+    casacore::MVTime::read(today, "today");
+    fs << casacore::MVTime(today).string(casacore::MVTime::FITS) << endl;
     if (!fs) {
         ASKAPTHROW(AskapError, "Error writing READY file");
     }

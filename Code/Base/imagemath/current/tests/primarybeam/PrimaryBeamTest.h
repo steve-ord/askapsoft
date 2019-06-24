@@ -12,7 +12,7 @@
 
 #include <casacore/coordinates/Coordinates/CoordinateSystem.h>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -21,7 +21,7 @@
 
 
 
-using namespace casa;
+using namespace casacore;
 
 
 namespace askap
@@ -44,23 +44,23 @@ namespace askap
   private:
       /// @brief method to access image for primary beam tests
 
-      casa::CoordinateSystem makeCoords() {
+      casacore::CoordinateSystem makeCoords() {
 
           // Direction Coordinate
-          casa::Matrix<casa::Double> xform(2,2);                                    // 1
+          casacore::Matrix<casacore::Double> xform(2,2);                                    // 1
           xform = 0.0; xform.diagonal() = 1.0;                          // 2
-          casa::DirectionCoordinate radec(casa::MDirection::J2000,                  // 3
-              casa::Projection(casa::Projection::SIN),        // 4
-              135*casa::C::pi/180.0, 60*casa::C::pi/180.0,    // 5
-              -0.005*casa::C::pi/180.0, 0.005*casa::C::pi/180,        // 6
+          casacore::DirectionCoordinate radec(casacore::MDirection::J2000,                  // 3
+              casacore::Projection(casacore::Projection::SIN),        // 4
+              135*casacore::C::pi/180.0, 60*casacore::C::pi/180.0,    // 5
+              -0.005*casacore::C::pi/180.0, 0.005*casacore::C::pi/180,        // 6
               xform,                              // 7
               128.0, 128.0,                       // 8
               999.0, 999.0);
 
-          casa::Vector<casa::String> units(2); units = "deg";                        //  9
+          casacore::Vector<casacore::String> units(2); units = "deg";                        //  9
           radec.setWorldAxisUnits(units);                               // 10
 
-          casa::Vector<casa::Double> world(2), pixel(2);                            // 11
+          casacore::Vector<casacore::Double> world(2), pixel(2);                            // 11
           pixel = 138.0;                                                // 12
 
           CPPUNIT_ASSERT(radec.toWorld(world, pixel));                        // 13
@@ -125,14 +125,14 @@ namespace askap
       void testEvaluateGaussian() {
           LOFAR::ParameterSet parset;
 
-          const casa::IPosition shape(2,256,256);
-          casa::Array<float> arr(shape);
+          const casacore::IPosition shape(2,256,256);
+          casacore::Array<float> arr(shape);
           arr.set(1.);
-          casa::CoordinateSystem coordsys(makeCoords());
+          casacore::CoordinateSystem coordsys(makeCoords());
 
 
-          casa::Vector<double> pixel(2,0.);
-          casa::MVDirection world;
+          casacore::Vector<double> pixel(2,0.);
+          casacore::MVDirection world;
           double offsetBeam = 0;
           double frequency = 1.0E9; // 1GHz
 
@@ -144,14 +144,14 @@ namespace askap
 
 
           // reference direction of input coords
-          casa::MVDirection beamcentre(135*C::pi/180.0, 60*C::pi/180.0);
+          casacore::MVDirection beamcentre(135*C::pi/180.0, 60*C::pi/180.0);
 
 
           // get coordinates of the direction axes
-          const int dcPos = coordsys.findCoordinate(casa::Coordinate::DIRECTION,-1);
-          const casa::DirectionCoordinate outDC = coordsys.directionCoordinate(dcPos);
+          const int dcPos = coordsys.findCoordinate(casacore::Coordinate::DIRECTION,-1);
+          const casacore::DirectionCoordinate outDC = coordsys.directionCoordinate(dcPos);
 
-          casa::Array<float> BeamArr(shape);
+          casacore::Array<float> BeamArr(shape);
 
           for (int x=0; x<shape[0];++x) {
               for (int y=0; y<shape[1];++y) {
@@ -171,13 +171,13 @@ namespace askap
                   double beamval = GaussPB->evaluateAtOffset(offsetBeam,frequency);
                   cout << " beamval --- " << beamval << endl;
 
-                  const casa::IPosition index(2,int(x),int(y));
+                  const casacore::IPosition index(2,int(x),int(y));
                   BeamArr(index) = beamval*beamval;
 
 
               }
           }
-          const casa::IPosition index(2,200,200);
+          const casacore::IPosition index(2,200,200);
           double testVal = BeamArr(index);
           // 0.49583 is the val at 200,200
           pixel[0] = 200;
@@ -215,14 +215,14 @@ namespace askap
       void testEvaluate2dGaussian() {
           LOFAR::ParameterSet parset;
 
-          const casa::IPosition shape(2,256,256);
-          casa::Array<float> arr(shape);
+          const casacore::IPosition shape(2,256,256);
+          casacore::Array<float> arr(shape);
           arr.set(1.);
-          casa::CoordinateSystem coordsys(makeCoords());
+          casacore::CoordinateSystem coordsys(makeCoords());
 
 
-          casa::Vector<double> pixel(2,0.);
-          casa::MVDirection world;
+          casacore::Vector<double> pixel(2,0.);
+          casacore::MVDirection world;
           double offsetBeam = 0;
           double frequency = 1.0E9; // 1GHz
 
@@ -236,14 +236,14 @@ namespace askap
 
 
           // reference direction of input coords
-          casa::MVDirection beamcentre(135*C::pi/180.0, 60*C::pi/180.0);
+          casacore::MVDirection beamcentre(135*C::pi/180.0, 60*C::pi/180.0);
 
 
           // get coordinates of the direction axes
-          const int dcPos = coordsys.findCoordinate(casa::Coordinate::DIRECTION,-1);
-          const casa::DirectionCoordinate outDC = coordsys.directionCoordinate(dcPos);
+          const int dcPos = coordsys.findCoordinate(casacore::Coordinate::DIRECTION,-1);
+          const casacore::DirectionCoordinate outDC = coordsys.directionCoordinate(dcPos);
 
-          casa::Array<float> BeamArr(shape);
+          casacore::Array<float> BeamArr(shape);
 
           for (int x=0; x<shape[0];++x) {
               for (int y=0; y<shape[1];++y) {
@@ -263,13 +263,13 @@ namespace askap
                   double beamval = GaussPB->evaluateAtOffset(offsetBeam,frequency);
                   cout << " beamval --- " << beamval << endl;
 
-                  const casa::IPosition index(2,int(x),int(y));
+                  const casacore::IPosition index(2,int(x),int(y));
                   BeamArr(index) = beamval*beamval;
 
 
               }
           }
-          const casa::IPosition index(2,200,200);
+          const casacore::IPosition index(2,200,200);
           double testVal = BeamArr(index);
           // 0.49583 is the val at 200,200
           pixel[0] = 200;

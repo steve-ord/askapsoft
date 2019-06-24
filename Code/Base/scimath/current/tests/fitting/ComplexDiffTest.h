@@ -36,7 +36,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <algorithm>
 #include <set>
@@ -71,108 +71,108 @@ public:
 
 void ComplexDiffTest::setUp() 
 {
-  f = ComplexDiff("g1",casa::Complex(35.,-15.));
-  g = ComplexDiff("g2",casa::Complex(-35.,15.));
+  f = ComplexDiff("g1",casacore::Complex(35.,-15.));
+  g = ComplexDiff("g2",casacore::Complex(-35.,15.));
 }
 
 void ComplexDiffTest::testAdd()
 {
   f+=g;
   CPPUNIT_ASSERT(abs(f.value())<1e-7);
-  CPPUNIT_ASSERT(abs(f.derivRe("g1")-casa::Complex(1.,0.))<1e-7);
-  CPPUNIT_ASSERT(abs(f.derivRe("g2")-casa::Complex(1.,0.))<1e-7);
-  CPPUNIT_ASSERT(abs(f.derivIm("g1")-casa::Complex(0.,1.))<1e-7);
-  CPPUNIT_ASSERT(abs(f.derivIm("g2")-casa::Complex(0.,1.))<1e-7);
+  CPPUNIT_ASSERT(abs(f.derivRe("g1")-casacore::Complex(1.,0.))<1e-7);
+  CPPUNIT_ASSERT(abs(f.derivRe("g2")-casacore::Complex(1.,0.))<1e-7);
+  CPPUNIT_ASSERT(abs(f.derivIm("g1")-casacore::Complex(0.,1.))<1e-7);
+  CPPUNIT_ASSERT(abs(f.derivIm("g2")-casacore::Complex(0.,1.))<1e-7);
   g+=f;
-  CPPUNIT_ASSERT(abs(g.value()-casa::Complex(-35.,15.))<1e-7);
-  CPPUNIT_ASSERT(abs(g.derivRe("g1")-casa::Complex(1.,0.))<1e-7);
-  CPPUNIT_ASSERT(abs(g.derivIm("g1")-casa::Complex(0.,1.))<1e-7);
-  CPPUNIT_ASSERT(abs(g.derivRe("g2")-casa::Complex(2.,0.))<1e-7);
-  CPPUNIT_ASSERT(abs(g.derivIm("g2")-casa::Complex(0.,2.))<1e-7);
+  CPPUNIT_ASSERT(abs(g.value()-casacore::Complex(-35.,15.))<1e-7);
+  CPPUNIT_ASSERT(abs(g.derivRe("g1")-casacore::Complex(1.,0.))<1e-7);
+  CPPUNIT_ASSERT(abs(g.derivIm("g1")-casacore::Complex(0.,1.))<1e-7);
+  CPPUNIT_ASSERT(abs(g.derivRe("g2")-casacore::Complex(2.,0.))<1e-7);
+  CPPUNIT_ASSERT(abs(g.derivIm("g2")-casacore::Complex(0.,2.))<1e-7);
   
-  ComplexDiff d = g+f+1+casa::Complex(0.,-2.);
+  ComplexDiff d = g+f+1+casacore::Complex(0.,-2.);
   
-  CPPUNIT_ASSERT(abs(d.value()-casa::Complex(-34.,13.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivRe("g1")-casa::Complex(2.,0.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivIm("g1")-casa::Complex(0.,2.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivRe("g2")-casa::Complex(3.,0.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivIm("g2")-casa::Complex(0.,3.))<1e-7);  
+  CPPUNIT_ASSERT(abs(d.value()-casacore::Complex(-34.,13.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivRe("g1")-casacore::Complex(2.,0.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivIm("g1")-casacore::Complex(0.,2.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivRe("g2")-casacore::Complex(3.,0.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivIm("g2")-casacore::Complex(0.,3.))<1e-7);  
 }
 
 void ComplexDiffTest::testMultiply()
 {
   ComplexDiff d = g*f;
-  CPPUNIT_ASSERT(abs(d.value()-casa::Complex(-1000.,1050.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivRe("g1")-casa::Complex(-35.,15.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivIm("g1")-casa::Complex(-15.,-35.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivRe("g2")-casa::Complex(35.,-15.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivIm("g2")-casa::Complex(15.,35.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.value()-casacore::Complex(-1000.,1050.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivRe("g1")-casacore::Complex(-35.,15.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivIm("g1")-casacore::Complex(-15.,-35.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivRe("g2")-casacore::Complex(35.,-15.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivIm("g2")-casacore::Complex(15.,35.))<1e-7);
   
   g*=f;
   
-  CPPUNIT_ASSERT(abs(g.value()-casa::Complex(-1000.,1050.))<1e-7);
-  CPPUNIT_ASSERT(abs(g.derivRe("g1")-casa::Complex(-35.,15.))<1e-7);
-  CPPUNIT_ASSERT(abs(g.derivIm("g1")-casa::Complex(-15.,-35.))<1e-7);
-  CPPUNIT_ASSERT(abs(g.derivRe("g2")-casa::Complex(35.,-15.))<1e-7);
-  CPPUNIT_ASSERT(abs(g.derivIm("g2")-casa::Complex(15.,35.))<1e-7);
+  CPPUNIT_ASSERT(abs(g.value()-casacore::Complex(-1000.,1050.))<1e-7);
+  CPPUNIT_ASSERT(abs(g.derivRe("g1")-casacore::Complex(-35.,15.))<1e-7);
+  CPPUNIT_ASSERT(abs(g.derivIm("g1")-casacore::Complex(-15.,-35.))<1e-7);
+  CPPUNIT_ASSERT(abs(g.derivRe("g2")-casacore::Complex(35.,-15.))<1e-7);
+  CPPUNIT_ASSERT(abs(g.derivIm("g2")-casacore::Complex(15.,35.))<1e-7);
   
-  d = g*casa::Complex(0.,1.);
+  d = g*casacore::Complex(0.,1.);
 
-  CPPUNIT_ASSERT(abs(d.value()-casa::Complex(-1050.,-1000.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivRe("g1")-casa::Complex(-15,-35.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivIm("g1")-casa::Complex(35.,-15.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivRe("g2")-casa::Complex(15,35.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivIm("g2")-casa::Complex(-35.,15.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.value()-casacore::Complex(-1050.,-1000.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivRe("g1")-casacore::Complex(-15,-35.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivIm("g1")-casacore::Complex(35.,-15.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivRe("g2")-casacore::Complex(15,35.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivIm("g2")-casacore::Complex(-35.,15.))<1e-7);
 }
 
 void ComplexDiffTest::testMultiplyVector()
 {
-  casa::Vector<casa::Complex> vec(10,casa::Complex(0.,-2.));
+  casacore::Vector<casacore::Complex> vec(10,casacore::Complex(0.,-2.));
   ComplexDiffMatrix cdVec = vec * f;
   
-  for (casa::uInt i = 0; i< vec.nelements(); ++i) {
+  for (casacore::uInt i = 0; i< vec.nelements(); ++i) {
        ASKAPASSERT(i < cdVec.nElements());
        const ComplexDiff &d = cdVec[i]; 
-       CPPUNIT_ASSERT(abs(d.value()-casa::Complex(-30.,-70.))<1e-7);
-       CPPUNIT_ASSERT(abs(d.derivRe("g1")-casa::Complex(0,-2.))<1e-7);
-       CPPUNIT_ASSERT(abs(d.derivIm("g1")-casa::Complex(2.,0.))<1e-7);
+       CPPUNIT_ASSERT(abs(d.value()-casacore::Complex(-30.,-70.))<1e-7);
+       CPPUNIT_ASSERT(abs(d.derivRe("g1")-casacore::Complex(0,-2.))<1e-7);
+       CPPUNIT_ASSERT(abs(d.derivIm("g1")-casacore::Complex(2.,0.))<1e-7);
   }
 
   ComplexDiff g1(g);
   cdVec = g1 * vec;
 
-  for (casa::uInt i = 0; i< vec.nelements(); ++i) {
+  for (casacore::uInt i = 0; i< vec.nelements(); ++i) {
        ASKAPASSERT(i < cdVec.nElements());
        const ComplexDiff &d = cdVec[i]; 
-       CPPUNIT_ASSERT(abs(d.value()-casa::Complex(30.,70.))<1e-7);
-       CPPUNIT_ASSERT(abs(d.derivRe("g2")-casa::Complex(0,-2.))<1e-7);
-       CPPUNIT_ASSERT(abs(d.derivIm("g2")-casa::Complex(2.,0.))<1e-7);
+       CPPUNIT_ASSERT(abs(d.value()-casacore::Complex(30.,70.))<1e-7);
+       CPPUNIT_ASSERT(abs(d.derivRe("g2")-casacore::Complex(0,-2.))<1e-7);
+       CPPUNIT_ASSERT(abs(d.derivIm("g2")-casacore::Complex(2.,0.))<1e-7);
   } 
   
   cdVec*= f;  
 
-  for (casa::uInt i = 0; i< vec.nelements(); ++i) {
+  for (casacore::uInt i = 0; i< vec.nelements(); ++i) {
        ASKAPASSERT(i < cdVec.nElements());
        const ComplexDiff &d = cdVec[i]; 
-       CPPUNIT_ASSERT(abs(d.value()-casa::Complex(2100.,2000))<1e-7);
-       CPPUNIT_ASSERT(abs(d.derivRe("g1")-casa::Complex(30.,70.))<1e-7);
-       CPPUNIT_ASSERT(abs(d.derivIm("g1")-casa::Complex(-70.,30.))<1e-7);
-       CPPUNIT_ASSERT(abs(d.derivRe("g2")-casa::Complex(-30.,-70.))<1e-7);
-       CPPUNIT_ASSERT(abs(d.derivIm("g2")-casa::Complex(70.,-30.))<1e-7);
+       CPPUNIT_ASSERT(abs(d.value()-casacore::Complex(2100.,2000))<1e-7);
+       CPPUNIT_ASSERT(abs(d.derivRe("g1")-casacore::Complex(30.,70.))<1e-7);
+       CPPUNIT_ASSERT(abs(d.derivIm("g1")-casacore::Complex(-70.,30.))<1e-7);
+       CPPUNIT_ASSERT(abs(d.derivRe("g2")-casacore::Complex(-30.,-70.))<1e-7);
+       CPPUNIT_ASSERT(abs(d.derivIm("g2")-casacore::Complex(70.,-30.))<1e-7);
   } 
 }
 
 void ComplexDiffTest::testConjugate()
 {
   ComplexDiff d = conj(g);
-  CPPUNIT_ASSERT(abs(d.value()-casa::Complex(-35.,-15.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivRe("g2")-casa::Complex(1.,0.))<1e-7);
-  CPPUNIT_ASSERT(abs(d.derivIm("g2")-casa::Complex(0.,-1.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.value()-casacore::Complex(-35.,-15.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivRe("g2")-casacore::Complex(1.,0.))<1e-7);
+  CPPUNIT_ASSERT(abs(d.derivIm("g2")-casacore::Complex(0.,-1.))<1e-7);
 }
 
 void ComplexDiffTest::testParameterList()
 {
-  ComplexDiff d = g*f+1+casa::Complex(0.,-2.);
+  ComplexDiff d = g*f+1+casacore::Complex(0.,-2.);
   std::vector<std::string> buf;
   std::copy(d.begin(),d.end(),std::back_insert_iterator<std::vector<std::string> >(buf));
   CPPUNIT_ASSERT(buf[0] == "g1");

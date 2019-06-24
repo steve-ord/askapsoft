@@ -36,22 +36,22 @@
 #include <casacore/lattices/LatticeMath/LatticeMathUtil.h>
 
 // ASKAPsoft includes
-#include <askap/Application.h>
-#include <askap/AskapError.h>
-#include <askap/AskapLogging.h>
-#include <askap/AskapUtil.h>
-#include <askap/StatReporter.h>
-#include <utils/MultiDimArrayPlaneIter.h>
+#include <askap/askap/Application.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapUtil.h>
+#include <askap/askap/StatReporter.h>
+#include <askap/scimath/utils/MultiDimArrayPlaneIter.h>
 #include <primarybeam/PrimaryBeam.h>
 #include <primarybeam/GaussianPB.h>
 #include <primarybeam/PrimaryBeamFactory.h>
 
-#include "utils/ImagemathUtils.h"
+#include "askap/scimath/utils/ImagemathUtils.h"
 
 
 ASKAP_LOGGER(linmoslogger, ".linmosaccumulator");
 
-using namespace casa;
+using namespace casacore;
 
 
 // variables functions used by the linmos accumulator class
@@ -852,7 +852,7 @@ namespace askap {
                 ASKAPDEBUGASSERT(newTLC.nelements() >= 2);
                 ASKAPDEBUGASSERT(newBRC.nelements() >= 2);
                 /*
-                for (casa::uInt dim=0; dim<2; ++dim) {
+                for (casacore::uInt dim=0; dim<2; ++dim) {
                     if (newBLC(dim) < tempBLC(dim)) {
                         tempBLC(dim) = newBLC(dim);
                     }
@@ -1759,8 +1759,8 @@ namespace askap {
             ASKAPCHECK(success,
                 "World to pixel coordinate conversion failed for output TLC: "
                 << refDC.errorMessage());
-            tlc[0] = casa::Int(round(pix[0]));
-            tlc[1] = casa::Int(round(pix[1]));
+            tlc[0] = casacore::Int(round(pix[0]));
+            tlc[1] = casacore::Int(round(pix[1]));
 
             // first process BRC
             pix[0] = Double(brc[0]);
@@ -1773,8 +1773,8 @@ namespace askap {
             ASKAPCHECK(success,
                 "World to pixel coordinate conversion failed for output BRC: "
                 << refDC.errorMessage());
-            brc[0] = casa::Int(round(pix[0]));
-            brc[1] = casa::Int(round(pix[1]));
+            brc[0] = casacore::Int(round(pix[0]));
+            brc[1] = casacore::Int(round(pix[1]));
 
             Vector<IPosition> corners(4);
             corners[0] = blc;

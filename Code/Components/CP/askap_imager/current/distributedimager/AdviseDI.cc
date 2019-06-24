@@ -28,13 +28,13 @@
 ///
 
 #include <distributedimager/AdviseDI.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <measurementequation/SynthesisParamsHelper.h>
 #include <dataaccess/TableDataSource.h>
 #include <dataaccess/ParsetInterface.h>
 #include <dataaccess/SharedIter.h>
 #include <askap_synthesis.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 
 
 ASKAP_LOGGER(logger, ".adviseDI");
@@ -75,7 +75,7 @@ namespace synthesis {
 
 float frequency_tolerance = 0.0;
 
-bool compare_tol (const casa::MFrequency& X, const casa::MFrequency& Y) {
+bool compare_tol (const casacore::MFrequency& X, const casacore::MFrequency& Y) {
 
     if (abs(X.getValue() - Y.getValue()) <= frequency_tolerance) {
       return true;
@@ -85,11 +85,11 @@ bool compare_tol (const casa::MFrequency& X, const casa::MFrequency& Y) {
     }
 }
 
-bool compare (const casa::MFrequency& X, const casa::MFrequency& Y) {
+bool compare (const casacore::MFrequency& X, const casacore::MFrequency& Y) {
     return (X.getValue() == Y.getValue());
 }
 
-bool custom_lessthan (const casa::MFrequency& X, const casa::MFrequency& Y) {
+bool custom_lessthan (const casacore::MFrequency& X, const casacore::MFrequency& Y) {
     return (X.getValue() < Y.getValue());
 }
 bool in_range(double end1, double end2, double test) {
@@ -156,7 +156,7 @@ void AdviseDI::prepare() {
 
 
 
-    casa::uInt srow = 0;
+    casacore::uInt srow = 0;
     chanFreq.resize(ms.size());
     chanWidth.resize(ms.size());
     effectiveBW.resize(ms.size());
@@ -174,7 +174,7 @@ void AdviseDI::prepare() {
 
     // need to calculate the allocations too.
 
-    casa::uInt totChanIn = 0;
+    casacore::uInt totChanIn = 0;
 
 
 
@@ -186,17 +186,17 @@ void AdviseDI::prepare() {
         centre[n].resize(0);
     // Open the input measurement set
         ASKAPLOG_DEBUG_STR(logger, "Opening " << ms[n] << " filecount " << n );
-        const casa::MeasurementSet in(ms[n]);
-        const casa::ROMSColumns srcCols(in);
-        const casa::ROMSSpWindowColumns& sc = srcCols.spectralWindow();
-        const casa::ROMSFieldColumns& fc = srcCols.field();
-        const casa::ROMSObservationColumns& oc = srcCols.observation();
-        const casa::ROMSAntennaColumns& ac = srcCols.antenna();
-        const casa::ROArrayColumn<casa::Double> times = casa::ROArrayColumn<casa::Double>(oc.timeRange());
-        const casa::ROArrayColumn<casa::Double> ants = casa::ROArrayColumn<casa::Double>(ac.position());
-        const casa::uInt thisRef = casa::ROScalarColumn<casa::Int>(in.spectralWindow(),"MEAS_FREQ_REF")(0);
+        const casacore::MeasurementSet in(ms[n]);
+        const casacore::ROMSColumns srcCols(in);
+        const casacore::ROMSSpWindowColumns& sc = srcCols.spectralWindow();
+        const casacore::ROMSFieldColumns& fc = srcCols.field();
+        const casacore::ROMSObservationColumns& oc = srcCols.observation();
+        const casacore::ROMSAntennaColumns& ac = srcCols.antenna();
+        const casacore::ROArrayColumn<casacore::Double> times = casacore::ROArrayColumn<casacore::Double>(oc.timeRange());
+        const casacore::ROArrayColumn<casacore::Double> ants = casacore::ROArrayColumn<casacore::Double>(ac.position());
+        const casacore::uInt thisRef = casacore::ROScalarColumn<casacore::Int>(in.spectralWindow(),"MEAS_FREQ_REF")(0);
 
-        casa::uInt thisChanIn = 0;
+        casacore::uInt thisChanIn = 0;
         srow = sc.nrow()-1;
 
         ASKAPCHECK(srow==0,"More than one spectral window not currently supported in adviseDI");
@@ -218,14 +218,14 @@ void AdviseDI::prepare() {
             chanStop = itsChannels[1];
             chanStep = itsChannels[2];
 
-            if (chanStop > casa::ROScalarColumn<casa::Int>(in.spectralWindow(),"NUM_CHAN")(0)) {
-                chanStop = casa::ROScalarColumn<casa::Int>(in.spectralWindow(),"NUM_CHAN")(0);
+            if (chanStop > casacore::ROScalarColumn<casacore::Int>(in.spectralWindow(),"NUM_CHAN")(0)) {
+                chanStop = casacore::ROScalarColumn<casacore::Int>(in.spectralWindow(),"NUM_CHAN")(0);
             }
             thisChanIn = 0;
         }
         else {
             chanStart = 0;
-            chanStop = casa::ROScalarColumn<casa::Int>(in.spectralWindow(),"NUM_CHAN")(0);
+            chanStop = casacore::ROScalarColumn<casacore::Int>(in.spectralWindow(),"NUM_CHAN")(0);
             chanStep = 1;
 
         }
@@ -233,10 +233,10 @@ void AdviseDI::prepare() {
         ASKAPLOG_INFO_STR(logger, "Chan start: " << chanStart << " stop: " << chanStop << " step: " << chanStep);
 
         for (uint i = chanStart; i < chanStop; i = i + chanStep) {
-          chanFreq[n].push_back(sc.chanFreq()(srow)(casa::IPosition(1, i)));
-          chanWidth[n].push_back(sc.chanWidth()(srow)(casa::IPosition(1, i)));
-          effectiveBW[n].push_back(sc.effectiveBW()(srow)(casa::IPosition(1, i)));
-          resolution[n].push_back(sc.resolution()(srow)(casa::IPosition(1, i)));
+          chanFreq[n].push_back(sc.chanFreq()(srow)(casacore::IPosition(1, i)));
+          chanWidth[n].push_back(sc.chanWidth()(srow)(casacore::IPosition(1, i)));
+          effectiveBW[n].push_back(sc.effectiveBW()(srow)(casacore::IPosition(1, i)));
+          resolution[n].push_back(sc.resolution()(srow)(casacore::IPosition(1, i)));
           thisChanIn++;
         }
 
@@ -246,7 +246,7 @@ void AdviseDI::prepare() {
         itsTangent.push_back(itsDirVec[n](0).getValue());
 
         // Read the position on Antenna 0
-        Array<casa::Double> posval;
+        Array<casacore::Double> posval;
         ants.get(0,posval,true);
         vector<double> pval = posval.tovector();
 
@@ -254,16 +254,16 @@ void AdviseDI::prepare() {
         Quantity(pval[1], "m").getBaseValue(),
         Quantity(pval[2], "m").getBaseValue());
 
-        itsPosition.push_back(MPosition(mvobs,casa::MPosition::ITRF));
+        itsPosition.push_back(MPosition(mvobs,casacore::MPosition::ITRF));
 
         // Get the Epoch
-        Array<casa::Double> tval;
+        Array<casacore::Double> tval;
         vector<double> tvals;
 
         times.get(0,tval,true);
         tvals = tval.tovector();
         double mjd = tvals[0]/(86400.);
-        casa::MVTime dat(mjd);
+        casacore::MVTime dat(mjd);
 
         itsEpoch.push_back(MVEpoch(dat.day()));
 
@@ -319,11 +319,11 @@ void AdviseDI::prepare() {
                 // correct the internal arrays
                 const MVFrequency botThisChan = chanFreq[n][ch]-chanWidth[n][ch]/2.0;
                 const MVFrequency topThisChan = chanFreq[n][ch]+chanWidth[n][ch]/2.0;
-                casa::MFrequency botThisMF(botThisChan,refin);
-                casa::MFrequency topThisMF(topThisChan,refin);
-                casa::MFrequency botBary = forw(botThisMF).getValue();
-                casa::MFrequency topBary = forw(topThisMF).getValue();
-                casa::MFrequency centreBary = forw(chanFreq[n][ch]).getValue();
+                casacore::MFrequency botThisMF(botThisChan,refin);
+                casacore::MFrequency topThisMF(topThisChan,refin);
+                casacore::MFrequency botBary = forw(botThisMF).getValue();
+                casacore::MFrequency topBary = forw(topThisMF).getValue();
+                casacore::MFrequency centreBary = forw(chanFreq[n][ch]).getValue();
                 chanFreq[n][ch] = centreBary.getValue();
                 if (chanFreq[n].size() > 1)
                     chanWidth[n][ch] = abs(topBary.getValue() - botBary.getValue());
@@ -334,7 +334,7 @@ void AdviseDI::prepare() {
 
     ///uniquifying the lists
 
-    bool (*custom_compare)(const casa::MFrequency& , const casa::MFrequency& ) = NULL;
+    bool (*custom_compare)(const casacore::MFrequency& , const casacore::MFrequency& ) = NULL;
 
     if (frequency_tolerance > 0) {
       custom_compare = compare_tol;
@@ -346,12 +346,12 @@ void AdviseDI::prepare() {
     }
 
     std::sort(itsBaryFrequencies.begin(),itsBaryFrequencies.end(), custom_lessthan);
-    std::vector<casa::MFrequency>::iterator bary_it;
+    std::vector<casacore::MFrequency>::iterator bary_it;
     bary_it = std::unique(itsBaryFrequencies.begin(),itsBaryFrequencies.end(),custom_compare);
     itsBaryFrequencies.resize(std::distance(itsBaryFrequencies.begin(),bary_it));
 
     std::sort(itsTopoFrequencies.begin(),itsTopoFrequencies.end(), custom_lessthan);
-    std::vector<casa::MFrequency>::iterator topo_it;
+    std::vector<casacore::MFrequency>::iterator topo_it;
     topo_it = std::unique(itsTopoFrequencies.begin(),itsTopoFrequencies.end(),custom_compare);
     itsTopoFrequencies.resize(std::distance(itsTopoFrequencies.begin(),topo_it));
     ASKAPLOG_DEBUG_STR(logger," Unique sizes Topo " << itsTopoFrequencies.size() << " Bary " << itsBaryFrequencies.size());
@@ -536,7 +536,7 @@ cp::ContinuumWorkUnit AdviseDI::getAllocation(int id) {
     return rtn;
 }
 
-int AdviseDI::match(int ms_number, casa::MVFrequency testFreq) {
+int AdviseDI::match(int ms_number, casacore::MVFrequency testFreq) {
     /// Which channel does the frequency correspond to.
     /// IF the barycentr flag has been set then this will match
     /// the barycentred channel to it.
@@ -609,8 +609,8 @@ void AdviseDI::addMissingParameters(LOFAR::ParameterSet& parset)
 
     if (isPrepared == true) {
         ASKAPLOG_INFO_STR(logger,"Prepared therefore can add frequency label for the output image");
-        std::vector<casa::MFrequency>::iterator begin_it;
-        std::vector<casa::MFrequency>::iterator end_it;
+        std::vector<casacore::MFrequency>::iterator begin_it;
+        std::vector<casacore::MFrequency>::iterator end_it;
         if (barycentre) {
             begin_it = itsBaryFrequencies.begin();
             end_it = itsBaryFrequencies.end()-1;
@@ -698,7 +698,7 @@ void AdviseDI::addMissingParameters(LOFAR::ParameterSet& parset)
 
          const double ra = SynthesisParamsHelper::convertQuantity(direction[0],"rad");
          const double dec = SynthesisParamsHelper::convertQuantity(direction[1],"rad");
-         const casa::MVDirection itsDirection = casa::MVDirection(ra,dec);
+         const casacore::MVDirection itsDirection = casacore::MVDirection(ra,dec);
 
          std::ostringstream pstr;
          // Only J2000 is implemented at the moment.

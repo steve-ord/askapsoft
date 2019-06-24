@@ -8,7 +8,7 @@
 /// @author Max Voronkov <maxim.voronkov@csiro.au>
 ///
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #ifndef CACHED_ACCESSOR_FIELD_TCC
 #define CACHED_ACCESSOR_FIELD_TCC

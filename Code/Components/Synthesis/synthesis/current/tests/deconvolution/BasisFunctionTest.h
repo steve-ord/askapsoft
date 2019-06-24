@@ -36,7 +36,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-using namespace casa;
+using namespace casacore;
 
 namespace askap {
   

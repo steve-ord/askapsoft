@@ -28,7 +28,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 // Support classes
-#include "askap/AskapError.h"
+#include "askap/askap/AskapError.h"
 #include "Common/ParameterSet.h"
 #include "cpcommon/VisChunk.h"
 #include "casacore/measures/Measures.h"
@@ -42,7 +42,7 @@
 // Classes to test
 #include "ingestpipeline/calcuvwtask/CalcUVWTask.h"
 
-using namespace casa;
+using namespace casacore;
 using askap::cp::common::VisChunk;
 
 namespace askap {
@@ -129,7 +129,7 @@ class CalcUVWTaskTest : public CppUnit::TestFixture {
 
             CPPUNIT_ASSERT_EQUAL(1u, chunk->nRow());
             CPPUNIT_ASSERT(chunk->uvw().size() == 1);
-            casa::RigidVector<casa::Double, 3> uvw = chunk->uvw()(row);
+            casacore::RigidVector<casacore::Double, 3> uvw = chunk->uvw()(row);
 
             // Tolerance for uvw equality
             const double tol = 1.0E-1;

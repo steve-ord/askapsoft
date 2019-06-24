@@ -25,8 +25,8 @@
 //#
 //#  $Id$
 
-#include <askap/AskapUtil.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapUtil.h>
+#include <askap/askap/AskapError.h>
 #include <iostream>
 #include <sstream>
 #include <vector>

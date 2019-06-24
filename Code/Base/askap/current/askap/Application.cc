@@ -25,7 +25,7 @@
 /// @author Ben Humphreys <ben.humphreys@csiro.au>
 
 // Include own header file first
-#include "askap/Application.h"
+#include "askap/askap/Application.h"
 
 // Include package level header file
 #include "askap_askap.h"
@@ -38,9 +38,9 @@
 #include <iostream>
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
-#include "askap/Log4cxxLogSink.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/Log4cxxLogSink.h"
 #include "log4cxx/logger.h"
 #include "log4cxx/logmanager.h"
 #include "log4cxx/consoleappender.h"
@@ -193,8 +193,8 @@ void Application::initLogging(const std::string& argv0)
     ASKAPLOG_PUTCONTEXT("mpirank", "-1");
 
     // Ensure that CASA log messages are captured
-    casa::LogSinkInterface* globalSink = new askap::Log4cxxLogSink();
-    casa::LogSink::globalSink(globalSink);
+    casacore::LogSinkInterface* globalSink = new askap::Log4cxxLogSink();
+    casacore::LogSink::globalSink(globalSink);
 }
 
 void Application::initConfig()

@@ -24,17 +24,17 @@
 
 #include <dataaccess/TableDataSource.h>
 #include <askap_synthesis.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 ASKAP_LOGGER(logger, "");
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <dataaccess/SharedIter.h>
 #include <dataaccess/ParsetInterface.h>
 
 #include <dataaccess/TableManager.h>
 #include <dataaccess/IDataConverterImpl.h>
-#include <utils/EigenDecompose.h>
-#include <askap/AskapUtil.h>
+#include <askap/scimath/utils/EigenDecompose.h>
+#include <askap/askap/AskapUtil.h>
 
 
 // casa
@@ -63,15 +63,15 @@ void doReadOnlyTest(const IConstDataSource &ds) {
   //sel->chooseFeed(1);
   //sel<<LOFAR::ParameterSet("test.in").makeSubset("TestSelection.");
   IDataConverterPtr conv=ds.createConverter();  
-  conv->setFrequencyFrame(casa::MFrequency::Ref(casa::MFrequency::TOPO),"Hz");
+  conv->setFrequencyFrame(casacore::MFrequency::Ref(casacore::MFrequency::TOPO),"Hz");
   const double refMJD = 58287.5;
-  conv->setEpochFrame(casa::MEpoch(casa::Quantity(refMJD,"d"),
-                      casa::MEpoch::Ref(casa::MEpoch::UTC)),"s");
-  conv->setDirectionFrame(casa::MDirection::Ref(casa::MDirection::J2000));                    
+  conv->setEpochFrame(casacore::MEpoch(casacore::Quantity(refMJD,"d"),
+                      casacore::MEpoch::Ref(casacore::MEpoch::UTC)),"s");
+  conv->setDirectionFrame(casacore::MDirection::Ref(casacore::MDirection::J2000));                    
   /*
-  const casa::MVDirection tangent(SynthesisParamsHelper::convertQuantity("12h30m00.000","rad"),
+  const casacore::MVDirection tangent(SynthesisParamsHelper::convertQuantity("12h30m00.000","rad"),
                                   SynthesisParamsHelper::convertQuantity("-45.00.00.000","rad"));
-  const casa::MDirection tangentDir(tangent, casa::MDirection::J2000);
+  const casacore::MDirection tangentDir(tangent, casacore::MDirection::J2000);
   */
   double firstTimeStamp = -1;
   size_t counter = 0;
@@ -81,9 +81,9 @@ void doReadOnlyTest(const IConstDataSource &ds) {
        if (firstTimeStamp < 0) {
            firstTimeStamp = acc.time();
        }
-       casa::MEpoch epoch(casa::Quantity(refMJD,"d")+casa::Quantity(acc.time(),"s"), casa::MEpoch::Ref(casa::MEpoch::UTC));
+       casacore::MEpoch epoch(casacore::Quantity(refMJD,"d")+casacore::Quantity(acc.time(),"s"), casacore::MEpoch::Ref(casacore::MEpoch::UTC));
        std::cout<<"time: "<<epoch<<" or "<<acc.time() - firstTimeStamp<<" seconds since start, cycle "<<counter + 1<<std::endl;
-       for (casa::uInt row = 0; row < acc.nRow(); ++row) {
+       for (casacore::uInt row = 0; row < acc.nRow(); ++row) {
             std::cout<<row<<" "<<acc.antenna1()[row]<<" "<<acc.antenna2()[row]<<" "<<acc.feed1()[row]<<" "<<
                   acc.uvw()[row](0)<<" "<<acc.uvw()[row](1)<<" "<<acc.uvw()[row](2)<<std::endl;
             std::cout<<"beam="<<acc.feed1()[row]<<" phase centre: "<<printDirection(acc.pointingDir1()[row])<<std::endl;
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
 	 return -2;
      }
 
-     casa::Timer timer;
+     casacore::Timer timer;
 
      timer.mark();
      //TableDataSource ds(argv[1],TableDataSource::REMOVE_BUFFERS |

@@ -30,7 +30,7 @@
 #ifndef ASKAP_ERROR_TEST_H
 #define ASKAP_ERROR_TEST_H
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 namespace askap

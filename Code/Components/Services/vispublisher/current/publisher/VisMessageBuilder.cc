@@ -37,9 +37,9 @@
 #include <cmath>
 
 // ASKAPsoft includes
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
-#include "utils/DelayEstimator.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
+#include "askap/scimath/utils/DelayEstimator.h"
 
 // Local package includes
 #include "publisher/VisOutputMessage.h"

@@ -34,11 +34,11 @@
 #include <askap_synthesis.h>
 
 // ASKAPsoft includes
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
-#include <askap/Application.h>
-#include <askap/StatReporter.h>
-#include <askapparallel/AskapParallel.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/Application.h>
+#include <askap/askap/StatReporter.h>
+#include <askap/askapparallel/AskapParallel.h>
 #include <Common/ParameterSet.h>
 #include <opcal/OpCalImpl.h>
 #include <opcal/BaselineSolver.h>

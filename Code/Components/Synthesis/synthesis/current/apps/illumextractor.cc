@@ -38,15 +38,15 @@
 
 
 // own includes
-#include <askap/AskapLogging.h>
-#include <askap/AskapUtil.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapUtil.h>
+#include <askap/askap/AskapError.h>
 #include <Common/ParameterSet.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 #include <gridding/UVPattern.h>
-#include <utils/ImageUtils.h>
+#include <askap/scimath/utils/ImageUtils.h>
 // just for logging
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 
 // command line parser
 #include <CommandLineParser.h>
@@ -69,12 +69,12 @@ int main(int argc, const char** argv) {
   // we need it to initialise the logging properly
   askapparallel::AskapParallel comms(argc, argv);
   try {
-     casa::Timer timer;
+     casacore::Timer timer;
      timer.mark();
 
      // Ensure that CASA log messages are captured
-     casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-     casa::LogSink::globalSink(globalSink);
+     casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+     casacore::LogSink::globalSink(globalSink);
      {
         cmdlineparser::Parser parser; // a command line parser
         // command line parameter
@@ -112,8 +112,8 @@ int main(int argc, const char** argv) {
         ASKAPCHECK(illum, "No illumination pattern seems to be defined");
         illum->getPattern(1.4e9, pattern);
         
-        casa::Array<casa::Float> buffer(pattern.pattern().shape());
-        casa::convertArray<float,double>(buffer,casa::amplitude(pattern.pattern()));
+        casacore::Array<casacore::Float> buffer(pattern.pattern().shape());
+        casacore::convertArray<float,double>(buffer,casacore::amplitude(pattern.pattern()));
         scimath::saveAsCasaImage("illum.img",buffer);
       }  
       ASKAPLOG_INFO_STR(logger,  "Total times - user:   " << timer.user()

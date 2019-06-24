@@ -41,9 +41,9 @@
 #include "configuration/SubstitutionHandler.h"
 #include "cpcommon/ParallelCPApplication.h"
 #include "cpcommon/VisChunk.h"
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
-#include "askap/AskapUtil.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapUtil.h"
 
 // boost includes
 #include "boost/shared_ptr.hpp"
@@ -85,9 +85,9 @@ public:
       itsBeamSR.reset(new ingest::BeamSubstitutionRule("b", cfg));
       itsFreqChunkSR.reset(new ingest::FreqChunkSubstitutionRule("f", cfg));
       boost::shared_ptr<common::VisChunk> chunk(new common::VisChunk(100, 10, 4, 6));
-      chunk->beam1().set(static_cast<casa::uInt>(rank()));
-      chunk->beam2().set(static_cast<casa::uInt>(rank()));
-      for (casa::uInt chan = 0; chan < chunk->nChannel(); ++chan) {
+      chunk->beam1().set(static_cast<casacore::uInt>(rank()));
+      chunk->beam2().set(static_cast<casacore::uInt>(rank()));
+      for (casacore::uInt chan = 0; chan < chunk->nChannel(); ++chan) {
            chunk->frequency()[chan] = 930e6 + 1e6/54. * double(chan) - 48e6 * (rank()%2);
       }
       itsBeamSR->setupFromChunk(chunk);

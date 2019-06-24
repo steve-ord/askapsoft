@@ -44,7 +44,7 @@
 #include <measurementequation/SumOfTwoMEs.h>
 #include <dataaccess/MemBufferDataAccessor.h>
 #include <measurementequation/NormalEquationsTypeError.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <stdexcept>
 
@@ -77,7 +77,7 @@ void SumOfTwoMEs::predict(IDataAccessor &chunk) const
   ASKAPDEBUGASSERT(itsSecondME);
   itsSecondME->predict(secondResult);
   itsFirstME->predict(chunk);
-  casa::Cube<casa::Complex> &rwVis = chunk.rwVisibility();
+  casacore::Cube<casacore::Complex> &rwVis = chunk.rwVisibility();
   rwVis += secondResult.visibility();
 }
 

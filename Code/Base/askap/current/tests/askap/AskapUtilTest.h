@@ -34,7 +34,7 @@
 #include <boost/config.hpp>
 
 // Class under test
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapUtil.h>
 
 namespace askap {
 
@@ -103,7 +103,7 @@ class AskapUtilTest : public CppUnit::TestFixture {
             input.push_back("-45.00.00.0");
             input.push_back("J2000");
 
-            const casa::MDirection dir = asMDirection(input);
+            const casacore::MDirection dir = asMDirection(input);
             CPPUNIT_ASSERT_DOUBLES_EQUAL(-172.5, dir.getAngle("deg").getValue()(0),
                                          dblTolerance);
             CPPUNIT_ASSERT_DOUBLES_EQUAL(-45.0, dir.getAngle("deg").getValue()(1),
@@ -131,7 +131,7 @@ class AskapUtilTest : public CppUnit::TestFixture {
                 input.push_back(*it);
                 input.push_back("J2000");
 
-                const casa::MDirection dir = asMDirection(input);
+                const casacore::MDirection dir = asMDirection(input);
                 CPPUNIT_ASSERT_DOUBLES_EQUAL(-172.5, dir.getAngle("deg").getValue()(0),
                         dblTolerance);
                 CPPUNIT_ASSERT_DOUBLES_EQUAL(-45.0, dir.getAngle("deg").getValue()(1),
@@ -140,7 +140,7 @@ class AskapUtilTest : public CppUnit::TestFixture {
         }
 
         void testAsQuantity() {
-            casa::Quantum<casa::Double> output = asQuantity("2.5arcsec", "arcsec");
+            casacore::Quantum<casacore::Double> output = asQuantity("2.5arcsec", "arcsec");
             CPPUNIT_ASSERT(output.isConform("arcsec"));
             CPPUNIT_ASSERT(output.isConform("arcmin"));
             CPPUNIT_ASSERT(output.isConform("deg"));
@@ -192,14 +192,14 @@ class AskapUtilTest : public CppUnit::TestFixture {
             std::vector<std::string> epochVec(2);
             epochVec[0] = "2007Mar07/10:20:30";
             epochVec[1] = "UTC";
-            casa::MEpoch epoch = asMEpoch(epochVec);
+            casacore::MEpoch epoch = asMEpoch(epochVec);
             CPPUNIT_ASSERT_EQUAL(54166, static_cast<int>(epoch.getValue().get()));
             
             const uint64_t bat = epoch2bat(epoch);
             const uint64_t batCompare = microsecondsPerDay * 54166 + 1000000ull * (33 /* leap seconds in 2007 */ + 30 +
                            60 * (20 + 60 * 10));
             CPPUNIT_ASSERT_EQUAL(batCompare, bat);
-            casa::MVEpoch epoch2 = bat2epoch(bat).getValue();
+            casacore::MVEpoch epoch2 = bat2epoch(bat).getValue();
             CPPUNIT_ASSERT_DOUBLES_EQUAL(epoch.getValue().get(), epoch2.get(), dblTolerance);
         }
         
@@ -217,7 +217,7 @@ class AskapUtilTest : public CppUnit::TestFixture {
             input.push_back("-45.00.00.00");
             input.push_back("J2000");
 
-            const casa::MDirection dir = asMDirection(input);
+            const casacore::MDirection dir = asMDirection(input);
             CPPUNIT_ASSERT_EQUAL(std::string("12:30:00.00"), askap::printLon(dir));
         }
 
@@ -227,7 +227,7 @@ class AskapUtilTest : public CppUnit::TestFixture {
             input.push_back("-45.00.00.00");
             input.push_back("J2000");
 
-            const casa::MDirection dir = asMDirection(input);
+            const casacore::MDirection dir = asMDirection(input);
             CPPUNIT_ASSERT_EQUAL(std::string("-045.00.00.00"), askap::printLat(dir));
         }
 

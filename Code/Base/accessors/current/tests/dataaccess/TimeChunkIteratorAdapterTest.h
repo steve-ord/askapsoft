@@ -38,9 +38,9 @@
 #include <dataaccess/TableDataSource.h>
 #include <dataaccess/IConstDataSource.h>
 #include <dataaccess/TimeChunkIteratorAdapter.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include "TableTestRunner.h"
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapUtil.h>
 
 
 namespace askap {

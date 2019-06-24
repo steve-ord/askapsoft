@@ -38,8 +38,8 @@
 #include "boost/shared_ptr.hpp"
 #include "boost/filesystem.hpp"
 // ASKAPsoft includes
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 #include <fitting/Equation.h>
 #include <fitting/INormalEquations.h>
 #include <fitting/ImagingNormalEquations.h>
@@ -56,7 +56,7 @@
 #include <dataaccess/IDataSelector.h>
 #include <dataaccess/IDataIterator.h>
 #include <dataaccess/SharedIter.h>
-#include <utils/PolConverter.h>
+#include <askap/scimath/utils/PolConverter.h>
 #include <Common/ParameterSet.h>
 #include <Common/Exceptions.h>
 #include <casacore/casa/OS/Timer.h>
@@ -1353,10 +1353,10 @@ void ContinuumWorker::handleImageParams(askap::scimath::Params::ShPtr params, un
 void ContinuumWorker::initialiseBeamLog(const unsigned int numChannels)
 {
 
-    casa::Vector<casa::Quantum<double> > beamVec(3);
-    beamVec[0] = casa::Quantum<double>(0., "rad");
-    beamVec[1] = casa::Quantum<double>(0., "rad");
-    beamVec[2] = casa::Quantum<double>(0., "deg");
+    casacore::Vector<casacore::Quantum<double> > beamVec(3);
+    beamVec[0] = casacore::Quantum<double>(0., "rad");
+    beamVec[1] = casacore::Quantum<double>(0., "rad");
+    beamVec[2] = casacore::Quantum<double>(0., "deg");
 
     for(unsigned int i=0;i<numChannels;i++) {
         itsBeamList[i] = beamVec;
@@ -1419,7 +1419,7 @@ void ContinuumWorker::logBeamInfo()
         beamlog.write();
 
         ASKAPLOG_DEBUG_STR(logger, "Writing restoring beam to header of restored cube");
-        casa::Vector<casa::Quantum<double> > refbeam = beamlog.beam(itsBeamReferenceChannel);
+        casacore::Vector<casacore::Quantum<double> > refbeam = beamlog.beam(itsBeamReferenceChannel);
         itsRestoredCube->addBeam(refbeam);
 
     }

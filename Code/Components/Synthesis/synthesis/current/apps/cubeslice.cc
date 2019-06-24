@@ -24,7 +24,7 @@
 
 #include <casacore/casa/Arrays/IPosition.h>
 #include <CommandLineParser.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/coordinates/Coordinates/CoordinateSystem.h>
 #include <casacore/coordinates/Coordinates/Coordinate.h>
 #include <casacore/casa/Quanta/MVDirection.h>
@@ -62,14 +62,14 @@ int main(int argc, const char** argv) {
      
      
      parser.process(argc, argv);
-     casa::PagedImage<casa::Float> img(imgfile.getValue());
+     casacore::PagedImage<casacore::Float> img(imgfile.getValue());
      ASKAPCHECK(img.ok(),"Error loading "<<imgfile.getValue());
      ASKAPCHECK(img.shape().nelements()>=3,"Work with at least 3D cubes!");
      
-     const casa::IPosition shape = img.shape();
+     const casacore::IPosition shape = img.shape();
      
-     casa::IPosition blc(shape.nelements(),0);
-     casa::IPosition trc(shape);
+     casacore::IPosition blc(shape.nelements(),0);
+     casacore::IPosition trc(shape);
 
      std::string section = subsection.getValue();
 
@@ -108,10 +108,10 @@ int main(int argc, const char** argv) {
 
      std::cerr << "blc  = " << blc << ", trc = " << trc << "\n";
 
-     casa::Slicer slc(blc,trc,casa::IPosition(shape.nelements(),1));
+     casacore::Slicer slc(blc,trc,casacore::IPosition(shape.nelements(),1));
      
-     casa::SubImage<casa::Float> si = casa::SubImage<casa::Float>(img,slc,casa::AxesSpecifier(casa::True));
-     casa::PagedImage<casa::Float> res(si.shape(),si.coordinates(),std::string(outfile.getValue()));
+     casacore::SubImage<casacore::Float> si = casacore::SubImage<casacore::Float>(img,slc,casacore::AxesSpecifier(casacore::True));
+     casacore::PagedImage<casacore::Float> res(si.shape(),si.coordinates(),std::string(outfile.getValue()));
      res.put(si.get());
   }
   ///==============================================================================

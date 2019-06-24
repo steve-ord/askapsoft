@@ -52,7 +52,7 @@
 
 ASKAP_LOGGER(logger, ".linmos");
 
-using namespace casa;
+using namespace casacore;
 using namespace askap;
 using namespace askap::synthesis;
 /// @brief helper method to load beam offsets from the parset file
@@ -81,7 +81,7 @@ Vector<MVDirection> loadBeamOffsets(const LOFAR::ParameterSet &parset,
          //ASKAPCHECK(xy.size() == 2, "Expect two elements for each offset");
          // the shift appears to be positive in HA, so multiply by -1. Simulator.cc states:
          // "x direction is flipped to convert az-el type frame to ra-dec"
-         centres[beam].shift(-xy[0]*spacing, xy[1]*spacing, casa::True);
+         centres[beam].shift(-xy[0]*spacing, xy[1]*spacing, casacore::True);
          ASKAPLOG_INFO_STR(linmoslogger, " -> " << parName << " centre: " << centres[beam] );
     }
     return centres;

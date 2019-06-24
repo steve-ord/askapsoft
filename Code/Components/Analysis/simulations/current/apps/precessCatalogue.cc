@@ -28,10 +28,10 @@
 /// @author Matthew Whiting <matthew.whiting@csiro.au>
 #include <askap_simulations.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/casa/Logging/LogIO.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 
 #include <FITS/FITSparallel.h>
 #include <FITS/FITSfile.h>

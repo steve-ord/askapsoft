@@ -33,11 +33,11 @@
 // System includes
 
 // ASKAPsoft include
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 
 // Using
-using namespace casa;
+using namespace casacore;
 using namespace askap;
 using namespace askap::cp::pipelinetasks;
 using namespace askap::cp::sms::client;
@@ -56,10 +56,10 @@ DataserviceAccessor::~DataserviceAccessor()
 }
 
 ComponentListPtr DataserviceAccessor::coneSearch(
-    const casa::Quantity& ra,
-    const casa::Quantity& dec,
-    const casa::Quantity& searchRadius,
-    const casa::Quantity& fluxLimit)
+    const casacore::Quantity& ra,
+    const casacore::Quantity& dec,
+    const casacore::Quantity& searchRadius,
+    const casacore::Quantity& fluxLimit)
 {
     // Pre-conditions
     ASKAPCHECK(ra.isConform("deg"), "ra must conform to degrees");

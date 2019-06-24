@@ -28,10 +28,10 @@
 /// @author Matthew Whiting <matthew.whiting@csiro.au>
 #include <askap_simulations.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/casa/Logging/LogIO.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 
 #include <Common/ParameterSet.h>
 #include <casacore/casa/OS/Timer.h>
@@ -77,9 +77,9 @@ int main(int argc, const char** argv)
     askap::askapparallel::AskapParallel comms(argc, argv);
 //     try {
     // Ensure that CASA log messages are captured
-    casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-    casa::LogSink::globalSink(globalSink);
-    casa::Timer timer;
+    casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+    casacore::LogSink::globalSink(globalSink);
+    casacore::Timer timer;
     timer.mark();
     srandom(time(0));
     std::string parsetFile(getInputs("-inputs", "createFITS.in", argc, argv));

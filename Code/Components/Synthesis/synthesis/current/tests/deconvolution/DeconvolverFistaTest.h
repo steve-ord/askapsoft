@@ -34,7 +34,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-using namespace casa;
+using namespace casacore;
 
 namespace askap {
 
@@ -44,7 +44,7 @@ class DeconvolverFistaTest : public CppUnit::TestFixture
 {
   CPPUNIT_TEST_SUITE(DeconvolverFistaTest);
   CPPUNIT_TEST(testCreate);
-  CPPUNIT_TEST_EXCEPTION(testWrongShape, casa::ArrayShapeError);
+  CPPUNIT_TEST_EXCEPTION(testWrongShape, casacore::ArrayShapeError);
   //  CPPUNIT_TEST(testDeconvolve);
   CPPUNIT_TEST_SUITE_END();
 public:

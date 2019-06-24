@@ -35,7 +35,7 @@
 #include <casacore/casa/Arrays/Array.h>
 #include <casacore/casa/Arrays/ArrayMath.h>
 #include <boost/shared_ptr.hpp>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 ASKAP_LOGGER(decentropylogger, ".deconvolution.entropy");
 
 #include <deconvolution/DeconvolverEntropy.h>
@@ -43,7 +43,7 @@ ASKAP_LOGGER(decentropylogger, ".deconvolution.entropy");
 #include <deconvolution/EntropyI.h>
 #include <deconvolution/Emptiness.h>
 
-using namespace casa;
+using namespace casacore;
 
 namespace askap {
 

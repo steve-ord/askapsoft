@@ -27,10 +27,10 @@
 #include <iostream>
 #include <stdexcept>
 #include <askap_synthesis.h>
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/casa/Logging/LogIO.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 #include <casacore/casa/OS/Timer.h>
 #include <casacore/casa/Arrays/Vector.h>
 #include <casacore/casa/Arrays/Array.h>
@@ -43,9 +43,9 @@
 #include <measurementequation/SynthesisParamsHelper.h>
 #include <measurementequation/GaussianNoiseME.h>
 #include <measurementequation/SynthesisParamsHelper.h>
-#include <utils/ImageUtils.h>
+#include <askap/scimath/utils/ImageUtils.h>
 
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 
 ASKAP_LOGGER(logger, ".tpreconditioner");
 
@@ -55,22 +55,22 @@ using namespace askap::synthesis;
 
 int main(int argc, char **argv) {
   try {
-     casa::Timer timer;
+     casacore::Timer timer;
 
      timer.mark();
      // Initialize MPI (also succeeds if no MPI available).
      askap::askapparallel::AskapParallel ap(argc, (const char **&)argv);
 
      // Ensure that CASA log messages are captured
-     casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-     casa::LogSink::globalSink(globalSink);
+     casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+     casacore::LogSink::globalSink(globalSink);
 
 
      LOFAR::ParameterSet parset("test.in");
      SynthesisParamsHelper::setUpImageHandler(parset);
-     casa::Array<float> psf = SynthesisParamsHelper::imageHandler().read("picmf.psf");
-     casa::Array<float> img = SynthesisParamsHelper::imageHandler().read("testimg.img");
-     casa::Array<float> pcf = SynthesisParamsHelper::imageHandler().read("picmf.psf");
+     casacore::Array<float> psf = SynthesisParamsHelper::imageHandler().read("picmf.psf");
+     casacore::Array<float> img = SynthesisParamsHelper::imageHandler().read("testimg.img");
+     casacore::Array<float> pcf = SynthesisParamsHelper::imageHandler().read("picmf.psf");
      ASKAPASSERT(psf.shape().nonDegenerate() == img.shape().nonDegenerate());
      
           

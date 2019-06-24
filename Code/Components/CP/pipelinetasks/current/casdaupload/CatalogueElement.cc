@@ -34,7 +34,7 @@
 #include <string>
 
 // ASKAPsoft includes
-#include "askap/AskapError.h"
+#include "askap/askap/AskapError.h"
 #include "xercesc/dom/DOM.hpp" // Includes all DOM
 #include "boost/filesystem.hpp"
 #include "votable/XercescString.h"

@@ -33,7 +33,7 @@
 /// @author Max Voronkov <Maxim.Voronkov@csiro.au>
 
 #include <calibaccess/ParsetCalSolutionAccessor.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 // LOFAR
 #include <Common/ParameterSet.h>
@@ -41,7 +41,7 @@
 
 // logging stuff
 #include <askap_accessors.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 ASKAP_LOGGER(logger, ".calibaccess");
 
 // std includes
@@ -85,7 +85,7 @@ ParsetCalSolutionAccessor::~ParsetCalSolutionAccessor()
       std::ofstream os(itsParsetFileName.c_str());
       for (std::vector<std::string>::const_iterator it = parlist.begin(); 
            it != parlist.end(); ++it) {
-           const casa::Complex val = cache().complexValue(*it);
+           const casacore::Complex val = cache().complexValue(*it);
            os<<*it<<" = ["<<real(val)<<","<<imag(val)<<"]"<<std::endl;
       }     
   }
@@ -133,7 +133,7 @@ void ParsetCalSolutionAccessor::setLeakage(const JonesIndex &index, const JonesD
 /// @param[in] index ant/beam index
 /// @param[in] bp JonesJTerm object with gains for the given channel and validity flags
 /// @param[in] chan spectral channel
-void ParsetCalSolutionAccessor::setBandpass(const JonesIndex &index, const JonesJTerm &bp, const casa::uInt chan)
+void ParsetCalSolutionAccessor::setBandpass(const JonesIndex &index, const JonesJTerm &bp, const casacore::uInt chan)
 {
   prepareToWrite();
   CachedCalSolutionAccessor::setBandpass(index, bp, chan);

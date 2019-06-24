@@ -33,10 +33,10 @@
 #include <askap_accessors.h>
 
 // ASKAPsoft includes
-#include <askap/Application.h>
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
-#include <askap/StatReporter.h>
+#include <askap/askap/Application.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/StatReporter.h>
 
 #include <Common/ParameterSet.h>
 #include <casacore/images/Images/ImageFITSConverter.h>
@@ -85,11 +85,11 @@ class ConvertApp : public askap::Application {
                     ASKAPTHROW(AskapError, "BITPIX can only be -32 or 16.");
                 }
 
-                casa::String errorMsg;
+                casacore::String errorMsg;
                 bool returnVal;
 
-                casa::PagedImage<float> casaim(casaimage);
-                casa::TableRecord miscinfo = casaim.miscInfo();
+                casacore::PagedImage<float> casaim(casaimage);
+                casacore::TableRecord miscinfo = casaim.miscInfo();
 
                 if (subset.isDefined("headers")) {
                     std::vector<std::string> headersToUpdate = subset.getStringVector("headers", "");
@@ -109,10 +109,10 @@ class ConvertApp : public askap::Application {
                 if (subset.isDefined("history")) {
                     std::vector<std::string> historyMessages = subset.getStringVector("history", "");
                     if (historyMessages.size() > 0) {
-                        casa::LogIO log = casaim.logSink();
+                        casacore::LogIO log = casaim.logSink();
                         for (std::vector<std::string>::iterator history = historyMessages.begin();
                                 history < historyMessages.end(); history++) {
-                            log << *history << casa::LogIO::POST;
+                            log << *history << casacore::LogIO::POST;
                         }
                     }
                 }

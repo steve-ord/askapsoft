@@ -63,10 +63,10 @@ using namespace LOFAR::TYPES;
 
 #include <askap_analysis.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 
-#include <askapparallel/AskapParallel.h>
+#include <askap/askapparallel/AskapParallel.h>
 #include <imageaccess/CasaImageAccess.h>
 
 #include <parallelanalysis/DuchampParallel.h>
@@ -1400,8 +1400,8 @@ duchamp::OUTCOME DuchampParallel::getCASA(DATATYPE typeOfData, bool useSubimageI
 
         ASKAPLOG_INFO_STR(logger, "Reading data from image " << itsCube.pars().getImageFile());
 
-        casa::Array<Float> subarray(sub->shape());
-        const casa::MaskedArray<Float> msub(sub->get(), sub->getMask());
+        casacore::Array<Float> subarray(sub->shape());
+        const casacore::MaskedArray<Float> msub(sub->get(), sub->getMask());
         float minval = 0.;
         if (msub.nelementsValid() > 0) {
             minval = min(msub) - 10.;

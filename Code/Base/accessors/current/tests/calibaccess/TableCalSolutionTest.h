@@ -78,7 +78,7 @@ protected:
        return css;
    }
    
-   static void testComplex(const casa::Complex &expected, const casa::Complex &obtained, const float tol = 1e-5) {
+   static void testComplex(const casacore::Complex &expected, const casacore::Complex &obtained, const float tol = 1e-5) {
       CPPUNIT_ASSERT_DOUBLES_EQUAL(real(expected),real(obtained),tol);
       CPPUNIT_ASSERT_DOUBLES_EQUAL(imag(expected),imag(obtained),tol);      
    }
@@ -100,7 +100,7 @@ public:
        long newID = css->newSolutionID(0.);
        CPPUNIT_ASSERT_EQUAL(0l, newID);
        boost::shared_ptr<ICalSolutionAccessor> acc = css->rwSolution(newID);
-       acc->setGain(JonesIndex(0u,0u),JonesJTerm(casa::Complex(1.0,-1.0),true,casa::Complex(-1.0,1.0),true));
+       acc->setGain(JonesIndex(0u,0u),JonesJTerm(casacore::Complex(1.0,-1.0),true,casacore::Complex(-1.0,1.0),true));
        // reuse existing table
        acc.reset();
        css.reset();
@@ -108,7 +108,7 @@ public:
        newID = css->newSolutionID(60.);
        CPPUNIT_ASSERT_EQUAL(1l, newID);
        acc = css->rwSolution(newID);
-       acc->setLeakage(JonesIndex(2u,1u),JonesDTerm(casa::Complex(0.1,-0.1),true,casa::Complex(-0.1,0.4),false));
+       acc->setLeakage(JonesIndex(2u,1u),JonesDTerm(casacore::Complex(0.1,-0.1),true,casacore::Complex(-0.1,0.4),false));
        // once again reuse the table
        acc.reset();
        css.reset();
@@ -116,7 +116,7 @@ public:
        newID = css->newSolutionID(120.);
        CPPUNIT_ASSERT_EQUAL(2l, newID);
        acc = css->rwSolution(newID);
-       acc->setBandpass(JonesIndex(1u,1u),JonesJTerm(casa::Complex(1.0,-0.2),true,casa::Complex(0.9,-0.1),true),1u);       
+       acc->setBandpass(JonesIndex(1u,1u),JonesJTerm(casacore::Complex(1.0,-0.2),true,casacore::Complex(0.9,-0.1),true),1u);       
    }
 
    // common code testing leakages and gains in the test table
@@ -124,36 +124,36 @@ public:
    void doGainAndLeakageTest(const boost::shared_ptr<ICalSolutionConstAccessor> &acc) {
        CPPUNIT_ASSERT(acc);
        // test gains
-       for (casa::uInt ant = 0; ant<6; ++ant) {
-            for (casa::uInt beam = 0; beam<3; ++beam) {
+       for (casacore::uInt ant = 0; ant<6; ++ant) {
+            for (casacore::uInt beam = 0; beam<3; ++beam) {
                  const JonesJTerm gain = acc->gain(JonesIndex(ant,beam));
                  if ((ant == 0) && (beam == 0)) {
-                     testComplex(casa::Complex(1.,-1.), gain.g1());
-                     testComplex(casa::Complex(-1.,1.), gain.g2());
+                     testComplex(casacore::Complex(1.,-1.), gain.g1());
+                     testComplex(casacore::Complex(-1.,1.), gain.g2());
                      CPPUNIT_ASSERT(gain.g1IsValid());
                      CPPUNIT_ASSERT(gain.g2IsValid());                               
                  } else {
                      // default gain is 1.0
-                     testComplex(casa::Complex(1.0,0.), gain.g1());
-                     testComplex(casa::Complex(1.0,0.), gain.g2());
+                     testComplex(casacore::Complex(1.0,0.), gain.g1());
+                     testComplex(casacore::Complex(1.0,0.), gain.g2());
                      CPPUNIT_ASSERT(!gain.g1IsValid());
                      CPPUNIT_ASSERT(!gain.g2IsValid());                                                    
                  }
             }
        }
        // test leakages
-       for (casa::uInt ant = 0; ant<6; ++ant) {
-            for (casa::uInt beam = 0; beam<3; ++beam) {
+       for (casacore::uInt ant = 0; ant<6; ++ant) {
+            for (casacore::uInt beam = 0; beam<3; ++beam) {
                  const JonesDTerm leakage = acc->leakage(JonesIndex(ant,beam));
                  if ((ant == 2) && (beam == 1)) {
-                     testComplex(casa::Complex(0.1,-0.1), leakage.d12());
-                     testComplex(casa::Complex(-0.1,0.4), leakage.d21());
+                     testComplex(casacore::Complex(0.1,-0.1), leakage.d12());
+                     testComplex(casacore::Complex(-0.1,0.4), leakage.d21());
                      CPPUNIT_ASSERT(leakage.d12IsValid());
                      CPPUNIT_ASSERT(!leakage.d21IsValid());                               
                  } else {
                      // default leakage is 0.0
-                     testComplex(casa::Complex(0.), leakage.d12());
-                     testComplex(casa::Complex(0.), leakage.d21());
+                     testComplex(casacore::Complex(0.), leakage.d12());
+                     testComplex(casacore::Complex(0.), leakage.d21());
                      CPPUNIT_ASSERT(!leakage.d12IsValid());
                      CPPUNIT_ASSERT(!leakage.d21IsValid());                                                    
                  }
@@ -177,20 +177,20 @@ public:
        doGainAndLeakageTest(acc);
 
        // test bandpasses
-       for (casa::uInt ant = 0; ant<6; ++ant) {
-            for (casa::uInt beam = 0; beam<3; ++beam) {
+       for (casacore::uInt ant = 0; ant<6; ++ant) {
+            for (casacore::uInt beam = 0; beam<3; ++beam) {
                  const JonesIndex index(ant,beam);
-                 for (casa::uInt chan = 0; chan < 8; ++chan) {
+                 for (casacore::uInt chan = 0; chan < 8; ++chan) {
                       const JonesJTerm bp = acc->bandpass(index,chan);
                       if ((ant == 1) && (beam == 1) && (chan == 1)) {
-                          testComplex(casa::Complex(1.0,-0.2), bp.g1());
-                          testComplex(casa::Complex(0.9,-0.1), bp.g2());
+                          testComplex(casacore::Complex(1.0,-0.2), bp.g1());
+                          testComplex(casacore::Complex(0.9,-0.1), bp.g2());
                           CPPUNIT_ASSERT(bp.g1IsValid());
                           CPPUNIT_ASSERT(bp.g2IsValid());                               
                       } else {
                           // default bandpass gain is 1.0
-                          testComplex(casa::Complex(1.0,0.), bp.g1());
-                          testComplex(casa::Complex(1.0,0.), bp.g2());
+                          testComplex(casacore::Complex(1.0,0.), bp.g1());
+                          testComplex(casacore::Complex(1.0,0.), bp.g2());
                           CPPUNIT_ASSERT(!bp.g1IsValid());
                           CPPUNIT_ASSERT(!bp.g2IsValid());                                                    
                       }
@@ -216,20 +216,20 @@ public:
        doGainAndLeakageTest(acc);
 
        // test bandpasses
-       for (casa::uInt ant = 0; ant<6; ++ant) {
-            for (casa::uInt beam = 0; beam<3; ++beam) {
+       for (casacore::uInt ant = 0; ant<6; ++ant) {
+            for (casacore::uInt beam = 0; beam<3; ++beam) {
                  const JonesIndex index(ant,beam);
-                 for (casa::uInt chan = 0; chan < 7; ++chan) {
+                 for (casacore::uInt chan = 0; chan < 7; ++chan) {
                       const JonesJTerm bp = acc->bandpass(index,chan);
                       if ((ant == 1) && (beam == 1) && (chan == 0)) {
-                          testComplex(casa::Complex(1.0,-0.2), bp.g1());
-                          testComplex(casa::Complex(0.9,-0.1), bp.g2());
+                          testComplex(casacore::Complex(1.0,-0.2), bp.g1());
+                          testComplex(casacore::Complex(0.9,-0.1), bp.g2());
                           CPPUNIT_ASSERT(bp.g1IsValid());
                           CPPUNIT_ASSERT(bp.g2IsValid());                               
                       } else {
                           // default bandpass gain is 1.0
-                          testComplex(casa::Complex(1.0,0.), bp.g1());
-                          testComplex(casa::Complex(1.0,0.), bp.g2());
+                          testComplex(casacore::Complex(1.0,0.), bp.g1());
+                          testComplex(casacore::Complex(1.0,0.), bp.g2());
                           CPPUNIT_ASSERT(!bp.g1IsValid());
                           CPPUNIT_ASSERT(!bp.g2IsValid());                                                    
                       }
@@ -286,8 +286,8 @@ public:
           // the following should be successful because the first solution in the table 
           // was the gain solution
           const JonesJTerm gain = acc->gain(JonesIndex(0u,0u));
-          testComplex(casa::Complex(1.,-1.), gain.g1());
-          testComplex(casa::Complex(-1.,1.), gain.g2());
+          testComplex(casacore::Complex(1.,-1.), gain.g1());
+          testComplex(casacore::Complex(-1.,1.), gain.g2());
           CPPUNIT_ASSERT(gain.g1IsValid());
           CPPUNIT_ASSERT(gain.g2IsValid());                               
        } 
@@ -306,11 +306,11 @@ public:
             const long newID = css->newSolutionID(55553.*86400+3600.*double(sol));
             CPPUNIT_ASSERT_EQUAL(long(sol), newID);
             boost::shared_ptr<ICalSolutionAccessor> acc = css->rwSolution(newID);
-            for (casa::Short ant = 0; ant<6; ++ant) {
-                 for (casa::Short beam=0; beam<3; ++beam) {
+            for (casacore::Short ant = 0; ant<6; ++ant) {
+                 for (casacore::Short beam=0; beam<3; ++beam) {
                       const float amp = float(ant)/6. + 0.5 + 0.1*float(sol);
-                      const float phase = casa::C::pi/3.*float(beam);
-                      const casa::Complex val = casa::Complex(sin(phase),cos(phase))*amp;
+                      const float phase = casacore::C::pi/3.*float(beam);
+                      const casacore::Complex val = casacore::Complex(sin(phase),cos(phase))*amp;
                       acc->setGain(JonesIndex(ant,beam),JonesJTerm(val,true,-val,true));
                  }
             }
@@ -323,11 +323,11 @@ public:
             CPPUNIT_ASSERT_EQUAL(long(sol), id);
             const boost::shared_ptr<ICalSolutionConstAccessor> acc = css->roSolution(id);
             CPPUNIT_ASSERT(acc);
-            for (casa::Short ant = 0; ant<6; ++ant) {
-                 for (casa::Short beam=0; beam<3; ++beam) {
+            for (casacore::Short ant = 0; ant<6; ++ant) {
+                 for (casacore::Short beam=0; beam<3; ++beam) {
                       const float amp = float(ant)/6. + 0.5 + 0.1*float(sol);
-                      const float phase = casa::C::pi/3.*float(beam);
-                      const casa::Complex val = casa::Complex(sin(phase),cos(phase))*amp;
+                      const float phase = casacore::C::pi/3.*float(beam);
+                      const casacore::Complex val = casacore::Complex(sin(phase),cos(phase))*amp;
                       const JonesJTerm gain = acc->gain(JonesIndex(ant,beam));
                       testComplex(val, gain.g1());
                       testComplex(-val, gain.g2());
@@ -345,16 +345,16 @@ public:
             CPPUNIT_ASSERT_EQUAL(long(sol), newID);
             boost::shared_ptr<ICalSolutionAccessor> acc = css->rwSolution(newID);
             ASKAPDEBUGASSERT(acc);
-            for (casa::uInt ant = 0; ant<6; ++ant) {
-                 for (casa::uInt beam=0; beam<3; ++beam) {
+            for (casacore::uInt ant = 0; ant<6; ++ant) {
+                 for (casacore::uInt beam=0; beam<3; ++beam) {
                       const float amp = float(ant)/6. + 0.5 + 0.1*float(sol);
-                      const float phase = casa::C::pi/3.*float(beam);
-                      const casa::Complex val = casa::Complex(sin(phase),cos(phase))*amp;
+                      const float phase = casacore::C::pi/3.*float(beam);
+                      const casacore::Complex val = casacore::Complex(sin(phase),cos(phase))*amp;
                       const accessors::JonesIndex index(ant,beam);
-                      acc->setJonesElement(index, casa::Stokes::XX, val);
-                      acc->setJonesElement(index, casa::Stokes::YY, -val);
-                      acc->setJonesElement(index, casa::Stokes::XY, val*0.1f);
-                      acc->setJonesElement(index, casa::Stokes::YX, -val*0.1f);
+                      acc->setJonesElement(index, casacore::Stokes::XX, val);
+                      acc->setJonesElement(index, casacore::Stokes::YY, -val);
+                      acc->setJonesElement(index, casacore::Stokes::XY, val*0.1f);
+                      acc->setJonesElement(index, casacore::Stokes::YX, -val*0.1f);
                  }
             }
        }
@@ -366,11 +366,11 @@ public:
             CPPUNIT_ASSERT_EQUAL(long(sol), id);
             const boost::shared_ptr<ICalSolutionConstAccessor> acc = css->roSolution(id);
             CPPUNIT_ASSERT(acc);
-            for (casa::Short ant = 0; ant<6; ++ant) {
-                 for (casa::Short beam=0; beam<3; ++beam) {
+            for (casacore::Short ant = 0; ant<6; ++ant) {
+                 for (casacore::Short beam=0; beam<3; ++beam) {
                       const float amp = float(ant)/6. + 0.5 + 0.1*float(sol);
-                      const float phase = casa::C::pi/3.*float(beam);
-                      const casa::Complex val = casa::Complex(sin(phase),cos(phase))*amp;
+                      const float phase = casacore::C::pi/3.*float(beam);
+                      const casacore::Complex val = casacore::Complex(sin(phase),cos(phase))*amp;
                       const JonesJTerm gain = acc->gain(JonesIndex(ant,beam));
                       testComplex(val, gain.g1());
                       testComplex(-val, gain.g2());

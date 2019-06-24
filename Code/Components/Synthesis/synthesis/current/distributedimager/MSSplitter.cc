@@ -37,12 +37,12 @@
 #include <stdint.h>
 
 // ASKAPsoft includes
-#include "askap/AskapError.h"
-#include "askap/AskapLogging.h"
-#include "askap/Application.h"
-#include "askap/AskapUtil.h"
-#include "askap/StatReporter.h"
-#include "askap/Log4cxxLogSink.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/Application.h"
+#include "askap/askap/AskapUtil.h"
+#include "askap/askap/StatReporter.h"
+#include "askap/askap/Log4cxxLogSink.h"
 #include "boost/shared_ptr.hpp"
 #include "Common/ParameterSet.h"
 #include "casacore/casa/OS/File.h"
@@ -65,7 +65,7 @@
 ASKAP_LOGGER(logger, ".mssplitter");
 
 using namespace askap;
-using namespace casa;
+using namespace casacore;
 using namespace std;
 using namespace cp;
 

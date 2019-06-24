@@ -31,8 +31,8 @@
 // cppunit includes
 #include <cppunit/extensions/HelperMacros.h>
 // own includes
-#include <utils/SpheroidalFunction.h>
-#include <askap/AskapError.h>
+#include <askap/scimath/utils/SpheroidalFunction.h>
+#include <askap/askap/AskapError.h>
 //#include <fstream>
 
 namespace askap {
@@ -46,7 +46,7 @@ class SpheroidalFunctionTest : public CppUnit::TestFixture {
 public:
   void cmpValuesTest() {
       // c=pi*m/2, alpha = 1
-      SpheroidalFunction sph(casa::C::pi*3, 1);
+      SpheroidalFunction sph(casacore::C::pi*3, 1);
       SpheroidalFunction sph2(sph); // test copy contstructor as well
       const size_t nPt = 100;
       //std::ofstream os("dbg.dat");

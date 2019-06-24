@@ -36,7 +36,7 @@
 #include <casacore/images/Images/ImageRegrid.h>
 
 // ASKAPsoft includes
-#include <utils/MultiDimArrayPlaneIter.h>
+#include <askap/scimath/utils/MultiDimArrayPlaneIter.h>
 #include <primarybeam/PrimaryBeam.h>
 
 

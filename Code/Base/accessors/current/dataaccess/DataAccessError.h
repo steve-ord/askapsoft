@@ -33,7 +33,7 @@
 #include <string>
 
 /// own includes
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 namespace askap {
 

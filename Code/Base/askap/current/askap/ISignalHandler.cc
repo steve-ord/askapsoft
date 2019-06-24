@@ -25,7 +25,7 @@
 /// @author Ben Humphreys <ben.humphreys@csiro.au>
 
 // Include own header file first
-#include "askap/ISignalHandler.h"
+#include "askap/askap/ISignalHandler.h"
 
 askap::ISignalHandler::~ISignalHandler()
 {

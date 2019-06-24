@@ -23,21 +23,17 @@ fi
 #
 # Fix up the dependencies
 #
-source ${WORKSPACE}/ModuleFile
-module load python/3.6.3
-nice ${WORKSPACE}/make_depends.py -s default -d galaxy_packages.json
-module unload python/3.6.3
-
-module load python
-module load future
-module load virtualenv
-
-
 nice python2.7 bootstrap.py -n
 if [ $? -ne 0 ]; then
     echo "Error: Bootstrapping failed"
     exit 1
 fi
+module unload python/3.6.3
+module load python/3.6.3
+nice ${WORKSPACE}/make_depends.py -s default -d galaxy_packages.json
+module unload python/3.6.3
+
+module load python
 
 #
 # Init ASKAP environment

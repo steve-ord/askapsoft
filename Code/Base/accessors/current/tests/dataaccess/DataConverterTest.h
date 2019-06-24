@@ -82,29 +82,29 @@ public:
    /// test Epoch conversion
    void testEpochConversion()
    { 
-    casa::MEpoch refEpoch=casa::MEpoch(casa::MVEpoch(casa::Quantity(50257.29,"d")),
-                            casa::MEpoch::Ref(casa::MEpoch::UTC));
+    casacore::MEpoch refEpoch=casacore::MEpoch(casacore::MVEpoch(casacore::Quantity(50257.29,"d")),
+                            casacore::MEpoch::Ref(casacore::MEpoch::UTC));
     itsConverter->setEpochFrame(refEpoch,"s");
     CPPUNIT_ASSERT(fabs(itsConverter->epoch(refEpoch))<1e-7);
     // adjust it one day forward and see whether the epoch is converted
     // to seconds
-    casa::MEpoch newEpoch=casa::MEpoch(casa::MVEpoch(casa::Quantity(50258.29,"d")),
-                            casa::MEpoch::Ref(casa::MEpoch::UTC));
+    casacore::MEpoch newEpoch=casacore::MEpoch(casacore::MVEpoch(casacore::Quantity(50258.29,"d")),
+                            casacore::MEpoch::Ref(casacore::MEpoch::UTC));
     CPPUNIT_ASSERT(fabs(itsConverter->epoch(newEpoch)-86400)<1e-7);
 
     // convert it to another frame and check again
-    casa::MEpoch gmstEpoch=casa::MEpoch::Convert(newEpoch,
-                         casa::MEpoch::Ref(casa::MEpoch::GMST))(newEpoch);    
+    casacore::MEpoch gmstEpoch=casacore::MEpoch::Convert(newEpoch,
+                         casacore::MEpoch::Ref(casacore::MEpoch::GMST))(newEpoch);    
     CPPUNIT_ASSERT(fabs(itsConverter->epoch(gmstEpoch)-86400)<1e-7);
  
     
     // convert it to LMST (which requires a position) and check again
-    const casa::MeasFrame someFrame=getSomeFrame(WHERE_ONLY);
+    const casacore::MeasFrame someFrame=getSomeFrame(WHERE_ONLY);
     // preserve only converted MVEpoch and instantiate MEpoch from scratch
     // in order to clean out the position and test converter properly
-    casa::MEpoch lmstEpoch=casa::MEpoch(casa::MEpoch::Convert(newEpoch,
-                  casa::MEpoch::Ref(casa::MEpoch::LMST,someFrame))(newEpoch).getValue(),
-		  casa::MEpoch::LMST);    
+    casacore::MEpoch lmstEpoch=casacore::MEpoch(casacore::MEpoch::Convert(newEpoch,
+                  casacore::MEpoch::Ref(casacore::MEpoch::LMST,someFrame))(newEpoch).getValue(),
+		  casacore::MEpoch::LMST);    
     itsConverter->setMeasFrame(someFrame);
     CPPUNIT_ASSERT(fabs(itsConverter->epoch(lmstEpoch)-86400)<1e-7);
     
@@ -112,9 +112,9 @@ public:
 
    void testMissingFrame()
    {
-     casa::MDirection theSun(casa::MDirection::SUN);
-     itsConverter->setDirectionFrame(casa::MDirection::Ref(casa::MDirection::J2000));
-     casa::MVDirection result;
+     casacore::MDirection theSun(casacore::MDirection::SUN);
+     itsConverter->setDirectionFrame(casacore::MDirection::Ref(casacore::MDirection::J2000));
+     casacore::MVDirection result;
      itsConverter->direction(theSun,result);
    }
 
@@ -122,22 +122,22 @@ public:
    void testDirectionConversion()
    {
     
-    const casa::MVDirection direction(casa::Quantity(30.,"deg"),
-                                  casa::Quantity(-50.,"deg"));
-    casa::MDirection j2000Dir(direction, casa::MDirection::J2000);
-    casa::MDirection galDir(casa::MDirection::Convert(j2000Dir,
-                           casa::MDirection::GALACTIC)(j2000Dir));
+    const casacore::MVDirection direction(casacore::Quantity(30.,"deg"),
+                                  casacore::Quantity(-50.,"deg"));
+    casacore::MDirection j2000Dir(direction, casacore::MDirection::J2000);
+    casacore::MDirection galDir(casacore::MDirection::Convert(j2000Dir,
+                           casacore::MDirection::GALACTIC)(j2000Dir));
 
-    itsConverter->setDirectionFrame(casa::MDirection::Ref(casa::MDirection::J2000));
-    casa::MVDirection result;
+    itsConverter->setDirectionFrame(casacore::MDirection::Ref(casacore::MDirection::J2000));
+    casacore::MVDirection result;
     itsConverter->direction(galDir,result);
     CPPUNIT_ASSERT(result.separation(direction)<1e-7);
 
     // convert direction to Az/El (which requires time and position)
     // and check again
-    const casa::MeasFrame someFrame=getSomeFrame(WHERE_AND_WHEN);
-    casa::MDirection azelDir(casa::MDirection::Convert(galDir,
-                           casa::MDirection::Ref(casa::MDirection::AZEL,
+    const casacore::MeasFrame someFrame=getSomeFrame(WHERE_AND_WHEN);
+    casacore::MDirection azelDir(casacore::MDirection::Convert(galDir,
+                           casacore::MDirection::Ref(casacore::MDirection::AZEL,
 			   someFrame))(galDir));
     itsConverter->setMeasFrame(someFrame);		    
     itsConverter->direction(azelDir,result);
@@ -147,21 +147,21 @@ public:
    /// test Frequency conversion
    void testFrequencyConversion()
    {
-     const casa::MVFrequency freq(casa::Quantity(1420,"MHz"));
-     casa::MFrequency lsrkFreq(freq, casa::MFrequency::LSRK);
-     itsConverter->setFrequencyFrame(casa::MFrequency::Ref(
-                      casa::MFrequency::LSRK),"GHz");
+     const casacore::MVFrequency freq(casacore::Quantity(1420,"MHz"));
+     casacore::MFrequency lsrkFreq(freq, casacore::MFrequency::LSRK);
+     itsConverter->setFrequencyFrame(casacore::MFrequency::Ref(
+                      casacore::MFrequency::LSRK),"GHz");
 		      
-     CPPUNIT_ASSERT(itsConverter->isVoid(casa::MFrequency::Ref(
-                      casa::MFrequency::LSRK),"GHz"));
+     CPPUNIT_ASSERT(itsConverter->isVoid(casacore::MFrequency::Ref(
+                      casacore::MFrequency::LSRK),"GHz"));
 
      CPPUNIT_ASSERT(fabs(itsConverter->frequency(lsrkFreq)-1.42)<1e-7);
 
      // the same with topocentric (i.e. sky frequency) to LSRK conversion
-     const casa::MeasFrame someFrame=getSomeFrame();
+     const casacore::MeasFrame someFrame=getSomeFrame();
      
-     casa::MFrequency topoFreq(casa::MFrequency::Convert(lsrkFreq,
-                           casa::MFrequency::Ref(casa::MFrequency::TOPO,
+     casacore::MFrequency topoFreq(casacore::MFrequency::Convert(lsrkFreq,
+                           casacore::MFrequency::Ref(casacore::MFrequency::TOPO,
 			   someFrame))(lsrkFreq));
      itsConverter->setMeasFrame(someFrame);
      
@@ -171,18 +171,18 @@ public:
    /// test Velocity conversion
    void testVelocityConversion()
    {
-     const casa::MVRadialVelocity vel(casa::Quantity(-1000,"m/s"));
-     casa::MRadialVelocity lsrkVel(vel, casa::MRadialVelocity::LSRK);
-     itsConverter->setVelocityFrame(casa::MRadialVelocity::Ref(
-                      casa::MRadialVelocity::LSRK),"km/s");
+     const casacore::MVRadialVelocity vel(casacore::Quantity(-1000,"m/s"));
+     casacore::MRadialVelocity lsrkVel(vel, casacore::MRadialVelocity::LSRK);
+     itsConverter->setVelocityFrame(casacore::MRadialVelocity::Ref(
+                      casacore::MRadialVelocity::LSRK),"km/s");
      
      CPPUNIT_ASSERT(fabs(itsConverter->velocity(lsrkVel)+1)<1e-7);
 
      // the same with topocentric (i.e. sky frequency) to LSRK conversion
-     const casa::MeasFrame someFrame=getSomeFrame();
+     const casacore::MeasFrame someFrame=getSomeFrame();
 
-     casa::MRadialVelocity topoVel(casa::MRadialVelocity::Convert(lsrkVel,
-                           casa::MRadialVelocity::Ref(casa::MRadialVelocity::TOPO,
+     casacore::MRadialVelocity topoVel(casacore::MRadialVelocity::Convert(lsrkVel,
+                           casacore::MRadialVelocity::Ref(casacore::MRadialVelocity::TOPO,
 			   someFrame))(lsrkVel));
      itsConverter->setMeasFrame(someFrame);
 
@@ -191,39 +191,39 @@ public:
 
    /// test missing rest frequency for velocity to frequency conversion
    void testMissingRestFrequency1() {     
-     casa::MRadialVelocity lsrkVel((casa::MVRadialVelocity(casa::Quantity(
+     casacore::MRadialVelocity lsrkVel((casacore::MVRadialVelocity(casacore::Quantity(
                                     -1000, "m/s"))),
-				    casa::MRadialVelocity::LSRK);
-     itsConverter->setFrequencyFrame(casa::MFrequency::Ref(
-                                     casa::MFrequency::LSRK),"GHz");
-     const casa::Double buf=itsConverter->frequency(lsrkVel);
+				    casacore::MRadialVelocity::LSRK);
+     itsConverter->setFrequencyFrame(casacore::MFrequency::Ref(
+                                     casacore::MFrequency::LSRK),"GHz");
+     const casacore::Double buf=itsConverter->frequency(lsrkVel);
      // to keep the compiler happy that this variable is used
      ASKAPASSERT(true || buf==0);     
    }
    
    /// test missing rest frequency for frequency to velocity conversion
    void testMissingRestFrequency2() {
-     casa::MFrequency lsrkFreq((casa::MVFrequency(casa::Quantity(
+     casacore::MFrequency lsrkFreq((casacore::MVFrequency(casacore::Quantity(
                                     1.4, "GHz"))),
-				    casa::MFrequency::LSRK);
-     itsConverter->setVelocityFrame(casa::MRadialVelocity::Ref(
-                                    casa::MRadialVelocity::LSRK),"km/s");
-     const casa::Double buf=itsConverter->velocity(lsrkFreq);     
+				    casacore::MFrequency::LSRK);
+     itsConverter->setVelocityFrame(casacore::MRadialVelocity::Ref(
+                                    casacore::MRadialVelocity::LSRK),"km/s");
+     const casacore::Double buf=itsConverter->velocity(lsrkFreq);     
      // to keep the compiler happy that this variable is used
      ASKAPASSERT(true || buf==0);     
    }
 
    /// test velocity to frequency conversion
    void testVelToFreq() {     
-     casa::MRadialVelocity lsrkVel((casa::MVRadialVelocity(casa::Quantity(
+     casacore::MRadialVelocity lsrkVel((casacore::MVRadialVelocity(casacore::Quantity(
                                     -10, "km/s"))),
-				    casa::MRadialVelocity::LSRK);
-     itsConverter->setFrequencyFrame(casa::MFrequency::Ref(
-                                     casa::MFrequency::TOPO),"MHz");
-     itsConverter->setRestFrequency(casa::MVFrequency(casa::Quantity(
+				    casacore::MRadialVelocity::LSRK);
+     itsConverter->setFrequencyFrame(casacore::MFrequency::Ref(
+                                     casacore::MFrequency::TOPO),"MHz");
+     itsConverter->setRestFrequency(casacore::MVFrequency(casacore::Quantity(
                                     1420.405752, "MHz")));
 				    
-     const casa::MeasFrame someFrame=getSomeFrame(FULL);     
+     const casacore::MeasFrame someFrame=getSomeFrame(FULL);     
 
      itsConverter->setMeasFrame(someFrame);     
           
@@ -232,15 +232,15 @@ public:
 
    /// test frequency to velocity conversion
    void testFreqToVel() {     
-     casa::MFrequency topoFreq((casa::MVFrequency(casa::Quantity(
+     casacore::MFrequency topoFreq((casacore::MVFrequency(casacore::Quantity(
                                     1420464418, "Hz"))),
-				    casa::MFrequency::TOPO);
-     itsConverter->setVelocityFrame(casa::MRadialVelocity::Ref(
-                                     casa::MRadialVelocity::LSRK),"km/s");
-     itsConverter->setRestFrequency(casa::MVFrequency(casa::Quantity(
+				    casacore::MFrequency::TOPO);
+     itsConverter->setVelocityFrame(casacore::MRadialVelocity::Ref(
+                                     casacore::MRadialVelocity::LSRK),"km/s");
+     itsConverter->setRestFrequency(casacore::MVFrequency(casacore::Quantity(
                                     1420.405752, "MHz")));
 				    
-     const casa::MeasFrame someFrame=getSomeFrame(FULL);     
+     const casacore::MeasFrame someFrame=getSomeFrame(FULL);     
 
      itsConverter->setMeasFrame(someFrame);
      
@@ -249,13 +249,13 @@ public:
 
    /// test reverse "conversions" to measures for epoch
    void testEpochToMeasures() {
-     casa::MEpoch refEpoch=casa::MEpoch(casa::MVEpoch(casa::Quantity(54257.29,"d")),
-                            casa::MEpoch::Ref(casa::MEpoch::UTC));
+     casacore::MEpoch refEpoch=casacore::MEpoch(casacore::MVEpoch(casacore::Quantity(54257.29,"d")),
+                            casacore::MEpoch::Ref(casacore::MEpoch::UTC));
      itsConverter->setEpochFrame(refEpoch,"d");
-     casa::MEpoch newEpoch=casa::MEpoch(casa::MVEpoch(casa::Quantity(54258.29,"d")),
-                            casa::MEpoch::Ref(casa::MEpoch::UTC));
-     const casa::Double asDouble=itsConverter->epoch(newEpoch);
-     const casa::MVEpoch asMVEpoch(casa::Quantity(asDouble,"d"));
+     casacore::MEpoch newEpoch=casacore::MEpoch(casacore::MVEpoch(casacore::Quantity(54258.29,"d")),
+                            casacore::MEpoch::Ref(casacore::MEpoch::UTC));
+     const casacore::Double asDouble=itsConverter->epoch(newEpoch);
+     const casacore::MVEpoch asMVEpoch(casacore::Quantity(asDouble,"d"));
      
      CPPUNIT_ASSERT(fabs(itsConverter->epoch(
               itsConverter->epochMeasure(asDouble))-1.)<1e-7);	      
@@ -276,28 +276,28 @@ protected:
    /// the conversion is performed.
    /// @param type a FrameType enum describing which aspects of the frame
    ///             must be set
-   static casa::MeasFrame getSomeFrame(FrameType type = FULL) {
-     const casa::MPosition where((casa::MVPosition(casa::Quantity(267.,"m"),
-                                   casa::Quantity(149.549,"deg"),
-		                   casa::Quantity(-30.2644,"deg"))),
-				   casa::MPosition::WGS84);
+   static casacore::MeasFrame getSomeFrame(FrameType type = FULL) {
+     const casacore::MPosition where((casacore::MVPosition(casacore::Quantity(267.,"m"),
+                                   casacore::Quantity(149.549,"deg"),
+		                   casacore::Quantity(-30.2644,"deg"))),
+				   casacore::MPosition::WGS84);
 
      if (type==WHERE_ONLY) {
-         return casa::MeasFrame(where);
+         return casacore::MeasFrame(where);
      }
 
-     casa::MEpoch when=casa::MEpoch(casa::MVEpoch(casa::Quantity(54255.29,"d")),
-                            casa::MEpoch::Ref(casa::MEpoch::UTC));
+     casacore::MEpoch when=casacore::MEpoch(casacore::MVEpoch(casacore::Quantity(54255.29,"d")),
+                            casacore::MEpoch::Ref(casacore::MEpoch::UTC));
 
      if (type==WHERE_AND_WHEN) {
-         return casa::MeasFrame(where,when);
+         return casacore::MeasFrame(where,when);
      }
     
-     casa::MDirection what((casa::MVDirection(casa::Quantity(30.,"deg"),
-                                 casa::Quantity(-50.,"deg"))),
-				 casa::MDirection::J2000);
+     casacore::MDirection what((casacore::MVDirection(casacore::Quantity(30.,"deg"),
+                                 casacore::Quantity(-50.,"deg"))),
+				 casacore::MDirection::J2000);
 
-     return casa::MeasFrame(where,when,what);
+     return casacore::MeasFrame(where,when,what);
    }
 private:
    boost::shared_ptr<BasicDataConverter> itsConverter;

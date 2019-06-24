@@ -27,7 +27,7 @@
 #include <casacore/casa/Arrays/Matrix.h>
 #include <fft/FFTWrapper.h>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <cppunit/extensions/HelperMacros.h>
 
 #include <stdexcept>
@@ -37,7 +37,7 @@
 
 enum MetricNames {NRMSE, NMSE, RMSE, MSE};
 
-using namespace casa;
+using namespace casacore;
 
 //------------------------------------------------------------------------
 static double myRand(double low, double high)
@@ -48,13 +48,13 @@ static double myRand(double low, double high)
 
 //---------------------------------------------------------------------------------------------
 template <typename T>
-static double calc_error(const casa::Array<T>& A, const casa::Array<T>& B, MetricNames metric)
+static double calc_error(const casacore::Array<T>& A, const casacore::Array<T>& B, MetricNames metric)
 {
-    casa::IPosition aShape = A.shape();
-    casa::IPosition bShape = B.shape();
+    casacore::IPosition aShape = A.shape();
+    casacore::IPosition bShape = B.shape();
     double totalError = 0.0;
     for(int i=0; i < aShape.product(); i++){
-        casa::IPosition iPos = casa::toIPositionInArray(i, aShape);
+        casacore::IPosition iPos = casacore::toIPositionInArray(i, aShape);
         switch (metric) {
             case MSE:
             case RMSE:
@@ -83,11 +83,11 @@ static double calc_error(const casa::Array<T>& A, const casa::Array<T>& B, Metri
 
 //---------------------------------------------------------------------------------------------
 template <typename T>
-static bool test_for_equality(const casa::Array<T>& A, const casa::Array<T>& B, MetricNames metric, 
+static bool test_for_equality(const casacore::Array<T>& A, const casacore::Array<T>& B, MetricNames metric, 
                        const double diffP, double& error)
 {
-    casa::IPosition aShape = A.shape();
-    casa::IPosition bShape = B.shape();
+    casacore::IPosition aShape = A.shape();
+    casacore::IPosition bShape = B.shape();
     if (aShape != bShape) return false; 
     error = calc_error(A, B, metric);
     return ((error > diffP) ? false : true);
@@ -95,27 +95,27 @@ static bool test_for_equality(const casa::Array<T>& A, const casa::Array<T>& B, 
 
 //---------------------------------------------------------------------------------------------
 template <typename T>
-static bool forward_backward_test(const int N, casa::Matrix<T>& mat, MetricNames metric, const double diffP)
+static bool forward_backward_test(const int N, casacore::Matrix<T>& mat, MetricNames metric, const double diffP)
 {    
     bool returnVal;
     double diff = 0.0;
        
-    casa::IPosition shape = mat.shape();
+    casacore::IPosition shape = mat.shape();
        
     for(int c=0; c < shape[0]; c++){
         for(int r = 0; r < shape[1]; r++){
             mat(r,c) = T(myRand(-0.5,0.5), myRand(-0.5,0.5));
         } 
     }
-    casa::Matrix<T> original = mat.copy();    
+    casacore::Matrix<T> original = mat.copy();    
                 
     // Forward FFT
     for(int c=0; c<N; c++){
-        casa::Vector<T> y = mat.column(c);
+        casacore::Vector<T> y = mat.column(c);
         askap::scimath::fft(y, FFT);                    
     }
     for(int r=0; r<N; r++){
-        casa::Vector<T> y = mat.row(r);
+        casacore::Vector<T> y = mat.row(r);
         askap::scimath::fft(y, FFT);                            
     }
     
@@ -124,11 +124,11 @@ static bool forward_backward_test(const int N, casa::Matrix<T>& mat, MetricNames
     diff = 0.0;
     // Inverse FFT
     for(int c=0; c<N; c++){
-        casa::Vector<T> y = mat.column(c);
+        casacore::Vector<T> y = mat.column(c);
         askap::scimath::fft(y, IFFT);                    
     }
     for(int r=0; r<N; r++){
-        casa::Vector<T> y = mat.row(r);
+        casacore::Vector<T> y = mat.row(r);
         askap::scimath::fft(y, IFFT);                            
     }
 
@@ -180,7 +180,7 @@ namespace askap
                 const size_t N = dataLength[i];
                 cout << endl << "  Single precision : NMRSE error threshold = " << sp_precision 
                      << " : Testing if  ifft(fft(X)) = X : 2D NxN fft : N = " << N;
-                casa::Matrix<casa::Complex> sp_mat(N, N, 1);
+                casacore::Matrix<casacore::Complex> sp_mat(N, N, 1);
                 CPPUNIT_ASSERT(forward_backward_test(N, sp_mat, NRMSE, sp_precision) == true);
             }
         }
@@ -190,7 +190,7 @@ namespace askap
                 const size_t N = dataLength[i];            
                 cout << endl << "  Double precision : NMRSE error threshold = " << dp_precision
                      << " : Testing if  ifft(fft(X)) = X : 2D NxN fft : N = " << N;
-                casa::Matrix<casa::DComplex> dp_mat(N, N, 1);
+                casacore::Matrix<casacore::DComplex> dp_mat(N, N, 1);
                 CPPUNIT_ASSERT(forward_backward_test(N, dp_mat, NRMSE, dp_precision) == true);
             }
         }

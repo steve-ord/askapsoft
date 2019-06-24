@@ -11,7 +11,7 @@
 #ifndef ASKAP_ACCESSORS_CACHED_ACCESSOR_FIELD_H
 #define ASKAP_ACCESSORS_CACHED_ACCESSOR_FIELD_H
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 // boost includes
 #ifdef _OPENMP

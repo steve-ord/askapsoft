@@ -24,10 +24,10 @@
 
 #include <askap_analysis.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/casa/Logging/LogIO.h>
-#include <askap/Log4cxxLogSink.h>
+#include <askap/askap/Log4cxxLogSink.h>
 
 #include <patternmatching/Matcher.h>
 #include <Common/ParameterSet.h>
@@ -57,8 +57,8 @@ int main(int argc, const char** argv)
 
     try {
         // Ensure that CASA log messages are captured
-        casa::LogSinkInterface* globalSink = new Log4cxxLogSink();
-        casa::LogSink::globalSink(globalSink);
+        casacore::LogSinkInterface* globalSink = new Log4cxxLogSink();
+        casacore::LogSink::globalSink(globalSink);
 
         std::string guptaFile, deboerFile;
 

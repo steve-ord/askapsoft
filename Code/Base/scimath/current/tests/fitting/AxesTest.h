@@ -32,7 +32,7 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <casacore/coordinates/Coordinates/Projection.h>
 #include <casacore/coordinates/Coordinates/DirectionCoordinate.h>
 
@@ -119,14 +119,14 @@ namespace askap
           
           p1->update("Time",0.0, 1.0);
           CPPUNIT_ASSERT(p1->has("Time"));
-          CPPUNIT_ASSERT(casa::abs(p1->start("Time"))<1e-7);
-          CPPUNIT_ASSERT(casa::abs(p1->end("Time")-1.0)<1e-7);
+          CPPUNIT_ASSERT(casacore::abs(p1->start("Time"))<1e-7);
+          CPPUNIT_ASSERT(casacore::abs(p1->end("Time")-1.0)<1e-7);
                     
           p1->update("Freq", 0.7e9, 1.7e9);
 
           CPPUNIT_ASSERT(p1->has("Freq"));
-          CPPUNIT_ASSERT(casa::abs(p1->start("Freq")-0.7e9)<1);
-          CPPUNIT_ASSERT(casa::abs(p1->end("Freq")-1.7e9)<1);          
+          CPPUNIT_ASSERT(casacore::abs(p1->start("Freq")-0.7e9)<1);
+          CPPUNIT_ASSERT(casacore::abs(p1->end("Freq")-1.7e9)<1);          
         }
 
         void testIndices()
@@ -139,31 +139,31 @@ namespace askap
 
         void testStokes()
         {
-          casa::Vector<casa::Stokes::StokesTypes> stokes(4);
-          stokes[0] = casa::Stokes::I;
-          stokes[1] = casa::Stokes::Q;
-          stokes[2] = casa::Stokes::U;
-          stokes[3] = casa::Stokes::V;
+          casacore::Vector<casacore::Stokes::StokesTypes> stokes(4);
+          stokes[0] = casacore::Stokes::I;
+          stokes[1] = casacore::Stokes::Q;
+          stokes[2] = casacore::Stokes::U;
+          stokes[3] = casacore::Stokes::V;
           doStokesTest(stokes);
           
           stokes.resize(1);
-          stokes[0] = casa::Stokes::I;
+          stokes[0] = casacore::Stokes::I;
           doStokesTest(stokes);
                     
           stokes.resize(2);
-          stokes[0] = casa::Stokes::XX;
-          stokes[1] = casa::Stokes::YY;
+          stokes[0] = casacore::Stokes::XX;
+          stokes[1] = casacore::Stokes::YY;
           doStokesTest(stokes);
 
           stokes.resize(2);
-          stokes[0] = casa::Stokes::RR;
-          stokes[1] = casa::Stokes::RL;
+          stokes[0] = casacore::Stokes::RR;
+          stokes[1] = casacore::Stokes::RL;
           doStokesTest(stokes);
         }
         
-        void doStokesTest(const casa::Vector<casa::Stokes::StokesTypes> &stokes) {
+        void doStokesTest(const casacore::Vector<casacore::Stokes::StokesTypes> &stokes) {
           p1->addStokesAxis(stokes);
-          casa::Vector<casa::Stokes::StokesTypes> res = p1->stokesAxis();
+          casacore::Vector<casacore::Stokes::StokesTypes> res = p1->stokesAxis();
           CPPUNIT_ASSERT(res.nelements() == stokes.nelements());
           for (size_t pol = 0; pol<stokes.nelements(); ++pol) {
                CPPUNIT_ASSERT(stokes[pol] == res[pol]);
@@ -174,16 +174,16 @@ namespace askap
         {
           CPPUNIT_ASSERT(!p1->hasDirection());
           
-          casa::Matrix<casa::Double> xform(2,2,0.);
+          casacore::Matrix<casacore::Double> xform(2,2,0.);
           xform.diagonal() = 1.;
-          const double deg2rad = casa::C::pi/180.;
-          casa::DirectionCoordinate  dc(casa::MDirection::J2000, casa::Projection(casa::Projection::SIN),
+          const double deg2rad = casacore::C::pi/180.;
+          casacore::DirectionCoordinate  dc(casacore::MDirection::J2000, casacore::Projection(casacore::Projection::SIN),
                      135*deg2rad, -60*deg2rad,-1.*deg2rad, 1.*deg2rad, xform, 128,128);
           
           p1->addDirectionAxis(dc);
           CPPUNIT_ASSERT(p1->hasDirection());
           CPPUNIT_ASSERT(dc.near(p1->directionAxis()));
-          casa::DirectionCoordinate  dc2(casa::MDirection::J2000, casa::Projection(casa::Projection::SIN),
+          casacore::DirectionCoordinate  dc2(casacore::MDirection::J2000, casacore::Projection(casacore::Projection::SIN),
                      134.9*deg2rad, -60.1*deg2rad,-0.9*deg2rad, 1.*deg2rad, xform, 127,129);
           CPPUNIT_ASSERT(!dc2.near(p1->directionAxis()));
           p1->addDirectionAxis(dc2);

@@ -26,7 +26,7 @@
 
 #include <casacore/tables/Tables/TableError.h>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -56,13 +56,13 @@ namespace askap
           p1->add("par3", 13.0);
           Axes axes1;
           axes1.add("Freq", 1e9, 2e9);
-          casa::Array<double> arr1(casa::IPosition(1,10));
+          casacore::Array<double> arr1(casacore::IPosition(1,10));
           arr1.set(99.0);
           p1->add("par4", arr1, axes1);
           Axes axes2;
           axes2.add("RA", -1.0, 1.0);
           axes2.add("DEC", -0.3, 0.5);
-          casa::Array<double> arr2(casa::IPosition(2,10,10));
+          casacore::Array<double> arr2(casacore::IPosition(2,10,10));
           arr2.set(137.1);
           p1->add("par5", arr2, axes2);
         }

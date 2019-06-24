@@ -31,7 +31,7 @@
 #include "boost/shared_ptr.hpp"
 
 // Classes to test
-#include "askap/CircularBuffer.h"
+#include "askap/askap/CircularBuffer.h"
 
 namespace askap {
 namespace utility {

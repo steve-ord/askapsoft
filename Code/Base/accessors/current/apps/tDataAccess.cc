@@ -28,10 +28,10 @@
 
 #include <dataaccess/TableDataSource.h>
 #include <askap_accessors.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 ASKAP_LOGGER(logger, "");
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 #include <dataaccess/SharedIter.h>
 #include <dataaccess/ParsetInterface.h>
 
@@ -59,13 +59,13 @@ using namespace accessors;
 void timeDependentSubtableTest(const string &ms, const IConstDataSource &ds) 
 {
   IDataConverterPtr conv=ds.createConverter();  
-  //conv->setEpochFrame(casa::MEpoch(casa::Quantity(53635.5,"d"),
-  //                    casa::MEpoch::Ref(casa::MEpoch::UTC)),"s");
+  //conv->setEpochFrame(casacore::MEpoch(casacore::Quantity(53635.5,"d"),
+  //                    casacore::MEpoch::Ref(casacore::MEpoch::UTC)),"s");
   IDataSelectorPtr sel=ds.createSelector();
   //sel->chooseFeed(1);
   //sel<<LOFAR::ParameterSet("test.in").makeSubset("TestSelection.");
   const IDataConverterImpl &dci=dynamic_cast<const IDataConverterImpl&>(*conv);
-  const TableManager tm(casa::Table(ms),true);
+  const TableManager tm(casacore::Table(ms),true);
   const IFeedSubtableHandler &fsh = tm.getFeed();  
   for (IConstDataSharedIter it=ds.createConstIterator(sel,conv);it!=it.end();++it) {  
        cout<<"direction: "<<it->pointingDir2()<<endl;
@@ -79,17 +79,17 @@ void doReadOnlyTest(const IConstDataSource &ds) {
   //sel->chooseFeed(1);
   //sel<<LOFAR::ParameterSet("test.in").makeSubset("TestSelection.");
   IDataConverterPtr conv=ds.createConverter();  
-  conv->setFrequencyFrame(casa::MFrequency::Ref(casa::MFrequency::BARY),"MHz");
-  conv->setEpochFrame(casa::MEpoch(casa::Quantity(53635.5,"d"),
-                      casa::MEpoch::Ref(casa::MEpoch::UTC)),"s");
-  conv->setDirectionFrame(casa::MDirection::Ref(casa::MDirection::AZEL));                    
+  conv->setFrequencyFrame(casacore::MFrequency::Ref(casacore::MFrequency::BARY),"MHz");
+  conv->setEpochFrame(casacore::MEpoch(casacore::Quantity(53635.5,"d"),
+                      casacore::MEpoch::Ref(casacore::MEpoch::UTC)),"s");
+  conv->setDirectionFrame(casacore::MDirection::Ref(casacore::MDirection::AZEL));                    
     
   for (IConstDataSharedIter it=ds.createConstIterator(sel,conv);it!=it.end();++it) {  
        //cout<<"this is a test "<<it->visibility().nrow()<<" "<<it->frequency()<<endl;
        //cout<<"flags: "<<it->flag()<<endl;
        //cout<<"feed1 pa: "<<it->feed1PA()<<endl;
        cout<<"w: [";
-       for (casa::uInt row = 0; row<it->nRow(); ++row) {
+       for (casacore::uInt row = 0; row<it->nRow(); ++row) {
             cout<<it->uvw()[row](2);
 	    if (row + 1 != it->nRow()) {
 	        cout<<", ";
@@ -109,9 +109,9 @@ void doReadWriteTest(const IDataSource &ds) {
   IDataSelectorPtr sel=ds.createSelector();
   //sel->chooseFeed(1);  
   IDataConverterPtr conv=ds.createConverter();
-  conv->setFrequencyFrame(casa::MFrequency::Ref(casa::MFrequency::TOPO),"MHz");
-  conv->setEpochFrame(casa::MEpoch(casa::Quantity(53635.5,"d"),
-                      casa::MEpoch::Ref(casa::MEpoch::UTC)),"s");
+  conv->setFrequencyFrame(casacore::MFrequency::Ref(casacore::MFrequency::TOPO),"MHz");
+  conv->setEpochFrame(casacore::MEpoch(casacore::Quantity(53635.5,"d"),
+                      casacore::MEpoch::Ref(casacore::MEpoch::UTC)),"s");
   IDataSharedIter it=ds.createIterator(sel,conv);
   //for (size_t run=0;run<10;++run)
   for (it.init();it!=it.end();it.next()) {
@@ -126,13 +126,13 @@ void doReadWriteTest(const IDataSource &ds) {
        //it.chooseBuffer("MODEL_DATA");
        //it->rwVisibility()=it.buffer("TEST").visibility();
        it.chooseOriginal();
-       it->rwVisibility().set(casa::Complex(1.,0.0));
+       it->rwVisibility().set(casacore::Complex(1.,0.0));
        const double l=0., m=0.003975472185;
-       for (casa::uInt row = 0; row<it->nRow(); ++row) {
-            for (casa::uInt chan=0; chan<it->nChannel(); ++chan) {
-                 const double phase = 2.*casa::C::pi*(it->uvw()(row)(0)*l+it->uvw()(row)(1)*m)/casa::C::c*it->frequency()[chan]*1e6;
-                 const casa::Complex phasor(cos(phase),sin(phase));
-                 casa::Array<casa::Complex> tmp = it->rwVisibility().yzPlane(row).row(chan);
+       for (casacore::uInt row = 0; row<it->nRow(); ++row) {
+            for (casacore::uInt chan=0; chan<it->nChannel(); ++chan) {
+                 const double phase = 2.*casacore::C::pi*(it->uvw()(row)(0)*l+it->uvw()(row)(1)*m)/casacore::C::c*it->frequency()[chan]*1e6;
+                 const casacore::Complex phasor(cos(phase),sin(phase));
+                 casacore::Array<casacore::Complex> tmp = it->rwVisibility().yzPlane(row).row(chan);
                  tmp *= phasor;
             }
        }
@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
 	 return -2;
      }
 
-     casa::Timer timer;
+     casacore::Timer timer;
 
      timer.mark();
      //TableDataSource ds(argv[1],TableDataSource::REMOVE_BUFFERS |

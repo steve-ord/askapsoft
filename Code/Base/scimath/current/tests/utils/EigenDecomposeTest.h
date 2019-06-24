@@ -31,7 +31,7 @@
 #include <casacore/casa/Arrays/Vector.h>
 #include <casacore/casa/Arrays/Matrix.h>
 
-#include <utils/EigenDecompose.h>
+#include <askap/scimath/utils/EigenDecompose.h>
 
 namespace askap {
 
@@ -44,7 +44,7 @@ class EigenDecomposeTest : public CppUnit::TestFixture
    CPPUNIT_TEST_SUITE_END();
 public:
    void testSymEigenDecomp() {
-      casa::Matrix<double> M(3,3,0.);
+      casacore::Matrix<double> M(3,3,0.);
       M(0,0)=1.;
       M(1,1)=2.;
       M(2,2)=3.;
@@ -52,8 +52,8 @@ public:
       M(0,2) = M(2,0) = 0.3;
       M(1,2) = M(2,1) = 0.8;
       
-      casa::Matrix<double> eVect;
-      casa::Vector<double> eVal;
+      casacore::Matrix<double> eVect;
+      casacore::Vector<double> eVal;
       symEigenDecompose(M,eVal,eVect);
       
       CPPUNIT_ASSERT(eVal.nelements() == M.nrow());
@@ -63,11 +63,11 @@ public:
       CPPUNIT_ASSERT(eVal[0] >= eVal[1]);
       CPPUNIT_ASSERT(eVal[1] >= eVal[2]);
       // checking eigenvalues and eigenvectors (M*vect = val*vect)
-      for (casa::uInt i = 0; i<eVal.nelements(); ++i) {
+      for (casacore::uInt i = 0; i<eVal.nelements(); ++i) {
            // checking i-th value and vector
-           for (casa::uInt row=0; row<M.nrow(); ++row) {
+           for (casacore::uInt row=0; row<M.nrow(); ++row) {
                 double res = 0;
-                for (casa::uInt col=0; col<M.ncolumn(); ++col) {
+                for (casacore::uInt col=0; col<M.ncolumn(); ++col) {
                      res += M(row,col)*eVect(col,i);
                 } 
                 CPPUNIT_ASSERT_DOUBLES_EQUAL(eVect(row,i)*eVal[i],res,1e-6);

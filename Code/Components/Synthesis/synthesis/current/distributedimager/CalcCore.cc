@@ -31,8 +31,8 @@
 #include <string>
 
 // ASKAPsoft includes
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 #include <Common/ParameterSet.h>
 #include <fitting/INormalEquations.h>
 #include <fitting/ImagingNormalEquations.h>
@@ -55,7 +55,7 @@
 #include <dataaccess/ParsetInterface.h>
 #include <measurementequation/ImageFFTEquation.h>
 #include <parallel/GroupVisAggregator.h>
-#include <utils/MultiDimArrayPlaneIter.h>
+#include <askap/scimath/utils/MultiDimArrayPlaneIter.h>
 #include <gridding/IVisGridder.h>
 #include <gridding/VisGridderFactory.h>
 

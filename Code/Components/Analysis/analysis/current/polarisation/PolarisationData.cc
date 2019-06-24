@@ -30,8 +30,8 @@
 #include <polarisation/PolarisationData.h>
 #include <askap_analysis.h>
 
-#include <askap/AskapLogging.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapLogging.h>
+#include <askap/askap/AskapError.h>
 
 #include <extraction/SourceSpectrumExtractor.h>
 #include <extraction/NoiseSpectrumExtractor.h>
@@ -92,7 +92,7 @@ void PolarisationData::initialise(CasdaComponent *comp)
     // get frequency array and compute lambda-squared array
     itsFrequencies = itsStokesI.frequencies();
     ASKAPASSERT(itsFrequencies.size() == size);
-    itsLambdaSquared = casa::Vector<Float>(size);
+    itsLambdaSquared = casacore::Vector<Float>(size);
     for (unsigned int i = 0; i < size; i++) {
         float lambda = QC::c.getValue() / itsFrequencies[i];
         itsLambdaSquared[i] = lambda * lambda;

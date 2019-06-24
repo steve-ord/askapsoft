@@ -31,13 +31,13 @@
 
 // Local package includes
 #include "ingestpipeline/quacktask/QuackTask.h"
-#include "askap/AskapLogging.h"
-#include "askap/AskapError.h"
+#include "askap/askap/AskapLogging.h"
+#include "askap/askap/AskapError.h"
 
 
 ASKAP_LOGGER(logger, ".QuackTask");
 
-using namespace casa;
+using namespace casacore;
 using namespace askap;
 using namespace askap::cp::common;
 using namespace askap::cp::ingest;
@@ -85,7 +85,7 @@ void QuackTask::process(askap::cp::common::VisChunk::ShPtr& chunk)
        } else {
           ASKAPLOG_DEBUG_STR(logger, "Cycle "<<itsNCyclesThisScan + 1<<" of scan "<<itsCountedScanNumber<<" - flagging all the data");
        }
-       chunk->flag().set(casa::True);
+       chunk->flag().set(casacore::True);
    } else {
        if (itsNCycles != 0 && (itsNCyclesThisScan == itsNCycles)) {
            if (itsVerboseRank) {

@@ -112,7 +112,7 @@ namespace askap
         /// @param[in] matr matrix to test
         /// @param[in] tolerance tolerance on the element absolute values
         /// @return true if all elements are zero within the tolerance
-        static bool allMatrixElementsAreZeros(const casa::Matrix<double> &matr, const double tolerance);
+        static bool allMatrixElementsAreZeros(const casacore::Matrix<double> &matr, const double tolerance);
 
        private:
          /// @brief maximum condition number allowed
@@ -132,7 +132,7 @@ namespace askap
          /// has coded channel present.
          /// @param[in] name full name of the parameter
          /// @return a pair with extracted channel and the base parameter name
-         static std::pair<casa::uInt, std::string> extractChannelInfo(const std::string &name);
+         static std::pair<casacore::uInt, std::string> extractChannelInfo(const std::string &name);
     };
 
   }

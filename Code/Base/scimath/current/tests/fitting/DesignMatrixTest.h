@@ -24,7 +24,7 @@
 #include <fitting/DesignMatrix.h>
 #include <fitting/ComplexDiffMatrix.h>
 #include <fitting/ComplexDiff.h>
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <cppunit/extensions/HelperMacros.h>
 namespace askap
@@ -100,17 +100,17 @@ namespace askap
           ip.add("Value0");
           ip.add("Value1", 1.5);
           uint imsize=100;
-          casa::Vector<double> im(imsize);
+          casacore::Vector<double> im(imsize);
           im.set(3.0);
           ip.add("Image2", im);
 
           delete p1;
           p1 = new DesignMatrix(); //(ip);
           int gradsize=10*10*100;
-          p1->addDerivative("Value0", casa::Vector<casa::Double>(100, 0.0));
-          p1->addDerivative("Value1", casa::Vector<casa::Double>(100, 0.0));
-          p1->addDerivative("Image2", casa::Vector<casa::Double>(gradsize, 0.0));
-          p1->addResidual(casa::Vector<casa::Double>(100, 0.0), casa::Vector<double>(100, 1.0));
+          p1->addDerivative("Value0", casacore::Vector<casacore::Double>(100, 0.0));
+          p1->addDerivative("Value1", casacore::Vector<casacore::Double>(100, 0.0));
+          p1->addDerivative("Image2", casacore::Vector<casacore::Double>(gradsize, 0.0));
+          p1->addResidual(casacore::Vector<casacore::Double>(100, 0.0), casacore::Vector<double>(100, 1.0));
           CPPUNIT_ASSERT(p1->nData()==100);
           CPPUNIT_ASSERT(p1->nParameters()==3);
           
@@ -118,13 +118,13 @@ namespace askap
           // this is a test of the order, in which different dimensions are stored
           // by casa array. It is not used, but left here in case I forget
           // the result in the future. 
-          casa::Matrix<double> mtr(2,2,0.);
+          casacore::Matrix<double> mtr(2,2,0.);
           mtr(0,1)=1;
           mtr(1,0)=2;
           mtr(1,1)=3;
           for (int i=0;i<2;++i) for (int j=0;j<2;++j)
           std::cout<<i<<" "<<j<<" "<<mtr(i,j)<<std::endl;
-          casa::Vector<double> vec = mtr.reform(casa::IPosition(1,4));
+          casacore::Vector<double> vec = mtr.reform(casacore::IPosition(1,4));
           for (int i=0;i<4;++i)
           std::cout<<vec[i]<<std::endl;
           */
@@ -132,13 +132,13 @@ namespace askap
         
         void testComplexDiffMatrix()
         {
-           ComplexDiffMatrix cdm(5,5, casa::Complex(0.,-1.));
-           cdm(0,0) = ComplexDiff("g1", casa::Complex(110.,0.));
+           ComplexDiffMatrix cdm(5,5, casacore::Complex(0.,-1.));
+           cdm(0,0) = ComplexDiff("g1", casacore::Complex(110.,0.));
            cdm(3,3) = ComplexDiff("amp", 50.);
-           cdm(4,3) = ComplexDiff("g2", casa::Complex(10.,-10.)) *
-                        ComplexDiff("mult", casa::Complex(0.,-1.)); 
-           casa::Matrix<casa::Complex> data(5,5,casa::Complex(0.,-1.));
-           casa::Matrix<double> weight(5,5,1.);
+           cdm(4,3) = ComplexDiff("g2", casacore::Complex(10.,-10.)) *
+                        ComplexDiff("mult", casacore::Complex(0.,-1.)); 
+           casacore::Matrix<casacore::Complex> data(5,5,casacore::Complex(0.,-1.));
+           casacore::Matrix<double> weight(5,5,1.);
            p1->addModel(cdm,data,weight);
            CPPUNIT_ASSERT(p1->nData() == 50);
            CPPUNIT_ASSERT(p1->nParameters() == 7);
@@ -151,7 +151,7 @@ namespace askap
 // Will throw std::invalid_argument
           delete p1;
           p1 = new DesignMatrix(); //(ip);
-          casa::Vector<casa::Double> mat(100, 0.0);
+          casacore::Vector<casacore::Double> mat(100, 0.0);
           p1->addDerivative("FooBar", mat);
           p1->derivative("Value0");
         }

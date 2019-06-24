@@ -32,12 +32,12 @@
 
 // logging stuff
 #include <askap_synthesis.h>
-#include <askap/AskapLogging.h>
+#include <askap/askap/AskapLogging.h>
 ASKAP_LOGGER(logger, ".parallel");
 
 // own includes
-#include <askap/AskapError.h>
-#include <askap/AskapUtil.h>
+#include <askap/askap/AskapError.h>
+#include <askap/askap/AskapUtil.h>
 #include <parallel/MEParallelApp.h>
 #include <measurementequation/SynthesisParamsHelper.h>
 #include <gridding/VisGridderFactory.h>
@@ -103,7 +103,7 @@ MEParallelApp::MEParallelApp(askap::askapparallel::AskapParallel& comms, const L
        ASKAPLOG_DEBUG_STR(logger, "UVWMachine cache will store "<<
            itsUVWMachineCacheSize<<" machines");
        ASKAPLOG_DEBUG_STR(logger, "Tolerance on the directions is "<<
-           itsUVWMachineCacheTolerance/casa::C::pi*180.*3600.<<" arcsec");
+           itsUVWMachineCacheTolerance/casacore::C::pi*180.*3600.<<" arcsec");
 
        // Create the gridder using a factory acting on a parameterset
        itsGridder = createGridder(comms, parset);

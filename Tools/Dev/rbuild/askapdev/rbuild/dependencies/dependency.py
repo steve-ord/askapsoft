@@ -129,6 +129,8 @@ class Dependency:
     # @return the absolute path to the package installed location
     def get_install_path(self, key):
         rel_path  = self._deps[key]["path"]
+        if rel_path.startswith("/"):
+            return rel_path
         full_path = os.path.join(self.ASKAPROOT, rel_path, self.INSTALL_SUBDIR)
         return os.path.abspath(full_path)
 

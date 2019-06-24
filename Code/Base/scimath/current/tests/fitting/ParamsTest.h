@@ -22,7 +22,7 @@
 ///
 
 #include <fitting/Params.h>
-#include <utils/ChangeMonitor.h>
+#include <askap/scimath/utils/ChangeMonitor.h>
 
 #include <Blob/BlobString.h>
 #include <Blob/BlobOBufString.h>
@@ -32,7 +32,7 @@
 
 #include <casacore/casa/Arrays/Matrix.h>
 
-#include <askap/AskapError.h>
+#include <askap/askap/AskapError.h>
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -95,7 +95,7 @@ namespace askap
         void testNotScalar()
 // Should throw invalid_argument
         {
-          p1->add("NS0", casa::Vector<double>(100));
+          p1->add("NS0", casacore::Vector<double>(100));
           double result=p1->scalarValue("NS0");
           p1->add("DoSomethingWithResult", result);
         }
@@ -105,7 +105,7 @@ namespace askap
           CPPUNIT_ASSERT( p1->size()==0);
           for (uint i=0;i<10;i++)
           {
-            casa::String name;
+            casacore::String name;
             {
               std::ostringstream s;
               s<<"Root." << i;
@@ -143,25 +143,25 @@ namespace askap
         {
           p1->add("Value0", 1.5);
           CPPUNIT_ASSERT(p1->has("Value0"));
-          casa::Array<double> im(casa::IPosition(2,10,10));
+          casacore::Array<double> im(casacore::IPosition(2,10,10));
           im.set(3.0);
           p1->add("Value1", im);
-          CPPUNIT_ASSERT(p1->value("Value1")(casa::IPosition(2,5,5))==3.0);
+          CPPUNIT_ASSERT(p1->value("Value1")(casacore::IPosition(2,5,5))==3.0);
           CPPUNIT_ASSERT(p1->has("Value1"));
           CPPUNIT_ASSERT(!p1->isScalar("Value1"));
           CPPUNIT_ASSERT(p1->value("Value1").nelements()==100);
           p1->value("Value1").set(4.0);
-          CPPUNIT_ASSERT(p1->value("Value1")(casa::IPosition(2,5,5))==4.0);
+          CPPUNIT_ASSERT(p1->value("Value1")(casacore::IPosition(2,5,5))==4.0);
         }
         
         void testComplexVector()
         {
-          casa::Vector<casa::Complex> vec(5,casa::Complex(2.,3.));
-          vec[0] = casa::Complex(0.,1.);
+          casacore::Vector<casacore::Complex> vec(5,casacore::Complex(2.,3.));
+          vec[0] = casacore::Complex(0.,1.);
           p1->addComplexVector("cvec",vec);
           CPPUNIT_ASSERT(p1->has("cvec"));
           CPPUNIT_ASSERT_EQUAL(size_t(10), p1->value("cvec").nelements());
-          const casa::Vector<casa::Complex> res = p1->complexVectorValue("cvec");
+          const casacore::Vector<casacore::Complex> res = p1->complexVectorValue("cvec");
           CPPUNIT_ASSERT_EQUAL(res.nelements(), vec.nelements());
           for (size_t i = 0; i<res.nelements(); ++i) {
                CPPUNIT_ASSERT_DOUBLES_EQUAL(real(vec[i]),real(res[i]),1e-6); 
@@ -169,7 +169,7 @@ namespace askap
           } 
           vec *= 2.f;
           p1->updateComplexVector("cvec",vec);
-          const casa::Vector<casa::Complex> res2 = p1->complexVectorValue("cvec");
+          const casacore::Vector<casacore::Complex> res2 = p1->complexVectorValue("cvec");
           CPPUNIT_ASSERT_EQUAL(res2.nelements(), vec.nelements());
           for (size_t i = 0; i<res2.nelements(); ++i) {
                CPPUNIT_ASSERT_DOUBLES_EQUAL(real(vec[i]),real(res2[i]),1e-6); 
@@ -179,20 +179,20 @@ namespace askap
         
         void testArraySlice()
         {
-          casa::Matrix<double> im(10,15,-1.0);
-          for (casa::uInt row = 0; row<im.nrow(); ++row) {
+          casacore::Matrix<double> im(10,15,-1.0);
+          for (casacore::uInt row = 0; row<im.nrow(); ++row) {
                im.row(row).set(double(row));
           }
           p1->add("BigArray",im.shape());
-          for (casa::uInt row = 0; row<im.nrow(); ++row) {
-               casa::Vector<double> vec(im.ncolumn(),double(row));
-               casa::Array<double> vecArr(vec.reform(casa::IPosition(2,1,vec.nelements())));
-               casa::IPosition blc(2,int(row),0);
+          for (casacore::uInt row = 0; row<im.nrow(); ++row) {
+               casacore::Vector<double> vec(im.ncolumn(),double(row));
+               casacore::Array<double> vecArr(vec.reform(casacore::IPosition(2,1,vec.nelements())));
+               casacore::IPosition blc(2,int(row),0);
                p1->update("BigArray",vecArr, blc);
           }
-          casa::Matrix<double> res(p1->value("BigArray"));
-          for (casa::uInt x = 0; x<res.nrow(); ++x) {
-               for (casa::uInt y = 0; y<res.ncolumn(); ++y) {
+          casacore::Matrix<double> res(p1->value("BigArray"));
+          for (casacore::uInt x = 0; x<res.nrow(); ++x) {
+               for (casacore::uInt y = 0; y<res.ncolumn(); ++y) {
                     CPPUNIT_ASSERT(x<im.nrow());
                     CPPUNIT_ASSERT(y<im.ncolumn());
                     CPPUNIT_ASSERT(fabs(im(x,y)-res(x,y))<1e-7);                    
@@ -257,7 +257,7 @@ namespace askap
         
         void testChangeMonitor() {
           p1->add("Par1", 0.1);
-          p1->add("Par2", casa::Vector<double>(5,1.));
+          p1->add("Par2", casacore::Vector<double>(5,1.));
           const ChangeMonitor cm1Par1 = p1->monitorChanges("Par1");
           const ChangeMonitor cm1Par2 = p1->monitorChanges("Par2");
           CPPUNIT_ASSERT(!p1->isChanged("Par1",cm1Par1));
@@ -265,7 +265,7 @@ namespace askap
           p1->update("Par1",-0.1);
           CPPUNIT_ASSERT(p1->isChanged("Par1",cm1Par1));
           CPPUNIT_ASSERT(!p1->isChanged("Par2",cm1Par2));
-          p1->update("Par2", casa::Vector<double>(5,1.1));
+          p1->update("Par2", casacore::Vector<double>(5,1.1));
           CPPUNIT_ASSERT(p1->isChanged("Par1",cm1Par1));
           CPPUNIT_ASSERT(p1->isChanged("Par2",cm1Par2));
           // second level of change monitoring
@@ -275,7 +275,7 @@ namespace askap
           CPPUNIT_ASSERT(!p1->isChanged("Par2",cm2Par2));
           for (int i=0;i<20; ++i) {
                p1->update("Par1",-0.1+double(i));
-               p1->update("Par2", casa::Vector<double>(5,1.1+double(i)));               
+               p1->update("Par2", casacore::Vector<double>(5,1.1+double(i)));               
           }
           CPPUNIT_ASSERT(p1->isChanged("Par1",cm2Par1));
           CPPUNIT_ASSERT(p1->isChanged("Par2",cm2Par2));

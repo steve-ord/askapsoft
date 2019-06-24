@@ -34,11 +34,11 @@
 
 
 // own include
-#include "askap/RangePartition.h"
+#include "askap/askap/RangePartition.h"
 
 // ASKAPsoft includes
-#include "askap/AskapError.h"
-#include "askap/AskapUtil.h"
+#include "askap/askap/AskapError.h"
+#include "askap/askap/AskapUtil.h"
 
 namespace askap {
 
